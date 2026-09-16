@@ -1,0 +1,24 @@
+a[data-emu-labmark] {
+  border-radius: 4px !important;
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 70%) inset !important;
+  color: #fff !important;
+  display: block;
+  padding: 4px !important;
+}
+
+a[data-emu-labmark="verified"] {
+  background: #c62828 !important;
+}
+
+a[data-emu-labmark="probable"] {
+  background: #ef6c00 !important;
+}
+
+.emu-labmark-badge {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  line-height: 1.2;
+  margin-top: 3px;
+  text-transform: uppercase;
+}
