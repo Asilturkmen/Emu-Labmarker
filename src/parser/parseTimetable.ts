@@ -1,8 +1,7 @@
 import { normalizeRoom } from "../data/labRooms";
 import type { ParsedMeetingRow, TimetableLayout } from "../types/timetable";
+import { matchCourseRoom, normalizeCourseCode } from "./courseRoom";
 
-const COURSE_ROOM_PATTERN =
-  /\b([A-Z]{2,}\s*-?\s*\d{3,4}[A-Z]?)\s*\/\s*([A-Z]{2,}(?:\s*-?\s*[A-Z0-9]+)+)\b/i;
 const TIME_RANGE_PATTERN =
   /(?:^|[^\d])([01]?\d|2[0-3]):([0-5]\d)\s*[-–—]\s*([01]?\d|2[0-3]):([0-5]\d)(?!\d)/;
 
@@ -27,9 +26,12 @@ const DAYS: ReadonlyArray<readonly [string, string]> = [
   ["PAZAR", "sunday"],
 ];
 
-function normalizeCourseCode(courseCode: string): string {
-  return courseCode.replace(/\s+/g, "").toUpperCase();
-}
+// Day labels are matched as substrings, and several Turkish labels contain a
+// shorter one (CUMA in CUMARTESI, PAZAR in PAZARTESI). Matching the longest
+// label first keeps the weekend from being read as a weekday.
+const DAY_MATCHERS = [...DAYS].sort(
+  ([left], [right]) => right.length - left.length,
+);
 
 function getLayout(cell: Element): TimetableLayout {
   return cell.closest(".schedule-table-content-mobile")
@@ -62,13 +64,8 @@ function parseCourseRoom(link: HTMLAnchorElement): {
   ];
 
   for (const candidate of candidates) {
-    const match = candidate.toUpperCase().match(COURSE_ROOM_PATTERN);
-    if (match?.[1] && match[2]) {
-      return {
-        courseCode: normalizeCourseCode(match[1]),
-        room: normalizeRoom(match[2]),
-      };
-    }
+    const courseRoom = matchCourseRoom(candidate);
+    if (courseRoom) return courseRoom;
   }
 
   return null;
@@ -120,7 +117,7 @@ function normalizeDay(value: string | undefined): string | null {
   if (!value) return null;
 
   const upperValue = value.trim().toUpperCase();
-  for (const [label, normalized] of DAYS) {
+  for (const [label, normalized] of DAY_MATCHERS) {
     if (upperValue.includes(label)) return normalized;
   }
 
@@ -155,14 +152,40 @@ function parsePortalList(link: HTMLAnchorElement): ParsedMeetingRow | null {
   return { ...courseRoom, startMinutes, endMinutes, day, layout: mobile ? "mobile" : "desktop", link };
 }
 
+/**
+ * cellIndex counts elements rather than grid columns, so a heading row with a
+ * merged cell would shift every day by one. Row spans are still not tracked;
+ * the portal timetable does not use them.
+ */
+function getColumnIndex(cell: HTMLTableCellElement): number {
+  let columnIndex = 0;
+  for (const sibling of Array.from(cell.parentElement?.children ?? [])) {
+    if (sibling === cell) break;
+    if (sibling instanceof HTMLTableCellElement) columnIndex += sibling.colSpan;
+  }
+  return columnIndex;
+}
+
+function findCellAtColumn(
+  row: HTMLTableRowElement,
+  columnIndex: number,
+): HTMLTableCellElement | null {
+  let currentColumn = 0;
+  for (const candidate of Array.from(row.cells)) {
+    if (columnIndex < currentColumn + candidate.colSpan) return candidate;
+    currentColumn += candidate.colSpan;
+  }
+  return null;
+}
+
 function findDayInTable(cell: Element): string | null {
   const tableCell = cell.closest("td, th") as HTMLTableCellElement | null;
   const table = cell.closest("table");
   if (!tableCell || !table) return null;
 
-  const columnIndex = tableCell.cellIndex;
+  const columnIndex = getColumnIndex(tableCell);
   for (const row of Array.from(table.rows)) {
-    const candidate = row.cells[columnIndex];
+    const candidate = findCellAtColumn(row, columnIndex);
     const day = normalizeDay(candidate?.textContent ?? undefined);
     if (day) return day;
   }

@@ -38,8 +38,10 @@ export function groupMeetingBlocks(rows: ParsedMeetingRow[]): MeetingBlock[] {
         continue;
       }
 
+      // Rows are sorted by start time, so a negative gap means this row
+      // overlaps the block and belongs to it.
       const gap = row.startMinutes - currentBlock.endMinutes;
-      if (gap >= 0 && gap <= MAX_CONTIGUOUS_GAP_MINUTES) {
+      if (gap <= MAX_CONTIGUOUS_GAP_MINUTES) {
         currentBlock.endMinutes = Math.max(
           currentBlock.endMinutes,
           row.endMinutes,

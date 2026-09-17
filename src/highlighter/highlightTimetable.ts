@@ -1,11 +1,10 @@
 import type { ResolvedMeeting, RoomClassification } from "../types/timetable";
-import { isVerifiedLabRoom } from "../data/labRooms";
+import { isVerifiedLabRoom, VERIFIED_LAB_ROOMS } from "../data/labRooms";
+import { matchCourseRoom } from "../parser/courseRoom";
 
 const MARKER_ATTRIBUTE = "data-emu-labmark";
 const BADGE_CLASS = "emu-labmark-badge";
 const FALLBACK_ATTRIBUTE = "data-emu-labmark-text-match";
-const COURSE_ROOM_TEXT_PATTERN =
-  /\b[A-Z]{2,}\s*-?\s*\d{3,4}[A-Z]?\s*\/\s*([A-Z]{2,}(?:\s*-?\s*[A-Z0-9]+)+)\b/i;
 
 const LABELS: Record<Exclude<RoomClassification, "normal">, string> = {
   verified: "LAB SINIFI",
@@ -80,8 +79,10 @@ function addMark(
   badge.className = BADGE_CLASS;
   badge.textContent = "LAB";
   badge.title = LABELS[classification];
+  // A decorative span is not focusable, so role="img" is what lets assistive
+  // technology read the full label instead of the shortened "LAB" text.
+  badge.setAttribute("role", "img");
   badge.setAttribute("aria-label", LABELS[classification]);
-  badge.tabIndex = 0;
   element.append(badge);
 }
 
@@ -112,7 +113,10 @@ export function highlightTimetable(meetings: ResolvedMeeting[]): void {
  * finds visible COURSE/ROOM text directly, so manually verified rooms can
  * still be highlighted without relying on timetable-specific markup.
  */
-export function highlightVerifiedRoomText(root: ParentNode = document): void {
+export function highlightVerifiedRoomText(
+  root: ParentNode = document,
+  verifiedRooms: ReadonlySet<string> = VERIFIED_LAB_ROOMS,
+): void {
   root
     .querySelectorAll<HTMLElement>(`[${FALLBACK_ATTRIBUTE}]`)
     .forEach((element) => {
@@ -125,10 +129,9 @@ export function highlightVerifiedRoomText(root: ParentNode = document): void {
   let node: Node | null;
 
   while ((node = walker.nextNode())) {
-    const match = node.textContent?.toUpperCase().match(COURSE_ROOM_TEXT_PATTERN);
-    const room = match?.[1];
+    const room = matchCourseRoom(node.textContent ?? "")?.room;
     const parent = node.parentElement;
-    if (!room || !parent || !isVerifiedLabRoom(room)) continue;
+    if (!room || !parent || !isVerifiedLabRoom(room, verifiedRooms)) continue;
     if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmark-badge, .emu-labmark-legend")) continue;
 
     const target =

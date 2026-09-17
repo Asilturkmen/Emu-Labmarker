@@ -47,4 +47,18 @@ describe("groupMeetingBlocks", () => {
   it("does not merge matching entries across desktop and mobile layouts", () => {
     expect(groupMeetingBlocks([row({}), row({ layout: "mobile" })])).toHaveLength(2);
   });
+
+  it("merges an overlapping row into the block it overlaps", () => {
+    const blocks = groupMeetingBlocks([
+      row({ startMinutes: 12 * 60 + 30, endMinutes: 14 * 60 + 20 }),
+      row({ startMinutes: 13 * 60 + 30, endMinutes: 14 * 60 + 20 }),
+    ]);
+
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0]).toMatchObject({
+      startMinutes: 12 * 60 + 30,
+      endMinutes: 14 * 60 + 20,
+    });
+    expect(blocks[0]?.rows).toHaveLength(2);
+  });
 });

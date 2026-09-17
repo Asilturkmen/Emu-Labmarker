@@ -4,7 +4,6 @@ export default defineConfig({
   manifest: {
     name: "EMU LabMark",
     description: "Highlights manually verified laboratory rooms in the EMU timetable.",
-    version: "0.1.0",
     permissions: ["storage"],
     icons: {
       16: "icons/icon-16.png",

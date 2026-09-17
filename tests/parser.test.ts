@@ -116,4 +116,51 @@ describe("parseTimetable", () => {
 
     expect(parseTimetable()).toEqual([]);
   });
+
+  it("does not read Turkish weekend day names as weekdays", () => {
+    const days: ReadonlyArray<readonly [string, string]> = [
+      ["Cumartesi", "saturday"],
+      ["CUMARTESİ", "saturday"],
+      ["Pazar", "sunday"],
+      ["Pazartesi", "monday"],
+      ["Cuma", "friday"],
+    ];
+
+    for (const [label, expected] of days) {
+      document.body.innerHTML = `
+        <a
+          class="schedule-table-content-mobile"
+          data-day="${label}"
+          data-start="09:30"
+          data-end="10:20"
+        >CMSE425/CMPE127</a>
+      `;
+
+      expect(parseTimetable()[0]?.day, label).toBe(expected);
+    }
+  });
+
+  it("keeps day columns aligned when a heading cell spans two columns", () => {
+    document.body.innerHTML = `
+      <table>
+        <thead>
+          <tr><th colspan="2">Time and Monday</th><th>Tuesday</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>10:30-11:20</td>
+            <td class="schedule-table-content"><a>CMSE425/CMPE127</a></td>
+            <td class="schedule-table-content"><a>CMSE425/CMPE134</a></td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    const rows = parseTimetable();
+
+    expect(rows.map(({ room, day }) => [room, day])).toEqual([
+      ["CMPE127", "monday"],
+      ["CMPE134", "tuesday"],
+    ]);
+  });
 });

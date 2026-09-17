@@ -3,12 +3,15 @@ import { portalTimetable } from "./fixtures/portalTimetable";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
-import { clearTimetableHighlights, highlightTimetable } from "../src/highlighter/highlightTimetable";
+import { clearTimetableHighlights, highlightTimetable, highlightVerifiedRoomText } from "../src/highlighter/highlightTimetable";
+
+// Pinned so that editing the verified room list cannot break these tests.
+const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
 
 function scan() {
   clearTimetableHighlights();
   const rows = parseTimetable();
-  const meetings = resolveMeetings(groupMeetingBlocks(rows), new Set(["CMPE134", "CMPE230"]));
+  const meetings = resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS);
   highlightTimetable(meetings);
   return { rows, meetings };
 }
@@ -67,5 +70,23 @@ describe("supplied UL/LI portal timetable", () => {
     document.body.insertAdjacentHTML("afterbegin", '<aside><a data-day="Monday" data-start="08:30" data-end="09:20">CMSE423/CMPE230</a></aside>');
     expect(scan().rows).toHaveLength(54);
     expect(document.querySelector("aside [data-emu-labmark]")).toBeNull();
+  });
+
+  // The content script runs the text fallback after the parser, so the two
+  // passes must not mark the same cell twice or reach beyond the timetable.
+  it("stays stable when the text fallback runs after the parser", () => {
+    for (let i = 0; i < 3; i++) {
+      scan();
+      highlightVerifiedRoomText(document, LAB_ROOMS);
+
+      for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
+        const container = document.querySelector(selector)!;
+        expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
+        expect(container.querySelectorAll("li.ctime:not([data-emu-labmark])")).toHaveLength(21);
+      }
+      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(8);
+      expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+      expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
+    }
   });
 });

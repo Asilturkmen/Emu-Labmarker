@@ -14,6 +14,9 @@ import type {
   RoomClassification,
 } from "../src/types/timetable";
 
+// Pinned so that editing the verified room list cannot change these results.
+const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
+
 function resolved(classification: RoomClassification): ResolvedMeeting {
   const link = document.createElement("a");
   document.body.append(link);
@@ -84,7 +87,7 @@ describe("highlightTimetable", () => {
       <div class="portal-course">CMSE423/CMPE230</div>
     `;
 
-    highlightVerifiedRoomText();
+    highlightVerifiedRoomText(document, LAB_ROOMS);
 
     const course = document.querySelector<HTMLElement>(".portal-course");
     expect(course?.dataset.emuLabmark).toBe("verified");
@@ -103,8 +106,8 @@ describe("highlightTimetable", () => {
       clearTimetableHighlights();
       const rows = parseTimetable();
       expect(rows.map((row) => row.room)).toEqual(["CMPE230", "CMPE134"]);
-      highlightTimetable(resolveMeetings(groupMeetingBlocks(rows)));
-      highlightVerifiedRoomText();
+      highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS));
+      highlightVerifiedRoomText(document, LAB_ROOMS);
       expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
       expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
       expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
@@ -112,8 +115,8 @@ describe("highlightTimetable", () => {
     }
     document.querySelectorAll("#shared a").forEach((link) => { link.textContent = "CMSE423/CMPE025"; });
     clearTimetableHighlights();
-    highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable())));
-    highlightVerifiedRoomText();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS));
+    highlightVerifiedRoomText(document, LAB_ROOMS);
     expect(document.querySelectorAll("[data-emu-labmark], .emu-labmark-legend")).toHaveLength(0);
   });
 
@@ -147,7 +150,7 @@ describe("highlightTimetable", () => {
         </div>
       </td></tr></table>
     `;
-    highlightVerifiedRoomText();
+    highlightVerifiedRoomText(document, LAB_ROOMS);
     expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
     expect(document.querySelectorAll("#layout[data-emu-labmark], #schedule[data-emu-labmark], #normal[data-emu-labmark]")).toHaveLength(0);
   });
@@ -162,7 +165,7 @@ describe("highlightTimetable", () => {
     const meeting = resolved("verified");
     meeting.block.rows[0]!.link = document.querySelector<HTMLAnchorElement>("#lab")!;
     highlightTimetable([meeting]);
-    highlightVerifiedRoomText();
+    highlightVerifiedRoomText(document, LAB_ROOMS);
     expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
     expect(document.querySelector("#layout")?.hasAttribute("data-emu-labmark")).toBe(false);
     expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmark")).toBe(false);
