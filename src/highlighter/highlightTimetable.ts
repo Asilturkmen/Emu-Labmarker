@@ -14,7 +14,56 @@ const LABELS: Record<Exclude<RoomClassification, "normal">, string> = {
 
 function clearMark(element: HTMLElement): void {
   element.removeAttribute(MARKER_ATTRIBUTE);
+  element.removeAttribute(FALLBACK_ATTRIBUTE);
   element.querySelectorAll(`.${BADGE_CLASS}`).forEach((badge) => badge.remove());
+}
+
+function isLocalCourseBox(candidate: HTMLElement, source: HTMLElement): boolean {
+  if (candidate.matches("html, body, table, thead, tbody, tfoot, tr, [role='grid'], [role='row']")) return false;
+  if (candidate.querySelector("table, thead, tbody, tr, td, th, [role='grid'], [role='row']")) return false;
+  // A layout cell may contain the entire div-based timetable. A course box
+  // must not encompass separate block containers or nested schedule cells.
+  for (const child of candidate.querySelectorAll(
+    "div, section, article, ul, ol, .schedule-table-content, .schedule-table-content-mobile",
+  )) {
+    if (!child.contains(source)) return false;
+  }
+  return true;
+}
+
+function getHighlightTarget(element: HTMLElement): HTMLElement | null {
+  const portalCell = element.closest<HTMLElement>(
+    ".schedule-table-content > ul > li.ctime, .schedule-table-content-mobile > ul > li.ctime",
+  );
+  if (portalCell) return portalCell;
+  const cell = element.closest<HTMLElement>(
+    ".schedule-table-content-mobile, .schedule-table-content, td",
+  );
+  if (cell && isLocalCourseBox(cell, element)) return cell;
+  return isLocalCourseBox(element, element) ? element : null;
+}
+
+export function clearTimetableHighlights(root: ParentNode = document): void {
+  root.querySelectorAll<HTMLElement>(`[${MARKER_ATTRIBUTE}]`).forEach(clearMark);
+  root.querySelectorAll(".emu-labmark-legend").forEach((legend) => legend.remove());
+}
+
+function updateLegends(root: ParentNode = document): void {
+  root.querySelectorAll(".emu-labmark-legend").forEach((legend) => legend.remove());
+  for (const table of root.querySelectorAll(".schedule-panel, table")) {
+    if (table.matches("table") && (table.closest(".schedule-panel") || table.querySelector(".schedule-panel"))) continue;
+    if (!table.querySelector(`[${MARKER_ATTRIBUTE}]`)) continue;
+    const legend = document.createElement("div");
+    legend.className = "emu-labmark-legend";
+    const swatch = document.createElement("span");
+    swatch.className = "emu-labmark-swatch";
+    swatch.setAttribute("aria-hidden", "true");
+    const badge = document.createElement("span");
+    badge.className = "emu-labmark-legend-badge";
+    badge.textContent = "LAB";
+    legend.append(swatch, badge, document.createTextNode(" = Laboratuvar dersi"));
+    table.after(legend);
+  }
 }
 
 function addMark(
@@ -23,11 +72,13 @@ function addMark(
 ): void {
   element.setAttribute(MARKER_ATTRIBUTE, classification);
 
-  if (element.querySelector(`.${BADGE_CLASS}`)) return;
-
-  const badge = document.createElement("span");
+  const badge = element.querySelector<HTMLElement>(`:scope > .${BADGE_CLASS}`) ??
+    document.createElement("small");
   badge.className = BADGE_CLASS;
-  badge.textContent = LABELS[classification];
+  badge.textContent = "LAB";
+  badge.title = LABELS[classification];
+  badge.setAttribute("aria-label", LABELS[classification]);
+  badge.tabIndex = 0;
   element.append(badge);
 }
 
@@ -36,7 +87,11 @@ export function highlightTimetable(meetings: ResolvedMeeting[]): void {
 
   for (const { block, classification } of meetings) {
     for (const row of block.rows) {
-      classificationByLink.set(row.link, classification);
+      const target = getHighlightTarget(row.link);
+      if (!target) continue;
+      const previous = classificationByLink.get(target);
+      if (previous === "verified" || (previous === "probable" && classification === "normal")) continue;
+      classificationByLink.set(target, classification);
     }
   }
 
@@ -46,6 +101,7 @@ export function highlightTimetable(meetings: ResolvedMeeting[]): void {
 
     addMark(link, classification);
   }
+  updateLegends();
 }
 
 /**
@@ -70,10 +126,12 @@ export function highlightVerifiedRoomText(root: ParentNode = document): void {
     const room = match?.[1];
     const parent = node.parentElement;
     if (!room || !parent || !isVerifiedLabRoom(room)) continue;
+    if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmark-badge, .emu-labmark-legend")) continue;
 
     const target =
       parent.closest<HTMLElement>("a, button, [role='button']") ?? parent;
-    targets.add(target);
+    const localTarget = getHighlightTarget(target);
+    if (localTarget) targets.add(localTarget);
   }
 
   for (const target of targets) {
@@ -81,4 +139,5 @@ export function highlightVerifiedRoomText(root: ParentNode = document): void {
     target.setAttribute(FALLBACK_ATTRIBUTE, "");
     addMark(target, "verified");
   }
+  updateLegends(root);
 }

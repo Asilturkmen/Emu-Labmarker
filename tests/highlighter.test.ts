@@ -1,7 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import {
+  clearTimetableHighlights,
   highlightTimetable,
   highlightVerifiedRoomText,
 } from "../src/highlighter/highlightTimetable";
@@ -41,6 +42,9 @@ function resolved(classification: RoomClassification): ResolvedMeeting {
 }
 
 describe("highlightTimetable", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+  });
   it.each([
     ["verified", "LAB SINIFI"],
     ["probable", "MUHTEMEL LAB SINIFI"],
@@ -51,7 +55,8 @@ describe("highlightTimetable", () => {
 
     const link = meeting.block.rows[0]?.link;
     expect(link?.dataset.emuLabmark).toBe(classification);
-    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe(label);
+    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB");
+    expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe(label);
   });
 
   it("leaves normal links unmarked and removes stale marks", () => {
@@ -86,7 +91,33 @@ describe("highlightTimetable", () => {
 
     const course = document.querySelector<HTMLElement>(".portal-course");
     expect(course?.dataset.emuLabmark).toBe("verified");
-    expect(course?.textContent).toContain("LAB SINIFI");
+    expect(course?.textContent).toContain("LAB");
+  });
+
+  it("marks the whole shared cell once and stays stable across full rescans", () => {
+    document.body.innerHTML = `
+      <table><thead><tr><th>Time</th><th>Wednesday</th></tr></thead><tbody>
+        <tr><td>12:30-13:20</td><td id="shared">
+          <a>CMSE423/CMPE230</a><br><a>CMSE456/CMPE134</a>
+        </td></tr>
+      </tbody></table>
+    `;
+    for (let scan = 0; scan < 3; scan++) {
+      clearTimetableHighlights();
+      const rows = parseTimetable();
+      expect(rows.map((row) => row.room)).toEqual(["CMPE230", "CMPE134"]);
+      highlightTimetable(resolveMeetings(groupMeetingBlocks(rows)));
+      highlightVerifiedRoomText();
+      expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
+      expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
+      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
+      expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+    }
+    document.querySelectorAll("#shared a").forEach((link) => { link.textContent = "CMSE423/CMPE025"; });
+    clearTimetableHighlights();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable())));
+    highlightVerifiedRoomText();
+    expect(document.querySelectorAll("[data-emu-labmark], .emu-labmark-legend")).toHaveLength(0);
   });
 
   it("highlights only the exceptional block in the full CMSE425 example", () => {
@@ -114,5 +145,35 @@ describe("highlightTimetable", () => {
         link.textContent?.includes("CMPE134"),
       ),
     ).toBe(true);
+  });
+
+  it("does not promote a course to an outer layout cell containing the timetable", () => {
+    document.body.innerHTML = `
+      <table><tr><td id="layout">
+        <div class="schedule-table-content" id="schedule">
+          <div class="schedule-table-content-mobile" id="lab"><a>CMSE423/CMPE230</a></div>
+          <div class="schedule-table-content-mobile" id="normal"><a>CMSE423/CMPE025</a></div>
+        </div>
+      </td></tr></table>
+    `;
+    highlightVerifiedRoomText();
+    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
+    expect(document.querySelectorAll("#layout[data-emu-labmark], #schedule[data-emu-labmark], #normal[data-emu-labmark]")).toHaveLength(0);
+  });
+
+  it("keeps plain course links local when their nearest td wraps several blocks", () => {
+    document.body.innerHTML = `
+      <table><tr><td id="layout">
+        <div><a id="lab">CMSE423/CMPE230</a></div>
+        <div><a id="normal">CMSE423/CMPE025</a></div>
+      </td></tr></table>
+    `;
+    const meeting = resolved("verified");
+    meeting.block.rows[0]!.link = document.querySelector<HTMLAnchorElement>("#lab")!;
+    highlightTimetable([meeting]);
+    highlightVerifiedRoomText();
+    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
+    expect(document.querySelector("#layout")?.hasAttribute("data-emu-labmark")).toBe(false);
+    expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmark")).toBe(false);
   });
 });

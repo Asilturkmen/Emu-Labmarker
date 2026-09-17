@@ -51,10 +51,14 @@ function parseCourseRoom(link: HTMLAnchorElement): {
     };
   }
 
+  const textCopy = link.cloneNode(true) as HTMLElement;
+  textCopy.querySelectorAll(".emu-labmark-badge").forEach((badge) => badge.remove());
+  let href = link.getAttribute("href") ?? "";
+  try { href = decodeURIComponent(href); } catch { /* Keep malformed URLs as text. */ }
   const candidates = [
-    link.textContent ?? "",
+    textCopy.textContent ?? "",
     link.getAttribute("title") ?? "",
-    decodeURIComponent(link.getAttribute("href") ?? ""),
+    href,
   ];
 
   for (const candidate of candidates) {
@@ -123,6 +127,34 @@ function normalizeDay(value: string | undefined): string | null {
   return null;
 }
 
+/** The live portal uses UL rows and LI cells, with a separate mobile list. */
+function parsePortalList(link: HTMLAnchorElement): ParsedMeetingRow | null {
+  const cell = link.closest<HTMLLIElement>("li.ctime");
+  const list = cell?.parentElement;
+  const container = list?.parentElement;
+  if (!cell || list?.tagName !== "UL" || !container) return null;
+  const mobile = container.matches(".schedule-table-content-mobile");
+  if (!mobile && !container.matches(".schedule-table-content")) return null;
+
+  const courseRoom = parseCourseRoom(link);
+  const timeText = mobile
+    ? cell.querySelector("b")?.textContent
+    : list.firstElementChild?.textContent;
+  const match = timeText?.match(TIME_RANGE_PATTERN);
+  if (!courseRoom || !match) return null;
+  const startMinutes = Number(match[1]) * 60 + Number(match[2]);
+  const endMinutes = Number(match[3]) * 60 + Number(match[4]);
+  if (endMinutes <= startMinutes) return null;
+
+  const index = Array.from(list.children).indexOf(cell);
+  const headings = container.parentElement?.querySelector(".schedule-table-heading > ul");
+  const day = normalizeDay((mobile
+    ? list.firstElementChild?.textContent
+    : headings?.children[index]?.textContent) ?? undefined);
+  if (!day) return null;
+  return { ...courseRoom, startMinutes, endMinutes, day, layout: mobile ? "mobile" : "desktop", link };
+}
+
 function findDayInTable(cell: Element): string | null {
   const tableCell = cell.closest("td, th") as HTMLTableCellElement | null;
   const table = cell.closest("table");
@@ -179,10 +211,16 @@ export function parseTimetable(root: ParentNode = document): ParsedMeetingRow[] 
   // Portal markup has changed between releases. Scanning links and then
   // filtering by the strict COURSE/ROOM pattern is more resilient than
   // depending on a particular timetable CSS class.
-  const links = Array.from(root.querySelectorAll<HTMLAnchorElement>("a"));
+  const portal = root.querySelector("#schedule_content");
+  const links = Array.from((portal ?? root).querySelectorAll<HTMLAnchorElement>("a"));
   const parsedRows: ParsedMeetingRow[] = [];
 
   for (const link of links) {
+    if (link.closest(".schedule-table-content > ul > li, .schedule-table-content-mobile > ul > li")) {
+      const row = parsePortalList(link);
+      if (row) parsedRows.push(row);
+      continue;
+    }
     const cell =
       link.closest(".schedule-table-content, .schedule-table-content-mobile") ??
       link;

@@ -1,24 +1,93 @@
 [data-emu-labmark] {
-  border-radius: 4px !important;
-  box-shadow: 0 0 0 2px rgb(255 255 255 / 70%) inset !important;
+  position: relative !important;
+  background: #ffd3d7 !important;
+  color: #17365d !important;
+  box-shadow: inset 0 0 0 3px #f12e4b !important;
+  border-radius: 0 !important;
+  text-align: left !important;
+}
+
+td[data-emu-labmark] {
+  padding-inline: 16px !important;
+  vertical-align: middle !important;
+}
+
+/* The portal's real cells are LI elements; its SPAN is the content wrapper. */
+li.ctime[data-emu-labmark] {
+  box-sizing: border-box !important;
+}
+
+li.ctime[data-emu-labmark] > span {
+  box-sizing: border-box !important;
+  padding-inline: 16px !important;
+  text-align: left !important;
+}
+
+[data-emu-labmark] :is(a, button, span, p, div):not(.emu-labmark-badge) {
+  background: transparent !important;
+  color: #17365d !important;
+  text-align: left !important;
+}
+
+.emu-labmark-badge,
+.emu-labmark-legend-badge {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #f12e4b !important;
   color: #fff !important;
-  display: block;
-  padding: 4px !important;
-}
-
-[data-emu-labmark="verified"] {
-  background: #c62828 !important;
-}
-
-[data-emu-labmark="probable"] {
-  background: #ef6c00 !important;
+  border: 0 !important;
+  border-radius: 7px !important;
+  padding: 5px 8px !important;
+  font-family: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  letter-spacing: 0 !important;
+  white-space: nowrap !important;
+  text-decoration: none !important;
+  box-sizing: border-box !important;
 }
 
 .emu-labmark-badge {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 700;
-  line-height: 1.2;
-  margin-top: 3px;
-  text-transform: uppercase;
+  position: absolute !important;
+  top: 8px !important;
+  right: 8px !important;
+  margin: 0 !important;
+  z-index: 1;
+  cursor: help;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: none !important;
+}
+
+.emu-labmark-badge:focus-visible {
+  outline: 2px solid #17365d;
+  outline-offset: 2px;
+}
+
+.emu-labmark-legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 10px 0 0;
+  color: #17365d;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.emu-labmark-swatch {
+  display: inline-block;
+  width: 36px;
+  height: 25px;
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  border: 3px solid #f12e4b;
+  border-radius: 6px;
+  background: #ffd3d7;
 }
