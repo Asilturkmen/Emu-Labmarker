@@ -1,0 +1,105 @@
+:root {
+  color: #17365d;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  font-synthesis: none;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-width: 300px;
+  background: #f7f9fc;
+}
+
+.popup { padding: 16px; }
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin-bottom: 16px;
+}
+
+.brand img { border-radius: 10px; }
+
+h1 {
+  margin: 0 0 2px;
+  font-size: 17px;
+  line-height: 1.2;
+}
+
+p {
+  margin: 0;
+  color: #61748b;
+  font-size: 12px;
+}
+
+.control {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto;
+  align-items: center;
+  min-height: 68px;
+  padding: 13px 14px;
+  border: 1px solid #dce4ee;
+  border-radius: 13px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgb(23 54 93 / 7%);
+  cursor: pointer;
+}
+
+.control strong,
+.control small { display: block; }
+.control strong { font-size: 14px; }
+.control small { margin-top: 3px; color: #718096; font-size: 12px; }
+
+.control input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.switch {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  border-radius: 999px;
+  background: #a9b5c4;
+  transition: background 150ms ease;
+}
+
+.switch::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 24%);
+  transition: transform 150ms ease;
+}
+
+.control input:checked + .switch { background: #1269b5; }
+.control input:checked + .switch::after { transform: translateX(20px); }
+.control input:focus-visible + .switch { outline: 3px solid rgb(18 105 181 / 25%); outline-offset: 2px; }
+.control input:disabled + .switch { opacity: .55; }
+
+.legend {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 14px;
+  color: #61748b;
+  font-size: 11px;
+}
+
+.legend span { display: inline-flex; align-items: center; gap: 5px; }
+.dot { width: 9px; height: 9px; border-radius: 3px; }
+.dot.verified { background: #f12e4b; }
+.dot.probable { background: #f28c28; }
+
+body[data-enabled="false"] .brand img { filter: grayscale(1); opacity: .7; }

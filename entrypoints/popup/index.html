@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EMU LabMark</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="popup">
+      <header class="brand">
+        <img src="/icons/icon-48.png" width="42" height="42" alt="" />
+        <div>
+          <h1>EMU LabMark</h1>
+          <p>Laboratuvar derslerini ayırt et</p>
+        </div>
+      </header>
+
+      <label class="control" for="enabled-toggle">
+        <span>
+          <strong>Eklenti</strong>
+          <small id="status-text">Durum yükleniyor…</small>
+        </span>
+        <input id="enabled-toggle" type="checkbox" role="switch" disabled />
+        <span class="switch" aria-hidden="true"></span>
+      </label>
+
+      <div class="legend" aria-label="Renk açıklaması">
+        <span><i class="dot verified"></i>Kesin lab</span>
+        <span><i class="dot probable"></i>Muhtemel lab</span>
+      </div>
+    </main>
+    <script type="module" src="./main.ts"></script>
+  </body>
+</html>
