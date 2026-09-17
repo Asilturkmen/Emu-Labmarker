@@ -6,11 +6,11 @@ tahmin edilmez; yalnızca bilinen oda listelerindeki odalar işaretlenir.
 
 İki tür işaret var:
 
-| | Kesin lab | Geçici lab |
+| | Kesin lab | Özel lab |
 | --- | --- | --- |
 | Kaynak | Eklentiyle gelen doğrulanmış liste | Kullanıcının popup'tan eklediği liste |
-| Etiket | `LAB SINIFI` | `GEÇİCİ LAB SINIFI` |
-| Renk | Kırmızı | Mor |
+| Etiket | `LAB SINIFI` | `ÖZEL LAB SINIFI` |
+| Renk | Kırmızı (`#f12e4b`) | Teal (`#0ea5a4`) |
 
 ## Kurulum (geliştirme)
 
@@ -47,17 +47,17 @@ export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
 
 Listeye yalnızca gerçekten lab olduğu **elle doğrulanmış** odalar girer.
 
-### Geçici lab (kullanıcı tarafından)
+### Özel lab (kullanıcı tarafından)
 
 Normalde lab olmayan bir sınıf o dönem lab olarak kullanılabiliyor. Kullanıcı
-eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **mor** renkte ve
-`GEÇİCİ LAB SINIFI` etiketiyle görünür, kesin lablarla karışmaz.
+eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **teal** renkte ve
+`ÖZEL LAB SINIFI` etiketiyle görünür, kesin lablarla karışmaz.
 
 - Oda kodu (`CMPE025`) ya da programdan kopyalanmış bir giriş
   (`CMSE423/CMPE025`) yazılabilir; ikisi de `CMPE025` olarak kaydedilir.
 - Kesin lab listesinde olan bir oda eklenmek istenirse popup uyarır; oda iki
   listede de bulunuyorsa kesin lab gösterimi kazanır.
-- Liste `browser.storage.local` içinde `emuLabmarkTemporaryRooms` anahtarında
+- Liste `browser.storage.local` içinde `emuLabmarkCustomRooms` anahtarında
   tutulur (`src/settings.ts`), en fazla 50 oda. İçerik betiği değişikliği
   anında dinler, sayfayı yenilemek gerekmez.
 
@@ -71,7 +71,7 @@ eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **mor** renkte ve
 2. **`src/grouping/groupMeetingBlocks.ts`** — Aynı ders/gün/odaya ait ardışık
    saat satırlarını (aradaki 10 dakikalık teneffüs dahil) tek bloğa birleştirir.
 3. **`src/resolver/resolveMeetings.ts`** — Her bloğun odasını iki oda listesiyle
-   karşılaştırır; sıra: kesin lab → geçici lab → işaretsiz.
+   karşılaştırır; sıra: kesin lab → özel lab → işaretsiz.
 4. **`src/highlighter/highlightTimetable.ts`** — Hücreyi işaretler, etiketi ve
    tablo altındaki renk açıklamasını ekler. Açıklama yalnızca o programda
    gerçekten bulunan türleri listeler. Portal dersleri bağlantı olarak değil düz
@@ -81,7 +81,7 @@ Portalın kendi JavaScript'i programı kademeli render ettiği için bir
 `MutationObserver` değişiklikleri izler ve kısa bir gecikmeyle tek bir yeniden
 tarama yapar.
 
-Eklenti aç/kapa durumu ve kullanıcının geçici lab listesi
+Eklenti aç/kapa durumu ve kullanıcının özel lab listesi
 `browser.storage.local` içinde tutulur (`src/settings.ts`); popup bunları
 değiştirir, içerik betiği ikisini de anında dinler.
 
@@ -89,5 +89,5 @@ değiştirir, içerik betiği ikisini de anında dinler.
 
 Eklenti yalnızca ders programı sayfasının DOM'unu okur. Hiçbir veri toplanmaz
 veya dışarıya gönderilmez. Tek istenen izin `storage`; o da yalnızca aç/kapa
-tercihini ve kullanıcının kendi geçici lab listesini kendi tarayıcısında
+tercihini ve kullanıcının kendi özel lab listesini kendi tarayıcısında
 saklamak için kullanılır.

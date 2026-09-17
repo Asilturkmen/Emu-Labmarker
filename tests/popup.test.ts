@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { TEMPORARY_ROOMS_KEY } from "../src/settings";
+import { CUSTOM_ROOMS_KEY } from "../src/settings";
 
 // Vitest runs from the project root, and the jsdom environment has no
 // file-scheme import.meta.url to resolve against.
@@ -21,8 +21,12 @@ async function openPopup(
   vi.stubGlobal("browser", {
     storage: {
       local: {
-        get: async (key: string) =>
-          key in storage ? { [key]: storage[key] } : {},
+        get: async (keys: string | string[]) =>
+          Object.fromEntries(
+            (Array.isArray(keys) ? keys : [keys])
+              .filter((key) => key in storage)
+              .map((key) => [key, storage[key]]),
+          ),
         set: async (items: Record<string, unknown>) => {
           Object.assign(storage, items);
         },
@@ -60,7 +64,7 @@ function status(): string {
   return document.querySelector("#room-status")?.textContent ?? "";
 }
 
-describe("popup temporary room list", () => {
+describe("popup custom room list", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
@@ -75,7 +79,7 @@ describe("popup temporary room list", () => {
   });
 
   it("lists rooms that were already stored", async () => {
-    await openPopup({ [TEMPORARY_ROOMS_KEY]: ["CMPE025", "CL116"] });
+    await openPopup({ [CUSTOM_ROOMS_KEY]: ["CMPE025", "CL116"] });
 
     expect(chips()).toEqual(["CMPE025", "CL116"]);
   });
@@ -87,12 +91,12 @@ describe("popup temporary room list", () => {
     await vi.waitFor(() => expect(chips()).toEqual(["CMPE025"]));
 
     expect(status()).toBe("CMPE025 eklendi.");
-    expect(storage[TEMPORARY_ROOMS_KEY]).toEqual(["CMPE025"]);
+    expect(storage[CUSTOM_ROOMS_KEY]).toEqual(["CMPE025"]);
     expect(document.querySelector<HTMLInputElement>("#room-input")?.value).toBe("");
   });
 
   it("explains why a room was rejected and keeps the list unchanged", async () => {
-    await openPopup({ [TEMPORARY_ROOMS_KEY]: ["CMPE025"] });
+    await openPopup({ [CUSTOM_ROOMS_KEY]: ["CMPE025"] });
 
     addRoom("CMPE134");
     await vi.waitFor(() =>
@@ -109,11 +113,11 @@ describe("popup temporary room list", () => {
     );
 
     expect(chips()).toEqual(["CMPE025"]);
-    expect(storage[TEMPORARY_ROOMS_KEY]).toEqual(["CMPE025"]);
+    expect(storage[CUSTOM_ROOMS_KEY]).toEqual(["CMPE025"]);
   });
 
   it("removes a room when its button is used", async () => {
-    await openPopup({ [TEMPORARY_ROOMS_KEY]: ["CMPE025", "CL116"] });
+    await openPopup({ [CUSTOM_ROOMS_KEY]: ["CMPE025", "CL116"] });
 
     document
       .querySelector<HTMLButtonElement>('.chip-remove[data-room="CMPE025"]')!
@@ -121,7 +125,7 @@ describe("popup temporary room list", () => {
     await vi.waitFor(() => expect(chips()).toEqual(["CL116"]));
 
     expect(status()).toBe("CMPE025 çıkarıldı.");
-    expect(storage[TEMPORARY_ROOMS_KEY]).toEqual(["CL116"]);
+    expect(storage[CUSTOM_ROOMS_KEY]).toEqual(["CL116"]);
   });
 
   it("keeps the enable toggle working alongside the list", async () => {

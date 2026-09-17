@@ -34,7 +34,7 @@ export function isVerifiedLabRoom(
 export const NO_ROOMS: ReadonlySet<string> = new Set<string>();
 
 /** Keeps a hand-maintained list from growing without bound. */
-export const MAX_TEMPORARY_ROOMS = 50;
+export const MAX_CUSTOM_ROOMS = 50;
 
 /**
  * Rooms are always compared as whole normalized codes, so an unusually short
@@ -78,7 +78,7 @@ export function addRoomToList(
   if (rooms.some((existing) => normalizeRoom(existing) === room)) {
     return { status: "duplicate", ...unchanged };
   }
-  if (rooms.length >= MAX_TEMPORARY_ROOMS) {
+  if (rooms.length >= MAX_CUSTOM_ROOMS) {
     return { status: "limit", ...unchanged };
   }
 

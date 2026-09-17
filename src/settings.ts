@@ -7,7 +7,10 @@ import {
 import { normalizeRoom } from "./data/courseRoom";
 
 export const LABMARK_ENABLED_KEY = "emuLabmarkEnabled";
-export const TEMPORARY_ROOMS_KEY = "emuLabmarkTemporaryRooms";
+export const CUSTOM_ROOMS_KEY = "emuLabmarkCustomRooms";
+// The same list was stored here while the feature was called "geçici lab".
+// Safe to delete once nobody is running a build from that week.
+const LEGACY_CUSTOM_ROOMS_KEY = "emuLabmarkTemporaryRooms";
 
 export async function getLabMarkEnabled(): Promise<boolean> {
   const stored = await browser.storage.local.get(LABMARK_ENABLED_KEY);
@@ -23,7 +26,7 @@ export async function setLabMarkEnabled(enabled: boolean): Promise<void> {
  * them. Extension storage can be edited outside the popup, so anything that is
  * not a usable room code is dropped instead of trusted.
  */
-export function parseTemporaryLabRooms(value: unknown): string[] {
+export function parseCustomLabRooms(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
 
   const rooms: string[] = [];
@@ -35,27 +38,33 @@ export function parseTemporaryLabRooms(value: unknown): string[] {
   return rooms;
 }
 
-export async function getTemporaryLabRooms(): Promise<string[]> {
-  const stored = await browser.storage.local.get(TEMPORARY_ROOMS_KEY);
-  return parseTemporaryLabRooms(stored[TEMPORARY_ROOMS_KEY]);
+export async function getCustomLabRooms(): Promise<string[]> {
+  const stored = await browser.storage.local.get([
+    CUSTOM_ROOMS_KEY,
+    LEGACY_CUSTOM_ROOMS_KEY,
+  ]);
+  const rooms = parseCustomLabRooms(stored[CUSTOM_ROOMS_KEY]);
+  return rooms.length
+    ? rooms
+    : parseCustomLabRooms(stored[LEGACY_CUSTOM_ROOMS_KEY]);
 }
 
-async function setTemporaryLabRooms(rooms: string[]): Promise<void> {
-  await browser.storage.local.set({ [TEMPORARY_ROOMS_KEY]: rooms });
+async function setCustomLabRooms(rooms: string[]): Promise<void> {
+  await browser.storage.local.set({ [CUSTOM_ROOMS_KEY]: rooms });
 }
 
-export async function addTemporaryLabRoom(
+export async function addCustomLabRoom(
   input: string,
 ): Promise<{ status: AddRoomStatus; room: string; rooms: string[] }> {
-  const result = addRoomToList(await getTemporaryLabRooms(), input);
-  if (result.status === "added") await setTemporaryLabRooms(result.rooms);
+  const result = addRoomToList(await getCustomLabRooms(), input);
+  if (result.status === "added") await setCustomLabRooms(result.rooms);
   return result;
 }
 
-export async function removeTemporaryLabRoom(
+export async function removeCustomLabRoom(
   room: string,
 ): Promise<string[]> {
-  const rooms = removeRoomFromList(await getTemporaryLabRooms(), room);
-  await setTemporaryLabRooms(rooms);
+  const rooms = removeRoomFromList(await getCustomLabRooms(), room);
+  await setCustomLabRooms(rooms);
   return rooms;
 }

@@ -1,9 +1,9 @@
 import type { AddRoomStatus } from "../../src/data/labRooms";
 import {
-  addTemporaryLabRoom,
+  addCustomLabRoom,
   getLabMarkEnabled,
-  getTemporaryLabRooms,
-  removeTemporaryLabRoom,
+  getCustomLabRooms,
+  removeCustomLabRoom,
   setLabMarkEnabled,
 } from "../../src/settings";
 
@@ -72,7 +72,7 @@ const ADD_MESSAGES: Record<AddRoomStatus, (room: string) => string> = {
 async function initialize(): Promise<void> {
   render(await getLabMarkEnabled());
   toggle.disabled = false;
-  renderRooms(await getTemporaryLabRooms());
+  renderRooms(await getCustomLabRooms());
 }
 
 toggle.addEventListener("change", async () => {
@@ -92,7 +92,7 @@ roomForm.addEventListener("submit", async (event) => {
   const input = roomInput.value.trim();
   if (!input) return;
 
-  const { status, room, rooms } = await addTemporaryLabRoom(input);
+  const { status, room, rooms } = await addCustomLabRoom(input);
   setRoomStatus(ADD_MESSAGES[status](room), status === "added" ? "info" : "error");
   if (status === "added") {
     roomInput.value = "";
@@ -109,7 +109,7 @@ roomList.addEventListener("click", async (event) => {
   if (!remove || !room) return;
 
   remove.disabled = true;
-  renderRooms(await removeTemporaryLabRoom(room));
+  renderRooms(await removeCustomLabRoom(room));
   setRoomStatus(`${room} çıkarıldı.`);
 });
 

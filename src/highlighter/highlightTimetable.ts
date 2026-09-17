@@ -11,24 +11,24 @@ type LabClassification = Exclude<RoomClassification, "normal">;
 /** Confirmed laboratories outrank rooms a user added for themselves. */
 const CLASSIFICATION_RANK: Record<RoomClassification, number> = {
   normal: 0,
-  temporary: 1,
+  custom: 1,
   verified: 2,
 };
 
-const LAB_CLASSIFICATIONS = ["verified", "temporary"] as const;
+const LAB_CLASSIFICATIONS = ["verified", "custom"] as const;
 
 const BADGES: Record<LabClassification, { text: string; label: string }> = {
   verified: { text: "LAB SINIFI", label: "LAB SINIFI" },
-  temporary: {
-    text: "GEÇİCİ LAB SINIFI",
-    label: "GEÇİCİ LAB SINIFI (senin eklediğin)",
+  custom: {
+    text: "ÖZEL LAB SINIFI",
+    label: "ÖZEL LAB SINIFI (senin eklediğin)",
   },
 };
 
 // The badge already names the kind, so the legend only adds what it means.
 const LEGEND_TEXTS: Record<LabClassification, string> = {
   verified: " = Laboratuvar dersi",
-  temporary: " = Senin eklediğin sınıf",
+  custom: " = Senin eklediğin sınıf",
 };
 
 function clearMark(element: HTMLElement): void {
@@ -165,10 +165,10 @@ export function highlightTimetable(meetings: ResolvedMeeting[]): void {
 function classifyRoom(
   room: string,
   verifiedRooms: ReadonlySet<string>,
-  temporaryRooms: ReadonlySet<string>,
+  customRooms: ReadonlySet<string>,
 ): RoomClassification {
   if (isVerifiedLabRoom(room, verifiedRooms)) return "verified";
-  if (isVerifiedLabRoom(room, temporaryRooms)) return "temporary";
+  if (isVerifiedLabRoom(room, customRooms)) return "custom";
   return "normal";
 }
 
@@ -180,7 +180,7 @@ function classifyRoom(
 export function highlightLabRoomText(
   root: ParentNode = document,
   verifiedRooms: ReadonlySet<string> = VERIFIED_LAB_ROOMS,
-  temporaryRooms: ReadonlySet<string> = NO_ROOMS,
+  customRooms: ReadonlySet<string> = NO_ROOMS,
 ): void {
   root
     .querySelectorAll<HTMLElement>(`[${FALLBACK_ATTRIBUTE}]`)
@@ -197,7 +197,7 @@ export function highlightLabRoomText(
     const room = matchCourseRoom(node.textContent ?? "")?.room;
     const parent = node.parentElement;
     if (!room || !parent) continue;
-    const classification = classifyRoom(room, verifiedRooms, temporaryRooms);
+    const classification = classifyRoom(room, verifiedRooms, customRooms);
     if (classification === "normal") continue;
     if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmark-badge, .emu-labmark-legend")) continue;
 

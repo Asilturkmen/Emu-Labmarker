@@ -16,7 +16,7 @@ import type {
 
 // Pinned so that editing the verified room list cannot change these results.
 const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
-const TEMPORARY_ROOMS: ReadonlySet<string> = new Set(["CMPE025"]);
+const CUSTOM_ROOMS: ReadonlySet<string> = new Set(["CMPE025"]);
 
 function resolved(classification: RoomClassification): ResolvedMeeting {
   const link = document.createElement("a");
@@ -172,33 +172,33 @@ describe("highlightTimetable", () => {
     expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmark")).toBe(false);
   });
 
-  it("renders the temporary label for a room the user added", () => {
-    const meeting = resolved("temporary");
+  it("renders the custom label for a room the user added", () => {
+    const meeting = resolved("custom");
 
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
     const badge = link?.querySelector(".emu-labmark-badge");
-    expect(link?.dataset.emuLabmark).toBe("temporary");
-    expect(badge?.textContent).toBe("GEÇİCİ LAB SINIFI");
+    expect(link?.dataset.emuLabmark).toBe("custom");
+    expect(badge?.textContent).toBe("ÖZEL LAB SINIFI");
     expect(badge?.getAttribute("aria-label")).toBe(
-      "GEÇİCİ LAB SINIFI (senin eklediğin)",
+      "ÖZEL LAB SINIFI (senin eklediğin)",
     );
   });
 
-  it("highlights a temporary room found as plain text", () => {
+  it("highlights a custom room found as plain text", () => {
     document.body.innerHTML = `
       <div class="portal-course">CMSE423/CMPE025</div>
     `;
 
-    highlightLabRoomText(document, LAB_ROOMS, TEMPORARY_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
 
     const course = document.querySelector<HTMLElement>(".portal-course");
-    expect(course?.dataset.emuLabmark).toBe("temporary");
-    expect(course?.textContent).toContain("GEÇİCİ LAB SINIFI");
+    expect(course?.dataset.emuLabmark).toBe("custom");
+    expect(course?.textContent).toContain("ÖZEL LAB SINIFI");
   });
 
-  it("lets a confirmed laboratory win over a temporary room in the same cell", () => {
+  it("lets a confirmed laboratory win over a custom room in the same cell", () => {
     document.body.innerHTML = `
       <table><thead><tr><th>Time</th><th>Wednesday</th></tr></thead><tbody>
         <tr><td>12:30-13:20</td><td id="shared">
@@ -209,9 +209,9 @@ describe("highlightTimetable", () => {
     const rows = parseTimetable();
 
     highlightTimetable(
-      resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, TEMPORARY_ROOMS),
+      resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_ROOMS),
     );
-    highlightLabRoomText(document, LAB_ROOMS, TEMPORARY_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
 
     expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
     expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
@@ -228,14 +228,14 @@ describe("highlightTimetable", () => {
     `;
     const rows = parseTimetable();
 
-    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, TEMPORARY_ROOMS));
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_ROOMS));
 
     const items = document.querySelectorAll(".emu-labmark-legend-item");
     expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
     expect([...items].map((item) => item.querySelector(".emu-labmark-legend-badge")?.textContent))
-      .toEqual(["LAB SINIFI", "GEÇİCİ LAB SINIFI"]);
+      .toEqual(["LAB SINIFI", "ÖZEL LAB SINIFI"]);
 
-    // With no temporary room left, its legend row goes away too.
+    // With no custom room left, its legend row goes away too.
     clearTimetableHighlights();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, new Set()));
     expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);

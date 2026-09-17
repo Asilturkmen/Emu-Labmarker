@@ -12,9 +12,18 @@ td[data-emu-labmark] {
   vertical-align: middle !important;
 }
 
-/* The portal's real cells are LI elements; its SPAN is the content wrapper. */
+/* The portal's real cells are LI elements; its SPAN is the content wrapper.
+   Stacking the cell puts the badge under the courses rather than beside
+   them, whatever layout the portal gives the cell itself. */
 li.ctime[data-emu-labmark] {
   box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+}
+
+li.ctime[data-emu-labmark] > .emu-labmark-badge {
+  margin-right: 16px !important;
 }
 
 li.ctime[data-emu-labmark] > span {
@@ -23,7 +32,7 @@ li.ctime[data-emu-labmark] > span {
   text-align: left !important;
 }
 
-[data-emu-labmark] :is(a, button, span, p, div):not(.emu-labmark-badge) {
+[data-emu-labmark] :is(a, button, span, strong, b, p, div):not(.emu-labmark-badge) {
   background: transparent !important;
   color: #17365d !important;
   text-align: left !important;
@@ -49,20 +58,21 @@ li.ctime[data-emu-labmark] > span {
   box-sizing: border-box !important;
 }
 
+/* The badge stays in the cell's flow, below the course entries. Floating it
+   over the corner used to cover the room code whenever a cell held two
+   courses, because the room is the rightmost part of each entry. */
 .emu-labmark-badge {
-  position: absolute !important;
-  top: 8px !important;
-  right: 8px !important;
-  margin: 0 !important;
-  z-index: 1;
-  cursor: help;
-  width: auto !important;
+  position: static !important;
+  display: flex !important;
+  align-self: flex-end !important;
+  width: fit-content !important;
   height: auto !important;
   min-width: 0 !important;
   min-height: 0 !important;
-  bottom: auto !important;
-  left: auto !important;
+  margin: 6px 0 0 auto !important;
+  inset: auto !important;
   transform: none !important;
+  cursor: help;
 }
 
 .emu-labmark-legend {
@@ -98,17 +108,22 @@ li.ctime[data-emu-labmark] > span {
 /* Rooms the user added themselves are not confirmed laboratories, so they get
    their own colour. These selectors carry the same specificity as the shared
    [data-emu-labmark] rules above and must therefore stay last in the file. */
-[data-emu-labmark="temporary"] {
-  background: #e9e0fc !important;
-  box-shadow: inset 0 0 0 3px #6b3fd4 !important;
+[data-emu-labmark="custom"] {
+  background: #ccfbf1 !important;
+  box-shadow: inset 0 0 0 3px #0ea5a4 !important;
 }
 
-[data-emu-labmark="temporary"] > .emu-labmark-badge,
-.emu-labmark-legend-badge[data-kind="temporary"] {
-  background: #5a2fc0 !important;
+[data-emu-labmark="custom"],
+[data-emu-labmark="custom"] :is(a, button, span, strong, b, p, div):not(.emu-labmark-badge) {
+  color: #0f172a !important;
 }
 
-.emu-labmark-swatch[data-kind="temporary"] {
-  border-color: #6b3fd4;
-  background: #e9e0fc;
+[data-emu-labmark="custom"] > .emu-labmark-badge,
+.emu-labmark-legend-badge[data-kind="custom"] {
+  background: #0ea5a4 !important;
+}
+
+.emu-labmark-swatch[data-kind="custom"] {
+  border-color: #0ea5a4;
+  background: #ccfbf1;
 }

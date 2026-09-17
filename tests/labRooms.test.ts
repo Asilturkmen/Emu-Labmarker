@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   addRoomToList,
   isValidRoomCode,
-  MAX_TEMPORARY_ROOMS,
+  MAX_CUSTOM_ROOMS,
   removeRoomFromList,
 } from "../src/data/labRooms";
 
@@ -60,7 +60,7 @@ describe("addRoomToList", () => {
 
   it("stops at the list limit", () => {
     const rooms = Array.from(
-      { length: MAX_TEMPORARY_ROOMS },
+      { length: MAX_CUSTOM_ROOMS },
       (_unused, index) => `CL${index + 100}`,
     );
 

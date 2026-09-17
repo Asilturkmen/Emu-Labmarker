@@ -46,7 +46,7 @@ describe("resolveMeetings", () => {
     ]);
   });
 
-  it("marks rooms the user added as temporary", () => {
+  it("marks rooms the user added as custom", () => {
     const resolved = resolveMeetings(
       [block("CMPE025", "tuesday"), block("CMPE127", "tuesday")],
       new Set(["CMPE134"]),
@@ -54,7 +54,7 @@ describe("resolveMeetings", () => {
     );
 
     expect(resolved.map(({ classification }) => classification)).toEqual([
-      "temporary",
+      "custom",
       "normal",
     ]);
   });

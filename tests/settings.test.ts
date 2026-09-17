@@ -1,14 +1,14 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
-  addTemporaryLabRoom,
+  addCustomLabRoom,
   getLabMarkEnabled,
-  getTemporaryLabRooms,
+  getCustomLabRooms,
   LABMARK_ENABLED_KEY,
-  parseTemporaryLabRooms,
-  removeTemporaryLabRoom,
+  parseCustomLabRooms,
+  removeCustomLabRoom,
   setLabMarkEnabled,
-  TEMPORARY_ROOMS_KEY,
+  CUSTOM_ROOMS_KEY,
 } from "../src/settings";
 
 function stubStorage(stored: Record<string, unknown> = {}) {
@@ -17,8 +17,12 @@ function stubStorage(stored: Record<string, unknown> = {}) {
   vi.stubGlobal("browser", {
     storage: {
       local: {
-        get: async (key: string) =>
-          key in data ? { [key]: data[key] } : {},
+        get: async (keys: string | string[]) =>
+          Object.fromEntries(
+            (Array.isArray(keys) ? keys : [keys])
+              .filter((key) => key in data)
+              .map((key) => [key, data[key]]),
+          ),
         set: async (items: Record<string, unknown>) => {
           Object.assign(data, items);
         },
@@ -57,52 +61,68 @@ describe("lab mark setting", () => {
   });
 });
 
-describe("temporary lab rooms", () => {
+describe("custom lab rooms", () => {
   it("start out empty", async () => {
     stubStorage();
 
-    expect(await getTemporaryLabRooms()).toEqual([]);
+    expect(await getCustomLabRooms()).toEqual([]);
   });
 
   it("are stored normalized, in the order they were added", async () => {
     const data = stubStorage();
 
-    expect(await addTemporaryLabRoom("cmpe 025")).toMatchObject({
+    expect(await addCustomLabRoom("cmpe 025")).toMatchObject({
       status: "added",
       room: "CMPE025",
     });
-    await addTemporaryLabRoom("CMSE456/CL 116");
+    await addCustomLabRoom("CMSE456/CL 116");
 
-    expect(await getTemporaryLabRooms()).toEqual(["CMPE025", "CL116"]);
-    expect(data[TEMPORARY_ROOMS_KEY]).toEqual(["CMPE025", "CL116"]);
+    expect(await getCustomLabRooms()).toEqual(["CMPE025", "CL116"]);
+    expect(data[CUSTOM_ROOMS_KEY]).toEqual(["CMPE025", "CL116"]);
   });
 
   it("are not written when the room is rejected", async () => {
     const data = stubStorage();
-    await addTemporaryLabRoom("CMPE025");
+    await addCustomLabRoom("CMPE025");
 
-    expect((await addTemporaryLabRoom("CMPE025")).status).toBe("duplicate");
-    expect((await addTemporaryLabRoom("CMPE134")).status).toBe("verified");
-    expect((await addTemporaryLabRoom("??")).status).toBe("invalid");
-    expect(data[TEMPORARY_ROOMS_KEY]).toEqual(["CMPE025"]);
+    expect((await addCustomLabRoom("CMPE025")).status).toBe("duplicate");
+    expect((await addCustomLabRoom("CMPE134")).status).toBe("verified");
+    expect((await addCustomLabRoom("??")).status).toBe("invalid");
+    expect(data[CUSTOM_ROOMS_KEY]).toEqual(["CMPE025"]);
   });
 
   it("can be removed", async () => {
     stubStorage();
-    await addTemporaryLabRoom("CMPE025");
-    await addTemporaryLabRoom("CL116");
+    await addCustomLabRoom("CMPE025");
+    await addCustomLabRoom("CL116");
 
-    expect(await removeTemporaryLabRoom("cmpe 025")).toEqual(["CL116"]);
-    expect(await getTemporaryLabRooms()).toEqual(["CL116"]);
+    expect(await removeCustomLabRoom("cmpe 025")).toEqual(["CL116"]);
+    expect(await getCustomLabRooms()).toEqual(["CL116"]);
   });
 
   // Extension storage can be edited outside the popup.
   it("tolerate anything unusable in storage", () => {
-    expect(parseTemporaryLabRooms(undefined)).toEqual([]);
-    expect(parseTemporaryLabRooms("CMPE025")).toEqual([]);
-    expect(parseTemporaryLabRooms({ room: "CMPE025" })).toEqual([]);
+    expect(parseCustomLabRooms(undefined)).toEqual([]);
+    expect(parseCustomLabRooms("CMPE025")).toEqual([]);
+    expect(parseCustomLabRooms({ room: "CMPE025" })).toEqual([]);
     expect(
-      parseTemporaryLabRooms(["CMPE025", 7, null, "??", "cmpe 025", "CL116"]),
+      parseCustomLabRooms(["CMPE025", 7, null, "??", "cmpe 025", "CL116"]),
     ).toEqual(["CMPE025", "CL116"]);
+  });
+
+  // Lists saved by the build that called this feature "geçici lab".
+  it("still find a list saved under the previous key", async () => {
+    stubStorage({ emuLabmarkTemporaryRooms: ["CMPE025"] });
+
+    expect(await getCustomLabRooms()).toEqual(["CMPE025"]);
+  });
+
+  it("prefer the current key once it holds a list", async () => {
+    stubStorage({
+      emuLabmarkTemporaryRooms: ["CMPE025"],
+      [CUSTOM_ROOMS_KEY]: ["CL116"],
+    });
+
+    expect(await getCustomLabRooms()).toEqual(["CL116"]);
   });
 });

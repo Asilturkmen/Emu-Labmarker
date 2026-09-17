@@ -93,16 +93,16 @@ describe("supplied UL/LI portal timetable", () => {
   it("marks a user added room in its own colour without touching the verified ones", () => {
     // CMPE025 fills four cells per layout: Monday 12:30 and 13:30,
     // Friday 08:30 and 09:30.
-    const temporary: ReadonlySet<string> = new Set(["CMPE025"]);
+    const custom: ReadonlySet<string> = new Set(["CMPE025"]);
     clearTimetableHighlights();
     const rows = parseTimetable();
-    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, temporary));
-    highlightLabRoomText(document, LAB_ROOMS, temporary);
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, custom));
+    highlightLabRoomText(document, LAB_ROOMS, custom);
 
     for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
       const container = document.querySelector(selector)!;
       expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark="temporary"]')).toHaveLength(4);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmark="custom"]')).toHaveLength(4);
       expect(container.querySelectorAll("li.ctime:not([data-emu-labmark])")).toHaveLength(17);
     }
     expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(2);

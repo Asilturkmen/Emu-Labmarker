@@ -101,7 +101,7 @@ p {
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 9px; height: 9px; border-radius: 3px; }
 .dot.verified { background: #f12e4b; }
-.dot.temporary { background: #6b3fd4; }
+.dot.custom { background: #0ea5a4; }
 
 .rooms { margin-top: 16px; }
 
@@ -187,10 +187,10 @@ h2 {
   align-items: center;
   gap: 2px;
   padding: 4px 4px 4px 9px;
-  border: 1px solid #d5c9f5;
+  border: 1px solid #0ea5a4;
   border-radius: 999px;
-  background: #f1ebfe;
-  color: #4a259f;
+  background: #ccfbf1;
+  color: #0f172a;
   font-size: 12px;
   font-weight: 600;
 }
@@ -205,14 +205,14 @@ h2 {
   border: 0;
   border-radius: 50%;
   background: transparent;
-  color: #6b3fd4;
+  color: #0b7d7c;
   font-size: 15px;
   line-height: 1;
   cursor: pointer;
 }
 
-.chip-remove:hover { background: #ddd0fb; }
-.chip-remove:focus-visible { outline: 2px solid #6b3fd4; outline-offset: 1px; }
+.chip-remove:hover { background: #99f6e4; }
+.chip-remove:focus-visible { outline: 2px solid #0ea5a4; outline-offset: 1px; }
 .chip-remove:disabled { opacity: .5; cursor: default; }
 
 .visually-hidden {
