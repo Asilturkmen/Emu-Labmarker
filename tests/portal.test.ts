@@ -40,11 +40,15 @@ describe("supplied UL/LI portal timetable", () => {
       expect(container.hasAttribute("data-emu-labmark")).toBe(false);
       for (const cell of container.querySelectorAll("[data-emu-labmark]")) {
         expect(cell.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
-        if (cell.getAttribute("data-emu-labmark") === "probable") expect(cell.textContent).toContain("CMPE137");
+        if (cell.getAttribute("data-emu-labmark") === "probable") {
+          expect(cell.textContent).toContain("CMPE137");
+          expect(cell.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB?");
+        }
       }
     }
     expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
     expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(2);
     expect(document.querySelector(".schedule-panel")?.nextElementSibling?.className).toBe("emu-labmark-legend");
   });
 

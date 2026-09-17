@@ -55,13 +55,26 @@ function updateLegends(root: ParentNode = document): void {
     if (!table.querySelector(`[${MARKER_ATTRIBUTE}]`)) continue;
     const legend = document.createElement("div");
     legend.className = "emu-labmark-legend";
-    const swatch = document.createElement("span");
-    swatch.className = "emu-labmark-swatch";
-    swatch.setAttribute("aria-hidden", "true");
-    const badge = document.createElement("span");
-    badge.className = "emu-labmark-legend-badge";
-    badge.textContent = "LAB";
-    legend.append(swatch, badge, document.createTextNode(" = Laboratuvar dersi"));
+
+    const addLegendItem = (
+      classification: Exclude<RoomClassification, "normal">,
+      label: string,
+    ) => {
+      if (!table.querySelector(`[${MARKER_ATTRIBUTE}="${classification}"]`)) return;
+      const item = document.createElement("span");
+      item.className = "emu-labmark-legend-item";
+      const swatch = document.createElement("span");
+      swatch.className = `emu-labmark-swatch emu-labmark-swatch--${classification}`;
+      swatch.setAttribute("aria-hidden", "true");
+      const badge = document.createElement("span");
+      badge.className = `emu-labmark-legend-badge emu-labmark-legend-badge--${classification}`;
+      badge.textContent = classification === "probable" ? "LAB?" : "LAB";
+      item.append(swatch, badge, document.createTextNode(` = ${label}`));
+      legend.append(item);
+    };
+
+    addLegendItem("verified", "Laboratuvar dersi");
+    addLegendItem("probable", "Muhtemel laboratuvar dersi");
     table.after(legend);
   }
 }
@@ -75,7 +88,7 @@ function addMark(
   const badge = element.querySelector<HTMLElement>(`:scope > .${BADGE_CLASS}`) ??
     document.createElement("small");
   badge.className = BADGE_CLASS;
-  badge.textContent = "LAB";
+  badge.textContent = classification === "probable" ? "LAB?" : "LAB";
   badge.title = LABELS[classification];
   badge.setAttribute("aria-label", LABELS[classification]);
   badge.tabIndex = 0;

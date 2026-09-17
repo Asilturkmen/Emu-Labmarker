@@ -46,16 +46,16 @@ describe("highlightTimetable", () => {
     document.body.innerHTML = "";
   });
   it.each([
-    ["verified", "LAB SINIFI"],
-    ["probable", "MUHTEMEL LAB SINIFI"],
-  ] as const)("renders the %s label", (classification, label) => {
+    ["verified", "LAB SINIFI", "LAB"],
+    ["probable", "MUHTEMEL LAB SINIFI", "LAB?"],
+  ] as const)("renders the %s label", (classification, label, badgeText) => {
     const meeting = resolved(classification);
 
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
     expect(link?.dataset.emuLabmark).toBe(classification);
-    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB");
+    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe(badgeText);
     expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe(label);
   });
 
