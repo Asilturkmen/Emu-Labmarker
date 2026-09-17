@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <title>EMU LabMark — AT</title>
+  <rect x="4" y="4" width="120" height="120" rx="28" fill="#17365d"/>
+  <path d="M64 85v16M45 102h38" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round"/>
+  <rect x="21" y="27" width="86" height="60" rx="10" fill="#117fad" stroke="#fff" stroke-width="6"/>
+  <g fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M36 69l11-27 11 27M41 59h12"/>
+    <path d="M66 43h22M77 43v26"/>
+  </g>
+  <circle cx="105" cy="26" r="11" fill="#f12e4b" stroke="#17365d" stroke-width="4"/>
+</svg>
