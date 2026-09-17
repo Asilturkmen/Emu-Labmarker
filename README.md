@@ -45,16 +45,14 @@ programda gerçekten bulunan işaret türlerini anlatan bir açıklama satırı 
 
 ## Kurulum
 
-Eklenti henüz mağazada yayında değil. Kullanmak için:
+**Chrome Web Store** — yayına girdiğinde buraya mağaza bağlantısı eklenecek.
 
-```bash
-npm install
-npm run build
-```
+**Zip ile** — [Releases](https://github.com/Asilturkmen/Emu-Labmarker/releases)
+sayfasından son sürümün zip dosyasını indir ve klasöre çıkar. Chrome'da
+`chrome://extensions` adresini aç, sağ üstten **Geliştirici modu**'nu etkinleştir,
+**Paketlenmemiş öğe yükle**'ye bas ve çıkardığın klasörü seç.
 
-Ardından Chrome'da `chrome://extensions` adresini aç, **Geliştirici modu**'nu
-etkinleştir, **Paketlenmemiş öğe yükle**'ye bas ve `.output/chrome-mv3`
-klasörünü seç.
+Kurulumdan sonra ders programı sayfasını yenile.
 
 ## Kullanım
 
@@ -90,36 +88,15 @@ yalnızca gerçekten laboratuvar olduğu doğrulanmış odalar girer.
 
 ## Katkı
 
-Pull request'ler açık. Göndermeden önce:
+Pull request'ler açık. Proje WXT ve TypeScript ile yazıldı (Manifest V3).
+Göndermeden önce:
 
 ```bash
+npm install
 npm run typecheck && npm test
 ```
 
-Testler `jsdom` üzerinde gerçek portal işaretlemesiyle çalışır, ayrıca CI aynı
-üç adımı (`typecheck`, `test`, `build`) her push'ta yeniden koşar.
-
-## Geliştirme
-
-| Komut | |
-| --- | --- |
-| `npm run dev` | Geliştirme modu, canlı yeniden yükleme ile |
-| `npm run build` | `.output/chrome-mv3` altına derleme |
-| `npm run zip` | Mağazaya yüklenebilir arşiv |
-| `npm test` | Testler |
-| `npm run typecheck` | Tip denetimi |
-
-WXT ve TypeScript ile yazıldı, Manifest V3. İçerik betiği ders programındaki
-dersleri okur, oda kodlarını iki listeyle karşılaştırır ve eşleşenleri
-işaretler. Portal programı kademeli yüklediği için sayfadaki değişiklikler
-izlenir ve gerektiğinde yeniden taranır.
-
-```
-entrypoints/   içerik betiği ve popup
-src/           ayrıştırma, sınıflandırma ve işaretleme
-tests/         Vitest testleri ve portal fikstürü
-docs/          mağaza metinleri ve görseller
-```
+CI aynı adımları (`typecheck`, `test`, `build`) her push'ta yeniden koşar.
 
 ## Destek
 
