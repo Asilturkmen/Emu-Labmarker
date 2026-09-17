@@ -1,4 +1,4 @@
-a[data-emu-labmark] {
+[data-emu-labmark] {
   border-radius: 4px !important;
   box-shadow: 0 0 0 2px rgb(255 255 255 / 70%) inset !important;
   color: #fff !important;
@@ -6,11 +6,11 @@ a[data-emu-labmark] {
   padding: 4px !important;
 }
 
-a[data-emu-labmark="verified"] {
+[data-emu-labmark="verified"] {
   background: #c62828 !important;
 }
 
-a[data-emu-labmark="probable"] {
+[data-emu-labmark="probable"] {
   background: #ef6c00 !important;
 }
 

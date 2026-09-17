@@ -85,6 +85,27 @@ describe("parseTimetable", () => {
     expect(parseTimetable()).toHaveLength(1);
   });
 
+  it("parses portal links even when timetable CSS classes are absent", () => {
+    document.body.innerHTML = `
+      <table>
+        <tbody>
+          <tr>
+            <td>12:30-13:20</td>
+            <td><a class="portal-course">CMSE423/CMPE230</a></td>
+          </tr>
+        </tbody>
+      </table>
+    `;
+
+    expect(parseTimetable()[0]).toMatchObject({
+      courseCode: "CMSE423",
+      room: "CMPE230",
+      day: "monday",
+      startMinutes: 12 * 60 + 30,
+      endMinutes: 13 * 60 + 20,
+    });
+  });
+
   it("ignores unrelated links and incomplete timetable rows", () => {
     document.body.innerHTML = `
       <div class="schedule-table-content" data-day="Monday">

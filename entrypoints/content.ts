@@ -1,7 +1,10 @@
 import "../src/highlighter/highlight.css";
 
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
-import { highlightTimetable } from "../src/highlighter/highlightTimetable";
+import {
+  highlightTimetable,
+  highlightVerifiedRoomText,
+} from "../src/highlighter/highlightTimetable";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
 
@@ -25,6 +28,7 @@ export default defineContentScript({
       const blocks = groupMeetingBlocks(rows);
       const meetings = resolveMeetings(blocks);
       highlightTimetable(meetings);
+      highlightVerifiedRoomText();
 
       observer.observe(document.body, { childList: true, subtree: true });
     };

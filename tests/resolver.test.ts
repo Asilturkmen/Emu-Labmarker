@@ -30,11 +30,14 @@ describe("resolveMeetings", () => {
   });
 
   it("marks the sole non-dominant meeting block as probable", () => {
-    const resolved = resolveMeetings([
-      block("CMPE127", "tuesday"),
-      block("CMPE127", "thursday"),
-      block("CMPE134", "tuesday"),
-    ]);
+    const resolved = resolveMeetings(
+      [
+        block("CMPE127", "tuesday"),
+        block("CMPE127", "thursday"),
+        block("CMPE134", "tuesday"),
+      ],
+      new Set(),
+    );
 
     expect(resolved.map(({ classification }) => classification)).toEqual([
       "normal",

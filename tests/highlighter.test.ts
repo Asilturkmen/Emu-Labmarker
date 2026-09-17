@@ -1,7 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
-import { highlightTimetable } from "../src/highlighter/highlightTimetable";
+import {
+  highlightTimetable,
+  highlightVerifiedRoomText,
+} from "../src/highlighter/highlightTimetable";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
 import type {
@@ -74,6 +77,18 @@ describe("highlightTimetable", () => {
     );
   });
 
+  it("highlights verified room text even when it is not a link", () => {
+    document.body.innerHTML = `
+      <div class="portal-course">CMSE423/CMPE230</div>
+    `;
+
+    highlightVerifiedRoomText();
+
+    const course = document.querySelector<HTMLElement>(".portal-course");
+    expect(course?.dataset.emuLabmark).toBe("verified");
+    expect(course?.textContent).toContain("LAB SINIFI");
+  });
+
   it("highlights only the exceptional block in the full CMSE425 example", () => {
     document.body.innerHTML = `
       <table>
@@ -89,7 +104,7 @@ describe("highlightTimetable", () => {
 
     const rows = parseTimetable();
     const blocks = groupMeetingBlocks(rows);
-    highlightTimetable(resolveMeetings(blocks));
+    highlightTimetable(resolveMeetings(blocks, new Set()));
 
     expect(blocks).toHaveLength(3);
     expect(document.querySelectorAll('[data-emu-labmark="probable"]')).toHaveLength(2);

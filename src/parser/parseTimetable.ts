@@ -1,11 +1,6 @@
 import { normalizeRoom } from "../data/labRooms";
 import type { ParsedMeetingRow, TimetableLayout } from "../types/timetable";
 
-const CELL_SELECTORS = [
-  ".schedule-table-content",
-  ".schedule-table-content-mobile",
-] as const;
-
 const COURSE_ROOM_PATTERN =
   /\b([A-Z]{2,}\s*-?\s*\d{3,4}[A-Z]?)\s*\/\s*([A-Z]{2,}(?:\s*-?\s*[A-Z0-9]+)+)\b/i;
 const TIME_RANGE_PATTERN =
@@ -37,7 +32,7 @@ function normalizeCourseCode(courseCode: string): string {
 }
 
 function getLayout(cell: Element): TimetableLayout {
-  return cell.classList.contains("schedule-table-content-mobile")
+  return cell.closest(".schedule-table-content-mobile")
     ? "mobile"
     : "desktop";
 }
@@ -140,7 +135,20 @@ function findDayInTable(cell: Element): string | null {
     if (day) return day;
   }
 
-  return null;
+  // The desktop timetable always has the time column first, followed by
+  // Monday through Sunday. Some portal versions render the day headings
+  // outside the table, so use the column position as a fallback.
+  const daysByColumn = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
+  ] as const;
+
+  return daysByColumn[columnIndex - 1] ?? null;
 }
 
 function findDay(cell: Element, link: HTMLAnchorElement): string | null {
@@ -168,32 +176,28 @@ function findDay(cell: Element, link: HTMLAnchorElement): string | null {
 }
 
 export function parseTimetable(root: ParentNode = document): ParsedMeetingRow[] {
-  const cells = Array.from(root.querySelectorAll(CELL_SELECTORS.join(",")));
+  // Portal markup has changed between releases. Scanning links and then
+  // filtering by the strict COURSE/ROOM pattern is more resilient than
+  // depending on a particular timetable CSS class.
+  const links = Array.from(root.querySelectorAll<HTMLAnchorElement>("a"));
   const parsedRows: ParsedMeetingRow[] = [];
-  const seenLinks = new Set<HTMLAnchorElement>();
 
-  for (const cell of cells) {
-    const links = cell.matches("a")
-      ? [cell as HTMLAnchorElement]
-      : Array.from(cell.querySelectorAll<HTMLAnchorElement>("a"));
+  for (const link of links) {
+    const cell =
+      link.closest(".schedule-table-content, .schedule-table-content-mobile") ??
+      link;
+    const courseRoom = parseCourseRoom(link);
+    const timeRange = parseTimeRange(cell, link);
+    const day = findDay(cell, link);
+    if (!courseRoom || !timeRange || !day) continue;
 
-    for (const link of links) {
-      if (seenLinks.has(link)) continue;
-      seenLinks.add(link);
-
-      const courseRoom = parseCourseRoom(link);
-      const timeRange = parseTimeRange(cell, link);
-      const day = findDay(cell, link);
-      if (!courseRoom || !timeRange || !day) continue;
-
-      parsedRows.push({
-        ...courseRoom,
-        ...timeRange,
-        day,
-        layout: getLayout(cell),
-        link,
-      });
-    }
+    parsedRows.push({
+      ...courseRoom,
+      ...timeRange,
+      day,
+      layout: getLayout(cell),
+      link,
+    });
   }
 
   return parsedRows;

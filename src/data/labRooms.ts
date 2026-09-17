@@ -2,7 +2,11 @@
  * Add only rooms that have been manually verified as laboratory rooms.
  * Values are normalized before lookup, so spacing and letter case do not matter.
  */
-export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([]);
+export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
+ "CMPE134",
+ "CMPE230",
+
+]);
 
 export function normalizeRoom(room: string): string {
   return room.trim().replace(/\s+/g, "").toUpperCase();
