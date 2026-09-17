@@ -9,8 +9,8 @@ tahmin edilmez; yalnızca bilinen oda listelerindeki odalar işaretlenir.
 | | Kesin lab | Özel lab |
 | --- | --- | --- |
 | Kaynak | Eklentiyle gelen doğrulanmış liste | Kullanıcının popup'tan eklediği liste |
-| Etiket | `LAB SINIFI` | `ÖZEL LAB SINIFI` |
-| Renk | Kırmızı (`#f12e4b`) | Teal (`#0ea5a4`) |
+| Etiket | `LAB SINIFI` | `ÖZEL LAB` |
+| Renk | Kırmızı (`#f12e4b`) | Turuncu (`#f08c14`) |
 
 ## Kurulum (geliştirme)
 
@@ -51,7 +51,7 @@ Listeye yalnızca gerçekten lab olduğu **elle doğrulanmış** odalar girer.
 
 Normalde lab olmayan bir sınıf o dönem lab olarak kullanılabiliyor. Kullanıcı
 eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **teal** renkte ve
-`ÖZEL LAB SINIFI` etiketiyle görünür, kesin lablarla karışmaz.
+`ÖZEL LAB` etiketiyle görünür, kesin lablarla karışmaz.
 
 - Oda kodu (`CMPE025`) ya da programdan kopyalanmış bir giriş
   (`CMSE423/CMPE025`) yazılabilir; ikisi de `CMPE025` olarak kaydedilir.

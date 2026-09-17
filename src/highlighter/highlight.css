@@ -109,21 +109,21 @@ li.ctime[data-emu-labmark] > span {
    their own colour. These selectors carry the same specificity as the shared
    [data-emu-labmark] rules above and must therefore stay last in the file. */
 [data-emu-labmark="custom"] {
-  background: #ccfbf1 !important;
-  box-shadow: inset 0 0 0 3px #0ea5a4 !important;
+  background: #fef2d6 !important;
+  box-shadow: inset 0 0 0 3px #f08c14 !important;
 }
 
 [data-emu-labmark="custom"],
 [data-emu-labmark="custom"] :is(a, button, span, strong, b, p, div):not(.emu-labmark-badge) {
-  color: #0f172a !important;
+  color: #17365d !important;
 }
 
 [data-emu-labmark="custom"] > .emu-labmark-badge,
 .emu-labmark-legend-badge[data-kind="custom"] {
-  background: #0ea5a4 !important;
+  background: #f08c14 !important;
 }
 
 .emu-labmark-swatch[data-kind="custom"] {
-  border-color: #0ea5a4;
-  background: #ccfbf1;
+  border-color: #f08c14;
+  background: #fef2d6;
 }

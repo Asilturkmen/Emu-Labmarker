@@ -180,9 +180,9 @@ describe("highlightTimetable", () => {
     const link = meeting.block.rows[0]?.link;
     const badge = link?.querySelector(".emu-labmark-badge");
     expect(link?.dataset.emuLabmark).toBe("custom");
-    expect(badge?.textContent).toBe("ÖZEL LAB SINIFI");
+    expect(badge?.textContent).toBe("ÖZEL LAB");
     expect(badge?.getAttribute("aria-label")).toBe(
-      "ÖZEL LAB SINIFI (senin eklediğin)",
+      "ÖZEL LAB (senin eklediğin sınıf)",
     );
   });
 
@@ -195,7 +195,7 @@ describe("highlightTimetable", () => {
 
     const course = document.querySelector<HTMLElement>(".portal-course");
     expect(course?.dataset.emuLabmark).toBe("custom");
-    expect(course?.textContent).toContain("ÖZEL LAB SINIFI");
+    expect(course?.textContent).toContain("ÖZEL LAB");
   });
 
   it("lets a confirmed laboratory win over a custom room in the same cell", () => {
@@ -233,12 +233,50 @@ describe("highlightTimetable", () => {
     const items = document.querySelectorAll(".emu-labmark-legend-item");
     expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
     expect([...items].map((item) => item.querySelector(".emu-labmark-legend-badge")?.textContent))
-      .toEqual(["LAB SINIFI", "ÖZEL LAB SINIFI"]);
+      .toEqual(["LAB SINIFI", "ÖZEL LAB"]);
 
     // With no custom room left, its legend row goes away too.
     clearTimetableHighlights();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, new Set()));
     expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);
     expect(document.querySelector(".emu-labmark-legend-badge")?.textContent).toBe("LAB SINIFI");
+  });
+  it("writes the readable text colour onto the cell and restores it on clear", () => {
+    document.body.innerHTML = `
+      <div class="schedule-table-content"><ul><li class="ctime">
+        <span><strong><a style="color: rgb(255, 255, 255)">CMSE423/CMPE230</a></strong></span>
+      </li></ul></div>
+    `;
+
+    highlightLabRoomText(document, LAB_ROOMS);
+
+    const cell = document.querySelector<HTMLElement>("li.ctime")!;
+    const link = document.querySelector<HTMLElement>("a")!;
+    expect(cell.dataset.emuLabmark).toBe("verified");
+    // Inline !important is what beats the portal's own white-text rule.
+    for (const node of [cell, document.querySelector<HTMLElement>("strong")!, link]) {
+      expect(node.style.getPropertyValue("color")).toBe("rgb(23, 54, 93)");
+      expect(node.style.getPropertyPriority("color")).toBe("important");
+    }
+    const badge = cell.querySelector<HTMLElement>(".emu-labmark-badge")!;
+    expect(badge.style.getPropertyValue("color")).toBe("");
+
+    clearTimetableHighlights();
+
+    // The portal's own inline colour comes back, ours leaves no trace.
+    expect(link.style.getPropertyValue("color")).toBe("rgb(255, 255, 255)");
+    expect(link.style.getPropertyPriority("color")).toBe("");
+    expect(cell.style.getPropertyValue("color")).toBe("");
+    expect(document.querySelectorAll("[data-emu-labmark-ink]")).toHaveLength(0);
+  });
+
+  it("forces the readable text colour for a room the user added too", () => {
+    document.body.innerHTML = `<div class="portal-course">CMSE423/CMPE025</div>`;
+
+    highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
+
+    const course = document.querySelector<HTMLElement>(".portal-course")!;
+    expect(course.style.getPropertyValue("color")).toBe("rgb(23, 54, 93)");
+    expect(course.style.getPropertyPriority("color")).toBe("important");
   });
 });

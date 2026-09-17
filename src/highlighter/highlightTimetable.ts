@@ -5,6 +5,7 @@ import { matchCourseRoom } from "../data/courseRoom";
 const MARKER_ATTRIBUTE = "data-emu-labmark";
 const BADGE_CLASS = "emu-labmark-badge";
 const FALLBACK_ATTRIBUTE = "data-emu-labmark-text-match";
+const INK_ATTRIBUTE = "data-emu-labmark-ink";
 
 type LabClassification = Exclude<RoomClassification, "normal">;
 
@@ -20,9 +21,21 @@ const LAB_CLASSIFICATIONS = ["verified", "custom"] as const;
 const BADGES: Record<LabClassification, { text: string; label: string }> = {
   verified: { text: "LAB SINIFI", label: "LAB SINIFI" },
   custom: {
-    text: "ÖZEL LAB SINIFI",
-    label: "ÖZEL LAB SINIFI (senin eklediğin)",
+    text: "ÖZEL LAB",
+    label: "ÖZEL LAB (senin eklediğin sınıf)",
   },
+};
+
+/**
+ * The portal paints its course text white, and its own selectors outrank this
+ * extension's stylesheet even with !important. On the pale cell background that
+ * leaves white on pink, so the readable colour is written onto the elements
+ * themselves: an inline !important declaration is the one thing an author
+ * stylesheet cannot beat.
+ */
+const TEXT_COLORS: Record<LabClassification, string> = {
+  verified: "#17365d",
+  custom: "#17365d",
 };
 
 // The badge already names the kind, so the legend only adds what it means.
@@ -31,7 +44,34 @@ const LEGEND_TEXTS: Record<LabClassification, string> = {
   custom: " = Senin eklediğin sınıf",
 };
 
+function inkTargets(element: HTMLElement, selector: string): HTMLElement[] {
+  return [element, ...element.querySelectorAll<HTMLElement>(selector)];
+}
+
+function paintInk(element: HTMLElement, classification: LabClassification): void {
+  for (const node of inkTargets(element, "*")) {
+    if (node.classList.contains(BADGE_CLASS)) continue;
+    // Whatever inline colour the portal had is remembered, so that clearing a
+    // mark gives the cell back exactly as it was found.
+    if (!node.hasAttribute(INK_ATTRIBUTE)) {
+      node.setAttribute(INK_ATTRIBUTE, node.style.getPropertyValue("color"));
+    }
+    node.style.setProperty("color", TEXT_COLORS[classification], "important");
+  }
+}
+
+function stripInk(element: HTMLElement): void {
+  for (const node of inkTargets(element, `[${INK_ATTRIBUTE}]`)) {
+    const original = node.getAttribute(INK_ATTRIBUTE);
+    if (original === null) continue;
+    node.removeAttribute(INK_ATTRIBUTE);
+    if (original) node.style.setProperty("color", original);
+    else node.style.removeProperty("color");
+  }
+}
+
 function clearMark(element: HTMLElement): void {
+  stripInk(element);
   element.removeAttribute(MARKER_ATTRIBUTE);
   element.removeAttribute(FALLBACK_ATTRIBUTE);
   element.querySelectorAll(`.${BADGE_CLASS}`).forEach((badge) => badge.remove());
@@ -123,6 +163,7 @@ function addMark(
   badge.setAttribute("role", "img");
   badge.setAttribute("aria-label", BADGES[classification].label);
   element.append(badge);
+  paintInk(element, classification);
 }
 
 /** Keeps the strongest classification when one cell holds several courses. */
