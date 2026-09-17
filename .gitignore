@@ -2,3 +2,7 @@ node_modules/
 .output/
 .wxt/
 *.zip
+
+# Magaza basvurusu icin hazirlanan metinler ve gorseller yerelde kalir.
+docs/store-listing.md
+docs/store/
