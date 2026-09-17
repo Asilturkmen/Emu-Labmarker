@@ -2,7 +2,15 @@
 
 EMU öğrenci portalındaki ders programında (`student.emu.edu.tr/Academic/TimeTable`)
 laboratuvar derslerini işaretleyen bir tarayıcı eklentisi. Hangi dersin lab olduğu
-tahmin edilmez; yalnızca elle doğrulanmış oda listesindeki odalar işaretlenir.
+tahmin edilmez; yalnızca bilinen oda listelerindeki odalar işaretlenir.
+
+İki tür işaret var:
+
+| | Kesin lab | Geçici lab |
+| --- | --- | --- |
+| Kaynak | Eklentiyle gelen doğrulanmış liste | Kullanıcının popup'tan eklediği liste |
+| Etiket | `LAB SINIFI` | `GEÇİCİ LAB SINIFI` |
+| Renk | Kırmızı | Mor |
 
 ## Kurulum (geliştirme)
 
@@ -23,9 +31,12 @@ npm run dev       # Chrome'u eklenti yüklenmiş olarak açar
 
 ## Lab odası ekleme
 
-Tek veri kaynağı `src/data/labRooms.ts` içindeki `VERIFIED_LAB_ROOMS` listesidir.
-Yeni bir oda eklemek için listeye oda kodunu yazmak yeterli — boşluk ve harf
-büyüklüğü aranmadan önce normalize edildiği için `cmpe 134` ile `CMPE134` aynıdır.
+### Kesin lab (kod içinde)
+
+Doğrulanmış odalar `src/data/labRooms.ts` içindeki `VERIFIED_LAB_ROOMS`
+listesinde durur. Yeni bir oda eklemek için listeye oda kodunu yazmak yeterli —
+boşluk ve harf büyüklüğü aranmadan önce normalize edildiği için `cmpe 134` ile
+`CMPE134` aynıdır.
 
 ```ts
 export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
@@ -36,6 +47,20 @@ export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
 
 Listeye yalnızca gerçekten lab olduğu **elle doğrulanmış** odalar girer.
 
+### Geçici lab (kullanıcı tarafından)
+
+Normalde lab olmayan bir sınıf o dönem lab olarak kullanılabiliyor. Kullanıcı
+eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **mor** renkte ve
+`GEÇİCİ LAB SINIFI` etiketiyle görünür, kesin lablarla karışmaz.
+
+- Oda kodu (`CMPE025`) ya da programdan kopyalanmış bir giriş
+  (`CMSE423/CMPE025`) yazılabilir; ikisi de `CMPE025` olarak kaydedilir.
+- Kesin lab listesinde olan bir oda eklenmek istenirse popup uyarır; oda iki
+  listede de bulunuyorsa kesin lab gösterimi kazanır.
+- Liste `browser.storage.local` içinde `emuLabmarkTemporaryRooms` anahtarında
+  tutulur (`src/settings.ts`), en fazla 50 oda. İçerik betiği değişikliği
+  anında dinler, sayfayı yenilemek gerekmez.
+
 ## Nasıl çalışıyor
 
 İçerik betiği (`entrypoints/content.ts`) şu hattı işletir:
@@ -45,22 +70,24 @@ Listeye yalnızca gerçekten lab olduğu **elle doğrulanmış** odalar girer.
    (UL/LI) hem mobil düzenini ve İngilizce/Türkçe gün adlarını tanır.
 2. **`src/grouping/groupMeetingBlocks.ts`** — Aynı ders/gün/odaya ait ardışık
    saat satırlarını (aradaki 10 dakikalık teneffüs dahil) tek bloğa birleştirir.
-3. **`src/resolver/resolveMeetings.ts`** — Her bloğun odasını doğrulanmış oda
-   listesiyle karşılaştırır.
-4. **`src/highlighter/highlightTimetable.ts`** — Hücreyi işaretler, "LAB"
-   etiketini ve tablo altındaki renk açıklamasını ekler. Portal dersleri
-   bağlantı olarak değil düz metin olarak render ettiğinde
-   `highlightVerifiedRoomText` yedeği devreye girer.
+3. **`src/resolver/resolveMeetings.ts`** — Her bloğun odasını iki oda listesiyle
+   karşılaştırır; sıra: kesin lab → geçici lab → işaretsiz.
+4. **`src/highlighter/highlightTimetable.ts`** — Hücreyi işaretler, etiketi ve
+   tablo altındaki renk açıklamasını ekler. Açıklama yalnızca o programda
+   gerçekten bulunan türleri listeler. Portal dersleri bağlantı olarak değil düz
+   metin olarak render ettiğinde `highlightLabRoomText` yedeği devreye girer.
 
 Portalın kendi JavaScript'i programı kademeli render ettiği için bir
 `MutationObserver` değişiklikleri izler ve kısa bir gecikmeyle tek bir yeniden
 tarama yapar.
 
-Eklenti aç/kapa durumu `browser.storage.local` içinde tutulur
-(`src/settings.ts`); popup bunu değiştirir, içerik betiği anında tepki verir.
+Eklenti aç/kapa durumu ve kullanıcının geçici lab listesi
+`browser.storage.local` içinde tutulur (`src/settings.ts`); popup bunları
+değiştirir, içerik betiği ikisini de anında dinler.
 
 ## Gizlilik
 
-Eklenti yalnızca ders programı sayfasının DOM'unu okur. Hiçbir veri toplanmaz,
-saklanmaz veya dışarıya gönderilmez; tek istenen izin, aç/kapa tercihini
-saklamak için `storage`.
+Eklenti yalnızca ders programı sayfasının DOM'unu okur. Hiçbir veri toplanmaz
+veya dışarıya gönderilmez. Tek istenen izin `storage`; o da yalnızca aç/kapa
+tercihini ve kullanıcının kendi geçici lab listesini kendi tarayıcısında
+saklamak için kullanılır.

@@ -4,7 +4,7 @@ import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import {
   clearTimetableHighlights,
   highlightTimetable,
-  highlightVerifiedRoomText,
+  highlightLabRoomText,
 } from "../src/highlighter/highlightTimetable";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
@@ -16,6 +16,7 @@ import type {
 
 // Pinned so that editing the verified room list cannot change these results.
 const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
+const TEMPORARY_ROOMS: ReadonlySet<string> = new Set(["CMPE025"]);
 
 function resolved(classification: RoomClassification): ResolvedMeeting {
   const link = document.createElement("a");
@@ -55,7 +56,7 @@ describe("highlightTimetable", () => {
 
     const link = meeting.block.rows[0]?.link;
     expect(link?.dataset.emuLabmark).toBe("verified");
-    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB");
+    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB SINIFI");
     expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe("LAB SINIFI");
   });
 
@@ -87,11 +88,11 @@ describe("highlightTimetable", () => {
       <div class="portal-course">CMSE423/CMPE230</div>
     `;
 
-    highlightVerifiedRoomText(document, LAB_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS);
 
     const course = document.querySelector<HTMLElement>(".portal-course");
     expect(course?.dataset.emuLabmark).toBe("verified");
-    expect(course?.textContent).toContain("LAB");
+    expect(course?.textContent).toContain("LAB SINIFI");
   });
 
   it("marks the whole shared cell once and stays stable across full rescans", () => {
@@ -107,7 +108,7 @@ describe("highlightTimetable", () => {
       const rows = parseTimetable();
       expect(rows.map((row) => row.room)).toEqual(["CMPE230", "CMPE134"]);
       highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS));
-      highlightVerifiedRoomText(document, LAB_ROOMS);
+      highlightLabRoomText(document, LAB_ROOMS);
       expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
       expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
       expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
@@ -116,7 +117,7 @@ describe("highlightTimetable", () => {
     document.querySelectorAll("#shared a").forEach((link) => { link.textContent = "CMSE423/CMPE025"; });
     clearTimetableHighlights();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS));
-    highlightVerifiedRoomText(document, LAB_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS);
     expect(document.querySelectorAll("[data-emu-labmark], .emu-labmark-legend")).toHaveLength(0);
   });
 
@@ -150,7 +151,7 @@ describe("highlightTimetable", () => {
         </div>
       </td></tr></table>
     `;
-    highlightVerifiedRoomText(document, LAB_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS);
     expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
     expect(document.querySelectorAll("#layout[data-emu-labmark], #schedule[data-emu-labmark], #normal[data-emu-labmark]")).toHaveLength(0);
   });
@@ -165,9 +166,79 @@ describe("highlightTimetable", () => {
     const meeting = resolved("verified");
     meeting.block.rows[0]!.link = document.querySelector<HTMLAnchorElement>("#lab")!;
     highlightTimetable([meeting]);
-    highlightVerifiedRoomText(document, LAB_ROOMS);
+    highlightLabRoomText(document, LAB_ROOMS);
     expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
     expect(document.querySelector("#layout")?.hasAttribute("data-emu-labmark")).toBe(false);
     expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmark")).toBe(false);
+  });
+
+  it("renders the temporary label for a room the user added", () => {
+    const meeting = resolved("temporary");
+
+    highlightTimetable([meeting]);
+
+    const link = meeting.block.rows[0]?.link;
+    const badge = link?.querySelector(".emu-labmark-badge");
+    expect(link?.dataset.emuLabmark).toBe("temporary");
+    expect(badge?.textContent).toBe("GEÇİCİ LAB SINIFI");
+    expect(badge?.getAttribute("aria-label")).toBe(
+      "GEÇİCİ LAB SINIFI (senin eklediğin)",
+    );
+  });
+
+  it("highlights a temporary room found as plain text", () => {
+    document.body.innerHTML = `
+      <div class="portal-course">CMSE423/CMPE025</div>
+    `;
+
+    highlightLabRoomText(document, LAB_ROOMS, TEMPORARY_ROOMS);
+
+    const course = document.querySelector<HTMLElement>(".portal-course");
+    expect(course?.dataset.emuLabmark).toBe("temporary");
+    expect(course?.textContent).toContain("GEÇİCİ LAB SINIFI");
+  });
+
+  it("lets a confirmed laboratory win over a temporary room in the same cell", () => {
+    document.body.innerHTML = `
+      <table><thead><tr><th>Time</th><th>Wednesday</th></tr></thead><tbody>
+        <tr><td>12:30-13:20</td><td id="shared">
+          <a>CMSE423/CMPE025</a><br><a>CMSE456/CMPE230</a>
+        </td></tr>
+      </tbody></table>
+    `;
+    const rows = parseTimetable();
+
+    highlightTimetable(
+      resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, TEMPORARY_ROOMS),
+    );
+    highlightLabRoomText(document, LAB_ROOMS, TEMPORARY_ROOMS);
+
+    expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
+    expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
+  });
+
+  it("explains only the kinds that the timetable actually contains", () => {
+    document.body.innerHTML = `
+      <table><thead><tr><th>Time</th><th>Monday</th><th>Tuesday</th></tr></thead><tbody>
+        <tr><td>12:30-13:20</td>
+          <td class="schedule-table-content"><a>CMSE423/CMPE230</a></td>
+          <td class="schedule-table-content"><a>CMSE423/CMPE025</a></td>
+        </tr>
+      </tbody></table>
+    `;
+    const rows = parseTimetable();
+
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, TEMPORARY_ROOMS));
+
+    const items = document.querySelectorAll(".emu-labmark-legend-item");
+    expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+    expect([...items].map((item) => item.querySelector(".emu-labmark-legend-badge")?.textContent))
+      .toEqual(["LAB SINIFI", "GEÇİCİ LAB SINIFI"]);
+
+    // With no temporary room left, its legend row goes away too.
+    clearTimetableHighlights();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, new Set()));
+    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);
+    expect(document.querySelector(".emu-labmark-legend-badge")?.textContent).toBe("LAB SINIFI");
   });
 });

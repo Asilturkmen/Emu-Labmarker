@@ -3,7 +3,7 @@ import { portalTimetable } from "./fixtures/portalTimetable";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
-import { clearTimetableHighlights, highlightTimetable, highlightVerifiedRoomText } from "../src/highlighter/highlightTimetable";
+import { clearTimetableHighlights, highlightTimetable, highlightLabRoomText } from "../src/highlighter/highlightTimetable";
 
 // Pinned so that editing the verified room list cannot break these tests.
 const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
@@ -77,7 +77,7 @@ describe("supplied UL/LI portal timetable", () => {
   it("stays stable when the text fallback runs after the parser", () => {
     for (let i = 0; i < 3; i++) {
       scan();
-      highlightVerifiedRoomText(document, LAB_ROOMS);
+      highlightLabRoomText(document, LAB_ROOMS);
 
       for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
         const container = document.querySelector(selector)!;
@@ -88,5 +88,23 @@ describe("supplied UL/LI portal timetable", () => {
       expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
       expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
     }
+  });
+
+  it("marks a user added room in its own colour without touching the verified ones", () => {
+    // CMPE025 fills four cells per layout: Monday 12:30 and 13:30,
+    // Friday 08:30 and 09:30.
+    const temporary: ReadonlySet<string> = new Set(["CMPE025"]);
+    clearTimetableHighlights();
+    const rows = parseTimetable();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, temporary));
+    highlightLabRoomText(document, LAB_ROOMS, temporary);
+
+    for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
+      const container = document.querySelector(selector)!;
+      expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmark="temporary"]')).toHaveLength(4);
+      expect(container.querySelectorAll("li.ctime:not([data-emu-labmark])")).toHaveLength(17);
+    }
+    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(2);
   });
 });

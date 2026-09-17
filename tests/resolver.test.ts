@@ -45,4 +45,27 @@ describe("resolveMeetings", () => {
       "normal",
     ]);
   });
+
+  it("marks rooms the user added as temporary", () => {
+    const resolved = resolveMeetings(
+      [block("CMPE025", "tuesday"), block("CMPE127", "tuesday")],
+      new Set(["CMPE134"]),
+      new Set(["cmpe 025"]),
+    );
+
+    expect(resolved.map(({ classification }) => classification)).toEqual([
+      "temporary",
+      "normal",
+    ]);
+  });
+
+  it("keeps a confirmed laboratory verified even if the user also added it", () => {
+    const resolved = resolveMeetings(
+      [block("CMPE134", "tuesday")],
+      new Set(["CMPE134"]),
+      new Set(["CMPE134"]),
+    );
+
+    expect(resolved[0]?.classification).toBe("verified");
+  });
 });

@@ -1,6 +1,9 @@
-import { normalizeRoom } from "../data/labRooms";
+import {
+  matchCourseRoom,
+  normalizeCourseCode,
+  normalizeRoom,
+} from "../data/courseRoom";
 import type { ParsedMeetingRow, TimetableLayout } from "../types/timetable";
-import { matchCourseRoom, normalizeCourseCode } from "./courseRoom";
 
 const TIME_RANGE_PATTERN =
   /(?:^|[^\d])([01]?\d|2[0-3]):([0-5]\d)\s*[-–—]\s*([01]?\d|2[0-3]):([0-5]\d)(?!\d)/;

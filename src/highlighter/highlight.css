@@ -94,3 +94,21 @@ li.ctime[data-emu-labmark] > span {
   border-radius: 6px;
   background: #ffd3d7;
 }
+
+/* Rooms the user added themselves are not confirmed laboratories, so they get
+   their own colour. These selectors carry the same specificity as the shared
+   [data-emu-labmark] rules above and must therefore stay last in the file. */
+[data-emu-labmark="temporary"] {
+  background: #e9e0fc !important;
+  box-shadow: inset 0 0 0 3px #6b3fd4 !important;
+}
+
+[data-emu-labmark="temporary"] > .emu-labmark-badge,
+.emu-labmark-legend-badge[data-kind="temporary"] {
+  background: #5a2fc0 !important;
+}
+
+.emu-labmark-swatch[data-kind="temporary"] {
+  border-color: #6b3fd4;
+  background: #e9e0fc;
+}

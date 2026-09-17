@@ -1,6 +1,11 @@
 export type TimetableLayout = "desktop" | "mobile";
 
-export type RoomClassification = "verified" | "normal";
+/**
+ * "verified" rooms come from the curated list in src/data/labRooms.ts.
+ * "temporary" rooms are the ones a user added themselves, which are not
+ * confirmed laboratories and are shown differently.
+ */
+export type RoomClassification = "verified" | "temporary" | "normal";
 
 export interface ParsedMeetingRow {
   courseCode: string;

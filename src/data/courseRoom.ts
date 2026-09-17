@@ -1,12 +1,16 @@
-import { normalizeRoom } from "../data/labRooms";
-
 /**
  * A timetable entry renders the course and its room as "COURSE/ROOM", for
- * example "CMSE425/CMPE137" or "MGMT101/CL 114". The parser and the text
- * fallback must agree on this shape, so it lives in one place.
+ * example "CMSE425/CMPE137" or "MGMT101/CL 114". The parser, the text fallback
+ * and the user maintained room list must agree on this shape, so it lives in
+ * one place. This module is deliberately dependency free: everything else that
+ * deals with rooms builds on it.
  */
 export const COURSE_ROOM_PATTERN =
   /\b([A-Z]{2,}\s*-?\s*\d{3,4}[A-Z]?)\s*\/\s*([A-Z]{2,}(?:\s*-?\s*[A-Z0-9]+)+)\b/i;
+
+export function normalizeRoom(room: string): string {
+  return room.trim().replace(/\s+/g, "").toUpperCase();
+}
 
 export function normalizeCourseCode(courseCode: string): string {
   return courseCode.replace(/\s+/g, "").toUpperCase();
