@@ -9,7 +9,6 @@ const COURSE_ROOM_TEXT_PATTERN =
 
 const LABELS: Record<Exclude<RoomClassification, "normal">, string> = {
   verified: "LAB SINIFI",
-  probable: "MUHTEMEL LAB SINIFI",
 };
 
 function clearMark(element: HTMLElement): void {
@@ -56,25 +55,16 @@ function updateLegends(root: ParentNode = document): void {
     const legend = document.createElement("div");
     legend.className = "emu-labmark-legend";
 
-    const addLegendItem = (
-      classification: Exclude<RoomClassification, "normal">,
-      label: string,
-    ) => {
-      if (!table.querySelector(`[${MARKER_ATTRIBUTE}="${classification}"]`)) return;
-      const item = document.createElement("span");
-      item.className = "emu-labmark-legend-item";
-      const swatch = document.createElement("span");
-      swatch.className = `emu-labmark-swatch emu-labmark-swatch--${classification}`;
-      swatch.setAttribute("aria-hidden", "true");
-      const badge = document.createElement("span");
-      badge.className = `emu-labmark-legend-badge emu-labmark-legend-badge--${classification}`;
-      badge.textContent = classification === "probable" ? "LAB?" : "LAB";
-      item.append(swatch, badge, document.createTextNode(` = ${label}`));
-      legend.append(item);
-    };
-
-    addLegendItem("verified", "Laboratuvar dersi");
-    addLegendItem("probable", "Muhtemel laboratuvar dersi");
+    const item = document.createElement("span");
+    item.className = "emu-labmark-legend-item";
+    const swatch = document.createElement("span");
+    swatch.className = "emu-labmark-swatch";
+    swatch.setAttribute("aria-hidden", "true");
+    const badge = document.createElement("span");
+    badge.className = "emu-labmark-legend-badge";
+    badge.textContent = "LAB";
+    item.append(swatch, badge, document.createTextNode(" = Laboratuvar dersi"));
+    legend.append(item);
     table.after(legend);
   }
 }
@@ -88,7 +78,7 @@ function addMark(
   const badge = element.querySelector<HTMLElement>(`:scope > .${BADGE_CLASS}`) ??
     document.createElement("small");
   badge.className = BADGE_CLASS;
-  badge.textContent = classification === "probable" ? "LAB?" : "LAB";
+  badge.textContent = "LAB";
   badge.title = LABELS[classification];
   badge.setAttribute("aria-label", LABELS[classification]);
   badge.tabIndex = 0;
@@ -103,7 +93,7 @@ export function highlightTimetable(meetings: ResolvedMeeting[]): void {
       const target = getHighlightTarget(row.link);
       if (!target) continue;
       const previous = classificationByLink.get(target);
-      if (previous === "verified" || (previous === "probable" && classification === "normal")) continue;
+      if (previous === "verified") continue;
       classificationByLink.set(target, classification);
     }
   }

@@ -30,25 +30,22 @@ describe("supplied UL/LI portal timetable", () => {
     }
   });
 
-  it("marks precisely four verified and two probable cells in each layout", () => {
+  it("marks only the four verified cells in each layout", () => {
     scan();
     for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
       const container = document.querySelector(selector)!;
       expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark="probable"]')).toHaveLength(2);
-      expect(container.querySelectorAll('li.ctime:not([data-emu-labmark])')).toHaveLength(19);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmark]:not([data-emu-labmark="verified"])')).toHaveLength(0);
+      expect(container.querySelectorAll('li.ctime:not([data-emu-labmark])')).toHaveLength(21);
       expect(container.hasAttribute("data-emu-labmark")).toBe(false);
       for (const cell of container.querySelectorAll("[data-emu-labmark]")) {
         expect(cell.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
-        if (cell.getAttribute("data-emu-labmark") === "probable") {
-          expect(cell.textContent).toContain("CMPE137");
-          expect(cell.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB?");
-        }
+        expect(cell.getAttribute("data-emu-labmark")).toBe("verified");
       }
     }
     expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
     expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
-    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(2);
+    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);
     expect(document.querySelector(".schedule-panel")?.nextElementSibling?.className).toBe("emu-labmark-legend");
   });
 
@@ -60,7 +57,7 @@ describe("supplied UL/LI portal timetable", () => {
     oldLink.insertAdjacentHTML("beforeend", '<span class="emu-labmark-badge">LAB</span>');
     for (let i = 0; i < 3; i++) {
       expect(scan().rows).toHaveLength(54);
-      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(12);
+      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(8);
       expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
       expect([...document.querySelectorAll("a")].map((a) => [a.textContent, a.href, a.target])).toEqual(originalLinks);
     }

@@ -1,6 +1,6 @@
 export type TimetableLayout = "desktop" | "mobile";
 
-export type RoomClassification = "verified" | "probable" | "normal";
+export type RoomClassification = "verified" | "normal";
 
 export interface ParsedMeetingRow {
   courseCode: string;

@@ -45,18 +45,15 @@ describe("highlightTimetable", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
   });
-  it.each([
-    ["verified", "LAB SINIFI", "LAB"],
-    ["probable", "MUHTEMEL LAB SINIFI", "LAB?"],
-  ] as const)("renders the %s label", (classification, label, badgeText) => {
-    const meeting = resolved(classification);
+  it("renders the verified label", () => {
+    const meeting = resolved("verified");
 
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
-    expect(link?.dataset.emuLabmark).toBe(classification);
-    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe(badgeText);
-    expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe(label);
+    expect(link?.dataset.emuLabmark).toBe("verified");
+    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB");
+    expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe("LAB SINIFI");
   });
 
   it("leaves normal links unmarked and removes stale marks", () => {
@@ -72,7 +69,7 @@ describe("highlightTimetable", () => {
   });
 
   it("is idempotent", () => {
-    const meeting = resolved("probable");
+    const meeting = resolved("verified");
 
     highlightTimetable([meeting]);
     highlightTimetable([meeting]);
@@ -120,7 +117,7 @@ describe("highlightTimetable", () => {
     expect(document.querySelectorAll("[data-emu-labmark], .emu-labmark-legend")).toHaveLength(0);
   });
 
-  it("highlights only the exceptional block in the full CMSE425 example", () => {
+  it("does not guess that an exceptional room is a laboratory", () => {
     document.body.innerHTML = `
       <table>
         <thead><tr><th>Time</th><th>Tuesday</th><th>Thursday</th></tr></thead>
@@ -138,13 +135,7 @@ describe("highlightTimetable", () => {
     highlightTimetable(resolveMeetings(blocks, new Set()));
 
     expect(blocks).toHaveLength(3);
-    expect(document.querySelectorAll('[data-emu-labmark="probable"]')).toHaveLength(2);
-    expect(document.querySelectorAll('[data-emu-labmark="verified"]')).toHaveLength(0);
-    expect(
-      [...document.querySelectorAll('[data-emu-labmark="probable"]')].every((link) =>
-        link.textContent?.includes("CMPE134"),
-      ),
-    ).toBe(true);
+    expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(0);
   });
 
   it("does not promote a course to an outer layout cell containing the timetable", () => {

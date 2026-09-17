@@ -90,7 +90,7 @@ p {
 
 .legend {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   margin-top: 14px;
   color: #61748b;
@@ -100,6 +100,5 @@ p {
 .legend span { display: inline-flex; align-items: center; gap: 5px; }
 .dot { width: 9px; height: 9px; border-radius: 3px; }
 .dot.verified { background: #f12e4b; }
-.dot.probable { background: #f28c28; }
 
 body[data-enabled="false"] .brand img { filter: grayscale(1); opacity: .7; }

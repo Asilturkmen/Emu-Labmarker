@@ -7,11 +7,6 @@
   text-align: left !important;
 }
 
-[data-emu-labmark="probable"] {
-  background: #ffe2b8 !important;
-  box-shadow: inset 0 0 0 3px #f28c28 !important;
-}
-
 td[data-emu-labmark] {
   padding-inline: 16px !important;
   vertical-align: middle !important;
@@ -75,10 +70,6 @@ li.ctime[data-emu-labmark] > span {
   outline-offset: 2px;
 }
 
-[data-emu-labmark="probable"] > .emu-labmark-badge {
-  background: #f28c28 !important;
-}
-
 .emu-labmark-legend {
   display: flex;
   align-items: center;
@@ -107,13 +98,4 @@ li.ctime[data-emu-labmark] > span {
   border: 3px solid #f12e4b;
   border-radius: 6px;
   background: #ffd3d7;
-}
-
-.emu-labmark-swatch--probable {
-  border-color: #f28c28;
-  background: #ffe2b8;
-}
-
-.emu-labmark-legend-badge--probable {
-  background: #f28c28 !important;
 }

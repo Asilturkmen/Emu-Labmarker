@@ -20,7 +20,7 @@ function block(
 }
 
 describe("resolveMeetings", () => {
-  it("marks manually verified rooms red regardless of the heuristic", () => {
+  it("marks manually verified rooms", () => {
     const resolved = resolveMeetings(
       [block("CMPE134", "tuesday")],
       new Set(["cmpe 134"]),
@@ -29,7 +29,7 @@ describe("resolveMeetings", () => {
     expect(resolved[0]?.classification).toBe("verified");
   });
 
-  it("marks the sole non-dominant meeting block as probable", () => {
+  it("leaves every room outside the verified list normal", () => {
     const resolved = resolveMeetings(
       [
         block("CMPE127", "tuesday"),
@@ -42,37 +42,7 @@ describe("resolveMeetings", () => {
     expect(resolved.map(({ classification }) => classification)).toEqual([
       "normal",
       "normal",
-      "probable",
+      "normal",
     ]);
-  });
-
-  it.each([
-    {
-      name: "fewer than three blocks",
-      blocks: [block("A101", "monday"), block("B101", "tuesday")],
-    },
-    {
-      name: "no unique dominant room",
-      blocks: [
-        block("A101", "monday"),
-        block("A101", "tuesday"),
-        block("B101", "wednesday"),
-        block("B101", "thursday"),
-      ],
-    },
-    {
-      name: "more than one non-dominant block",
-      blocks: [
-        block("A101", "monday"),
-        block("A101", "tuesday"),
-        block("A101", "wednesday"),
-        block("B101", "thursday"),
-        block("C101", "friday"),
-      ],
-    },
-  ])("does not guess when $name", ({ blocks }) => {
-    expect(resolveMeetings(blocks).every((item) => item.classification === "normal")).toBe(
-      true,
-    );
   });
 });
