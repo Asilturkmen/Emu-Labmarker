@@ -3,7 +3,8 @@ import { defineConfig } from "wxt";
 export default defineConfig({
   manifest: {
     name: "EMU LabMark",
-    description: "Highlights manually verified laboratory rooms in the EMU timetable.",
+    description:
+      "EMU ders programındaki laboratuvar derslerini renkli olarak işaretler.",
     permissions: ["storage"],
     icons: {
       16: "icons/icon-16.png",

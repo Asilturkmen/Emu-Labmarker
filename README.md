@@ -1,93 +1,82 @@
 # EMU LabMark
 
-EMU öğrenci portalındaki ders programında (`student.emu.edu.tr/Academic/TimeTable`)
-laboratuvar derslerini işaretleyen bir tarayıcı eklentisi. Hangi dersin lab olduğu
-tahmin edilmez; yalnızca bilinen oda listelerindeki odalar işaretlenir.
+EMU öğrenci portalındaki ders programında laboratuvar derslerini ilk bakışta
+görünür kılan bir tarayıcı eklentisi.
 
-İki tür işaret var:
+Ders programı bütün dersleri aynı renkte gösterdiği için labları ayırt etmek oda
+kodlarını ezbere bilmeyi gerektiriyor. EMU LabMark laboratuvar derslerini renkli
+bir çerçeve ve kısa bir etiketle işaretler. Hangi dersin lab olduğunu tahmin
+etmez; yalnızca doğrulanmış laboratuvar odalarını işaretler.
 
-| | Kesin lab | Özel lab |
+> Kapsam: şu an bilgisayar mühendisliği (CMPE) laboratuvarları.
+
+## Neleri işaretler
+
+| | Lab sınıfı | Özel lab |
 | --- | --- | --- |
-| Kaynak | Eklentiyle gelen doğrulanmış liste | Kullanıcının popup'tan eklediği liste |
+| Kaynak | Eklentiyle gelen doğrulanmış liste | Kendi eklediğin sınıflar |
 | Etiket | `LAB SINIFI` | `ÖZEL LAB` |
-| Renk | Kırmızı (`#f12e4b`) | Turuncu (`#f08c14`) |
+| Renk | Kırmızı | Turuncu |
 
-## Kurulum (geliştirme)
+Ders programının altına, o programda gerçekten bulunan işaret türlerini anlatan
+bir açıklama satırı eklenir.
+
+## Kurulum
+
+Eklenti henüz mağazada yayında değil. Kullanmak için:
 
 ```bash
 npm install
-npm run dev       # Chrome'u eklenti yüklenmiş olarak açar
+npm run build
 ```
 
-## Komutlar
+Ardından Chrome'da `chrome://extensions` adresini aç, **Geliştirici modu**'nu
+etkinleştir, **Paketlenmemiş öğe yükle**'ye bas ve `.output/chrome-mv3`
+klasörünü seç.
 
-| Komut | Açıklama |
-| --- | --- |
-| `npm run dev` | Geliştirme modu, canlı yeniden yükleme ile |
-| `npm run build` | `.output/chrome-mv3` altına üretim derlemesi |
-| `npm run zip` | Mağazaya yüklenebilir arşiv |
-| `npm test` | Vitest testleri (jsdom) |
-| `npm run typecheck` | `wxt prepare` + `tsc --noEmit` |
+## Kullanım
 
-## Lab odası ekleme
+**Aç / kapa** — Eklenti simgesine tıkla ve anahtarı kullan. Kapattığında
+işaretler anında kalkar, ders programı olduğu gibi kalır.
 
-### Kesin lab (kod içinde)
+**Kendi lab sınıfını ekleme** — Bir hoca normalde lab olmayan bir sınıfı o dönem
+lab olarak kullanıyorsa, oda kodunu popup'taki listeye ekle. `CMPE025` gibi bir
+oda kodu da, ders programından kopyaladığın `CMSE423/CMPE025` gibi bir giriş de
+kabul edilir. Bu sınıflar turuncu renkte ve `ÖZEL LAB` etiketiyle görünür,
+doğrulanmış laboratuvarlarla karışmaz. Listeden çıkarmak için çipteki × işaretine
+bas.
 
-Doğrulanmış odalar `src/data/labRooms.ts` içindeki `VERIFIED_LAB_ROOMS`
-listesinde durur. Yeni bir oda eklemek için listeye oda kodunu yazmak yeterli —
-boşluk ve harf büyüklüğü aranmadan önce normalize edildiği için `cmpe 134` ile
-`CMPE134` aynıdır.
-
-```ts
-export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
-  "CMPE134",
-  "CMPE230",
-]);
-```
-
-Listeye yalnızca gerçekten lab olduğu **elle doğrulanmış** odalar girer.
-
-### Özel lab (kullanıcı tarafından)
-
-Normalde lab olmayan bir sınıf o dönem lab olarak kullanılabiliyor. Kullanıcı
-eklenti simgesine tıklayıp kendi listesini tutar; bu odalar **teal** renkte ve
-`ÖZEL LAB` etiketiyle görünür, kesin lablarla karışmaz.
-
-- Oda kodu (`CMPE025`) ya da programdan kopyalanmış bir giriş
-  (`CMSE423/CMPE025`) yazılabilir; ikisi de `CMPE025` olarak kaydedilir.
-- Kesin lab listesinde olan bir oda eklenmek istenirse popup uyarır; oda iki
-  listede de bulunuyorsa kesin lab gösterimi kazanır.
-- Liste `browser.storage.local` içinde `emuLabmarkCustomRooms` anahtarında
-  tutulur (`src/settings.ts`), en fazla 50 oda. İçerik betiği değişikliği
-  anında dinler, sayfayı yenilemek gerekmez.
-
-## Nasıl çalışıyor
-
-İçerik betiği (`entrypoints/content.ts`) şu hattı işletir:
-
-1. **`src/parser/parseTimetable.ts`** — Ders programındaki bağlantıları tarar,
-   `COURSE/ROOM` biçimini, gün ve saat bilgisini çıkarır. Portalın hem masaüstü
-   (UL/LI) hem mobil düzenini ve İngilizce/Türkçe gün adlarını tanır.
-2. **`src/grouping/groupMeetingBlocks.ts`** — Aynı ders/gün/odaya ait ardışık
-   saat satırlarını (aradaki 10 dakikalık teneffüs dahil) tek bloğa birleştirir.
-3. **`src/resolver/resolveMeetings.ts`** — Her bloğun odasını iki oda listesiyle
-   karşılaştırır; sıra: kesin lab → özel lab → işaretsiz.
-4. **`src/highlighter/highlightTimetable.ts`** — Hücreyi işaretler, etiketi ve
-   tablo altındaki renk açıklamasını ekler. Açıklama yalnızca o programda
-   gerçekten bulunan türleri listeler. Portal dersleri bağlantı olarak değil düz
-   metin olarak render ettiğinde `highlightLabRoomText` yedeği devreye girer.
-
-Portalın kendi JavaScript'i programı kademeli render ettiği için bir
-`MutationObserver` değişiklikleri izler ve kısa bir gecikmeyle tek bir yeniden
-tarama yapar.
-
-Eklenti aç/kapa durumu ve kullanıcının özel lab listesi
-`browser.storage.local` içinde tutulur (`src/settings.ts`); popup bunları
-değiştirir, içerik betiği ikisini de anında dinler.
+Her değişiklik açık sekmelere anında yansır; sayfayı yenilemek gerekmez.
 
 ## Gizlilik
 
-Eklenti yalnızca ders programı sayfasının DOM'unu okur. Hiçbir veri toplanmaz
-veya dışarıya gönderilmez. Tek istenen izin `storage`; o da yalnızca aç/kapa
-tercihini ve kullanıcının kendi özel lab listesini kendi tarayıcısında
-saklamak için kullanılır.
+Eklenti yalnızca ders programı sayfasını okur. Hiçbir veri toplanmaz ve hiçbir
+yere gönderilmez. İstenen tek izin `storage`; o da aç/kapa tercihini ve kendi
+eklediğin sınıfların listesini yalnızca senin tarayıcında saklamak için
+kullanılır.
+
+## Laboratuvar listesini genişletmek
+
+Doğrulanmış odalar `src/data/labRooms.ts` dosyasındaki listede durur. Yeni bir
+oda için listeye oda kodunu eklemek yeterlidir; boşluk ve harf büyüklüğü fark
+etmez. Listeye yalnızca gerçekten laboratuvar olduğu doğrulanmış odalar girer —
+şüpheli bir oda, kullanıcının kendi ekleyebildiği özel lab listesine aittir.
+
+## Geliştirme
+
+| Komut | |
+| --- | --- |
+| `npm run dev` | Geliştirme modu, canlı yeniden yükleme ile |
+| `npm run build` | `.output/chrome-mv3` altına derleme |
+| `npm run zip` | Mağazaya yüklenebilir arşiv |
+| `npm test` | Testler |
+| `npm run typecheck` | Tip denetimi |
+
+WXT ve TypeScript ile yazıldı, Manifest V3. İçerik betiği ders programındaki
+dersleri okur, oda kodlarını iki listeyle karşılaştırır ve eşleşenleri
+işaretler. Portal programı kademeli yüklediği için sayfadaki değişiklikler
+izlenir ve gerektiğinde yeniden taranır.
+
+## Lisans
+
+MIT — ayrıntılar için [LICENSE](LICENSE).
