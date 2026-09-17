@@ -6,8 +6,10 @@ import { matchCourseRoom, normalizeRoom } from "./courseRoom";
  */
 export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
  "CMPE134",
- "CMPE230",
+ "CMPE135",
+ "CMPE136",
  "CMPE137",
+ "CMPE230",
 
 ]);
 
