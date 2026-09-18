@@ -15,6 +15,7 @@ import {
   LABMARK_ENABLED_KEY,
   parseCustomLabRooms,
 } from "../src/settings";
+import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
 // The portal re-renders the timetable in several steps. Waiting briefly
 // collapses a burst of mutations into a single rescan.
@@ -30,6 +31,11 @@ export default defineContentScript({
   runAt: "document_idle",
   async main() {
     if (!TIMETABLE_PATH.test(location.pathname)) return;
+
+    // Lets the background worker light up this tab's toolbar icon. Nothing
+    // here depends on the answer, and a worker that is still starting up must
+    // not keep the timetable from being marked.
+    void browser.runtime.sendMessage(TIMETABLE_ACTIVE_MESSAGE).catch(() => {});
 
     let rescan: ReturnType<typeof setTimeout> | null = null;
     let enabled = await getLabMarkEnabled();

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { portalTimetable } from "./fixtures/portalTimetable";
 import { CUSTOM_ROOMS_KEY, LABMARK_ENABLED_KEY } from "../src/settings";
+import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
 // The script collapses a burst of mutations into one rescan after 100ms.
 const RESCAN_WAIT_MS = 160;
@@ -22,11 +23,13 @@ const RealMutationObserver = globalThis.MutationObserver;
 let storage: Record<string, unknown>;
 let changeListeners: ChangeListener[];
 let observers: MutationObserver[];
+let sentMessages: unknown[];
 
 function stubEnvironment(stored: Record<string, unknown>): void {
   storage = { ...stored };
   changeListeners = [];
   observers = [];
+  sentMessages = [];
 
   // Each test loads a fresh copy of the script, and the copy from the previous
   // test would otherwise keep watching the document and mark it with its own
@@ -56,6 +59,11 @@ function stubEnvironment(stored: Record<string, unknown>): void {
       onChanged: {
         addListener: (listener: ChangeListener) =>
           changeListeners.push(listener),
+      },
+    },
+    runtime: {
+      sendMessage: async (message: unknown) => {
+        sentMessages.push(message);
       },
     },
   });
@@ -116,6 +124,8 @@ describe("content script", () => {
 
     expect(marks("verified").length).toBeGreaterThan(0);
     expect(changeListeners).toHaveLength(1);
+    // Lights up this tab's toolbar icon.
+    expect(sentMessages).toEqual([TIMETABLE_ACTIVE_MESSAGE]);
   });
 
   it.each([
@@ -129,6 +139,8 @@ describe("content script", () => {
     expect(marks()).toHaveLength(0);
     expect(changeListeners).toHaveLength(0);
     expect(observers).toHaveLength(0);
+    // The toolbar icon stays faded on every other page of the portal.
+    expect(sentMessages).toHaveLength(0);
   });
 
   it("leaves the timetable alone while the extension is switched off", async () => {
