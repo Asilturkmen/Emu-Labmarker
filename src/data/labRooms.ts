@@ -16,6 +16,7 @@ export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
   "CMPE228",
   "CMPE230",
   "CMPE231",
+  
   "CMPE235",
   "CMPE236",
   "CMPE238",

@@ -2,6 +2,11 @@
   "name": "emu-labmark",
   "version": "1.0.0",
   "private": true,
+  "author": {
+    "name": "Asil Türkmen",
+    "url": "https://asilturkmen.com"
+  },
+  "homepage": "https://asilturkmen.com",
   "type": "module",
   "scripts": {
     "postinstall": "wxt prepare",

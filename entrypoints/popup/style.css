@@ -233,4 +233,13 @@ h2 {
   line-height: 1.4;
 }
 
+.disclaimer a {
+  color: #1269b5;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.disclaimer a:hover { text-decoration: underline; }
+.disclaimer a:focus-visible { outline: 2px solid #1269b5; outline-offset: 2px; }
+
 body[data-enabled="false"] .brand img { filter: grayscale(1); opacity: .7; }

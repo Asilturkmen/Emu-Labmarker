@@ -5,6 +5,7 @@ export default defineConfig({
     name: "EMU LabMark",
     description:
       "EMU ders programındaki laboratuvar derslerini renkli olarak işaretler.",
+    homepage_url: "https://asilturkmen.com",
     permissions: ["storage"],
     icons: {
       16: "icons/icon-16.png",

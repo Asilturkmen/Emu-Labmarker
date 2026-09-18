@@ -13,6 +13,9 @@
     <img src="https://img.shields.io/badge/lisans-MIT-blue.svg" alt="MIT lisansı">
   </a>
   <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white" alt="Manifest V3">
+  <a href="https://asilturkmen.com">
+    <img src="https://img.shields.io/badge/geli%C5%9Ftirici-Asil%20T%C3%BCrkmen-17365d" alt="Geliştirici: Asil Türkmen">
+  </a>
   <a href="https://buymeacoffee.com/turkmenasil">
     <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-destek%20ol-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee">
   </a>
@@ -85,23 +88,9 @@ kullanılır.
 Doğrulanmış odalar `src/data/labRooms.ts` dosyasındaki listede durur ve listeye
 yalnızca gerçekten laboratuvar olduğu doğrulanmış odalar girer.
 
-- **Kullanıcıysan:** eksik odayı popup'tan özel lab olarak ekleyebilirsin, ya da
-  [bir issue aç](https://github.com/Asilturkmen/Emu-Labmarker/issues/new) —
-  oda kodunu yazman yeterli.
-- **Katkı vereceksen:** oda kodunu listeye ekle ve `npm test` ile doğrula.
-  Boşluk ve harf büyüklüğü fark etmez (`cmpe 134` = `CMPE134`).
-
-## Katkı
-
-Pull request'ler açık. Proje WXT ve TypeScript ile yazıldı (Manifest V3).
-Göndermeden önce:
-
-```bash
-npm install
-npm run typecheck && npm test
-```
-
-CI aynı adımları (`typecheck`, `test`, `build`) her push'ta yeniden koşar.
+Eksik bir odayı pop-up'tan özel lab olarak ekleyebilirsin, ya da
+[bir issue aç](https://github.com/Asilturkmen/Emu-Labmarker/issues/new) —
+oda kodunu yazman yeterli.
 
 ## Destek
 
@@ -111,6 +100,19 @@ Eklenti ücretsiz ve açık kaynak. İşine yaradıysa bir kahve ısmarlayabilir
   <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-turkmenasil-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee">
 </a>
 
+## Geliştirici
+
+EMU LabMark'ı **[Asil Türkmen](https://asilturkmen.com)** geliştirdi ve
+sürdürüyor. Diğer projeler ve iletişim için:
+[asilturkmen.com](https://asilturkmen.com)
+
 ## Lisans
 
-MIT — ayrıntılar için [LICENSE](LICENSE).
+MIT — ayrıntılar için [LICENSE](LICENSE). Telif © 2026 Asil Türkmen.
+
+---
+
+<p align="center">
+  <a href="https://asilturkmen.com">asilturkmen.com</a> ·
+  <a href="https://github.com/Asilturkmen/Emu-Labmarker">GitHub</a>
+</p>
