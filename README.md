@@ -56,9 +56,8 @@ iki şey var:
 gibi kalır. Sayfayı yenilemeye gerek yok.
 
 **Kendi lab sınıfını ekleme.** Bazen hoca normalde lab olmayan bir sınıfı o dönem lab
-olarak kullanıyor. Oda kodunu yaz, Ekle'ye bas. `CMPE025` de olur, ders programından
-kopyaladığın `CMSE423/CMPE025` de olur. Bu sınıflar turuncu renkte ve `ÖZEL LAB`
-etiketiyle görünür, kesin lablarla karışmaz. Çipin yanındaki × ile listeden çıkarırsın.
+olarak kullanıyor. Oda kodunu yaz, Ekle'ye bas.Bu sınıflar turuncu renkte ve `ÖZEL LAB`
+etiketiyle görünür, kesin lablarla karışmaz. Çipin yanındaki × ile listeden çıkarabilirsiniz.
 
 <br clear="all">
 
@@ -78,8 +77,7 @@ sayfasına bakar. Hiçbir veri toplamaz, hiçbir yere göndermez. İstediği tek
 
 ## Merhaba
 
-Ben Asil. Bu eklenti bağımsız bir öğrenci projesi; üniversitenin resmî bir ürünü değil,
-kendi ihtiyacımdan çıktı. Başka neler yaptığımı görmek ya da bir şey söylemek istersen:
+Ben Asil. Bu eklentiyi kendi ihtiyacımdan ortaya çıkan bağımsız bir öğrenci projesi olarak geliştirdim. Üniversitenin resmi bir ürünü değildir. Başka neler yaptığımı görmek ya da bir şey söylemek isterseneniz web sitemi ziyaret edebilirsiniz:
 **[asilturkmen.com](https://asilturkmen.com)**
 
 İşine yaradıysa bir kahve ısmarlayabilirsin:
