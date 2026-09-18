@@ -8,9 +8,6 @@ import { normalizeRoom } from "./data/courseRoom";
 
 export const LABMARK_ENABLED_KEY = "emuLabmarkEnabled";
 export const CUSTOM_ROOMS_KEY = "emuLabmarkCustomRooms";
-// The same list was stored here while the feature was called "geçici lab".
-// Safe to delete once nobody is running a build from that week.
-const LEGACY_CUSTOM_ROOMS_KEY = "emuLabmarkTemporaryRooms";
 
 export async function getLabMarkEnabled(): Promise<boolean> {
   const stored = await browser.storage.local.get(LABMARK_ENABLED_KEY);
@@ -39,14 +36,8 @@ export function parseCustomLabRooms(value: unknown): string[] {
 }
 
 export async function getCustomLabRooms(): Promise<string[]> {
-  const stored = await browser.storage.local.get([
-    CUSTOM_ROOMS_KEY,
-    LEGACY_CUSTOM_ROOMS_KEY,
-  ]);
-  const rooms = parseCustomLabRooms(stored[CUSTOM_ROOMS_KEY]);
-  return rooms.length
-    ? rooms
-    : parseCustomLabRooms(stored[LEGACY_CUSTOM_ROOMS_KEY]);
+  const stored = await browser.storage.local.get(CUSTOM_ROOMS_KEY);
+  return parseCustomLabRooms(stored[CUSTOM_ROOMS_KEY]);
 }
 
 async function setCustomLabRooms(rooms: string[]): Promise<void> {

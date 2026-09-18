@@ -41,18 +41,23 @@ export default defineContentScript({
       rescan = null;
       observer.disconnect();
 
-      clearTimetableHighlights();
-      if (enabled) {
-        const rows = parseTimetable();
-        const blocks = groupMeetingBlocks(rows);
-        const meetings = resolveMeetings(blocks, undefined, customRooms);
-        highlightTimetable(meetings);
-        // Some portal releases render course entries as plain text instead of
-        // links, which the timetable parser cannot see.
-        highlightLabRoomText(document, undefined, customRooms);
+      // Reconnecting in a finally block matters: a scan that throws on markup
+      // this version cannot read would otherwise leave the page unobserved,
+      // and every later portal re-render would go unnoticed until a reload.
+      try {
+        clearTimetableHighlights();
+        if (enabled) {
+          const rows = parseTimetable();
+          const blocks = groupMeetingBlocks(rows);
+          const meetings = resolveMeetings(blocks, undefined, customRooms);
+          highlightTimetable(meetings);
+          // Some portal releases render course entries as plain text instead
+          // of links, which the timetable parser cannot see.
+          highlightLabRoomText(document, undefined, customRooms);
+        }
+      } finally {
+        observer.observe(document.body, { childList: true, subtree: true });
       }
-
-      observer.observe(document.body, { childList: true, subtree: true });
     };
 
     function scheduleRun(): void {

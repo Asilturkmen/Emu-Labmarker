@@ -109,20 +109,4 @@ describe("custom lab rooms", () => {
       parseCustomLabRooms(["CMPE025", 7, null, "??", "cmpe 025", "CL116"]),
     ).toEqual(["CMPE025", "CL116"]);
   });
-
-  // Lists saved by the build that called this feature "geçici lab".
-  it("still find a list saved under the previous key", async () => {
-    stubStorage({ emuLabmarkTemporaryRooms: ["CMPE025"] });
-
-    expect(await getCustomLabRooms()).toEqual(["CMPE025"]);
-  });
-
-  it("prefer the current key once it holds a list", async () => {
-    stubStorage({
-      emuLabmarkTemporaryRooms: ["CMPE025"],
-      [CUSTOM_ROOMS_KEY]: ["CL116"],
-    });
-
-    expect(await getCustomLabRooms()).toEqual(["CL116"]);
-  });
 });

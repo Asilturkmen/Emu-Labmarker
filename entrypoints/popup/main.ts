@@ -70,9 +70,16 @@ const ADD_MESSAGES: Record<AddRoomStatus, (room: string) => string> = {
 };
 
 async function initialize(): Promise<void> {
-  render(await getLabMarkEnabled());
-  toggle.disabled = false;
-  renderRooms(await getCustomLabRooms());
+  try {
+    render(await getLabMarkEnabled());
+    toggle.disabled = false;
+    renderRooms(await getCustomLabRooms());
+  } catch {
+    // Without this the popup would sit on "Durum yükleniyor…" with a dead
+    // switch, which reads as a frozen popup rather than a storage failure.
+    statusText.textContent = "Ayarlar okunamadı";
+    setRoomStatus("Ayarlar okunamadı. Tarayıcıyı yeniden başlatmayı dene.", "error");
+  }
 }
 
 toggle.addEventListener("change", async () => {
@@ -81,6 +88,10 @@ toggle.addEventListener("change", async () => {
   render(enabled);
   try {
     await setLabMarkEnabled(enabled);
+  } catch {
+    // The switch must not claim a state that was never written to storage.
+    render(!enabled);
+    setRoomStatus("Tercih kaydedilemedi.", "error");
   } finally {
     toggle.disabled = false;
   }
