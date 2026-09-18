@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://asilturkmen.com"><b>Asil Türkmen</b></a> yaptı &nbsp;·&nbsp; <a href="https://asilturkmen.com">asilturkmen.com</a>
+  <a href="https://asilturkmen.com"><b></b></a> Tarafından geliştirildi.</a>
 </p>
 
 <p align="center">
