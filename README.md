@@ -29,7 +29,12 @@ etmez; yalnızca doğrulanmış laboratuvar odalarını işaretler.
   <img src="docs/screenshot.png" alt="Laboratuvar dersleri işaretlenmiş EMU ders programı" width="860">
 </p>
 
-> **Kapsam:** şu an bilgisayar mühendisliği (CMPE) laboratuvarları.
+> **Kimin için:** CMPE ve CMSE kodlu dersleri alan bilgisayar mühendisliği
+> öğrencileri. Doğrulanmış laboratuvar listesi şu an bu bölümün
+> laboratuvarlarını içeriyor. Başka bir bölümdeysen programında işaretlenecek
+> bir oda çıkmayabilir; kendi lab sınıfını pop-up'tan ekleyebilirsin.
+
+> **Not:** Bu bağımsız bir öğrenci projesidir.
 
 ## Neleri işaretler
 

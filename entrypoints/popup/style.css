@@ -224,4 +224,13 @@ h2 {
   white-space: nowrap;
 }
 
+.disclaimer {
+  margin-top: 13px;
+  padding-top: 11px;
+  border-top: 1px solid #e6ecf4;
+  color: #8a9ab0;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
 body[data-enabled="false"] .brand img { filter: grayscale(1); opacity: .7; }
