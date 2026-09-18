@@ -1,118 +1,97 @@
+<p align="center">
+  <img src="public/icons/icon-128.png" width="88" alt="EMU LabMark simgesi">
+</p>
+
 <h1 align="center">EMU LabMark</h1>
 
 <p align="center">
-  EMU öğrenci portalındaki ders programında laboratuvar derslerini
-  ilk bakışta görünür kılan bir tarayıcı eklentisi.
+  Ders programında hangi ders lab, hangisi değil: bir bakışta.
 </p>
 
 <p align="center">
-  <a href="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml">
-    <img src="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml/badge.svg" alt="CI durumu">
-  </a>
-  <a href="LICENSE">
-    <img src="https://img.shields.io/badge/lisans-MIT-blue.svg" alt="MIT lisansı">
-  </a>
-  <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-4285F4?logo=googlechrome&logoColor=white" alt="Manifest V3">
-  <a href="https://asilturkmen.com">
-    <img src="https://img.shields.io/badge/geli%C5%9Ftirici-Asil%20T%C3%BCrkmen-17365d" alt="Geliştirici: Asil Türkmen">
-  </a>
-  <a href="https://buymeacoffee.com/turkmenasil">
-    <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-destek%20ol-FFDD00?logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee">
-  </a>
+  <a href="https://asilturkmen.com"><b>Asil Türkmen</b></a> yaptı &nbsp;·&nbsp; <a href="https://asilturkmen.com">asilturkmen.com</a>
 </p>
-
----
-
-Ders programı bütün dersleri aynı renkte gösterdiği için labları ayırt etmek oda
-kodlarını ezbere bilmeyi gerektiriyor. EMU LabMark laboratuvar derslerini renkli
-bir çerçeve ve kısa bir etiketle işaretler. Hangi dersin lab olduğunu tahmin
-etmez; yalnızca doğrulanmış laboratuvar odalarını işaretler.
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Laboratuvar dersleri işaretlenmiş EMU ders programı" width="860">
+  <a href="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml"><img src="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-blue.svg" alt="MIT lisansı"></a>
+  <a href="https://asilturkmen.com"><img src="https://img.shields.io/badge/asilturkmen.com-ziyaret%20et-17365d" alt="asilturkmen.com"></a>
 </p>
 
-> **Kimin için:** CMPE ve CMSE kodlu dersleri alan bilgisayar mühendisliği
-> öğrencileri. Doğrulanmış laboratuvar listesi şu an bu bölümün
-> laboratuvarlarını içeriyor. Başka bir bölümdeysen programında işaretlenecek
-> bir oda çıkmayabilir; kendi lab sınıfını pop-up'tan ekleyebilirsin.
+<br>
 
-> **Not:** Bu bağımsız bir öğrenci projesidir.
+<p align="center">
+  <img src="docs/screenshot.png" alt="Lab dersleri kırmızı, kullanıcının eklediği sınıflar turuncu işaretlenmiş EMU ders programı" width="880">
+</p>
 
-## Neleri işaretler
+<br>
 
-| | Lab sınıfı | Özel lab |
-| --- | --- | --- |
-| Kaynak | Eklentiyle gelen doğrulanmış liste | Kendi eklediğin sınıflar |
-| Etiket | `LAB SINIFI` | `ÖZEL LAB` |
-| Renk | Kırmızı | Turuncu |
+Portaldaki ders programı her dersi aynı maviyle gösteriyor. CMSE423/CMPE230 lab mı,
+CMSE456/CMPE128 düz sınıf mı? Bunu anlamak için oda kodlarını ezbere bilmen lazım.
+Ben de ezberlemek yerine bunu yazdım.
 
-Bir saatte laboratuvar dersi varsa o hücrenin tamamı işaretlenir, böylece o saat
-aralığında lab olup olmadığı tek bakışta görünür. Ders programının altına da, o
-programda gerçekten bulunan işaret türlerini anlatan bir açıklama satırı eklenir.
+LabMark, lab olan saatleri kırmızı bir çerçeve ve küçük bir `LAB SINIFI` etiketiyle
+işaretliyor. Geri kalan hiçbir şeye dokunmuyor. Hangi dersin lab olduğunu tahmin de
+etmiyor; sadece gerçekten lab olduğu bilinen odaları işaretliyor.
 
 ## Kurulum
 
-**Chrome Web Store** — yayına girdiğinde buraya mağaza bağlantısı eklenecek.
+Chrome Web Store'a çıkınca bağlantısı buraya gelecek. O zamana kadar elle kurabilirsin:
 
-**Zip ile** — [Releases](https://github.com/Asilturkmen/Emu-Labmarker/releases)
-sayfasından son sürümün zip dosyasını indir ve klasöre çıkar. Chrome'da
-`chrome://extensions` adresini aç, sağ üstten **Geliştirici modu**'nu etkinleştir,
-**Paketlenmemiş öğe yükle**'ye bas ve çıkardığın klasörü seç.
+1. [Releases](https://github.com/Asilturkmen/Emu-Labmarker/releases) sayfasından son zip'i indir, bir klasöre çıkar.
+2. `chrome://extensions` adresini aç, sağ üstten **Geliştirici modu**'nu aç.
+3. **Paketlenmemiş öğe yükle**'ye bas, çıkardığın klasörü seç.
 
-Kurulumdan sonra ders programı sayfasını yenile.
+Sonra ders programı sayfasını bir kez yenile, o kadar.
 
 ## Kullanım
 
-**Aç / kapa** — Eklenti simgesine tıkla ve anahtarı kullan. Kapattığında
-işaretler anında kalkar, ders programı olduğu gibi kalır.
+<img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: aç/kapa anahtarı ve özel lab listesi">
 
-**Kendi lab sınıfını ekleme** — Bir hoca normalde lab olmayan bir sınıfı o dönem
-lab olarak kullanıyorsa, oda kodunu popup'taki listeye ekle. `CMPE025` gibi bir
-oda kodu da, ders programından kopyaladığın `CMSE423/CMPE025` gibi bir giriş de
-kabul edilir. Bu sınıflar turuncu renkte ve `ÖZEL LAB` etiketiyle görünür,
-doğrulanmış laboratuvarlarla karışmaz. Listeden çıkarmak için çipteki × işaretine
-bas.
+Kurulduğu an çalışır, ayar yapmadan da işini görür. Araç çubuğundaki simgesi ders
+programı sayfasındayken renkli, başka yerde gri olur. Tıklayınca açılan pencerede
+iki şey var:
 
-Her değişiklik açık sekmelere anında yansır; sayfayı yenilemek gerekmez.
+**Aç / kapa.** Anahtarı kapattığında işaretler anında kalkar, ders programı olduğu
+gibi kalır. Sayfayı yenilemeye gerek yok.
+
+**Kendi lab sınıfını ekleme.** Bazen hoca normalde lab olmayan bir sınıfı o dönem lab
+olarak kullanıyor. Oda kodunu yaz, Ekle'ye bas. `CMPE025` de olur, ders programından
+kopyaladığın `CMSE423/CMPE025` de olur. Bu sınıflar turuncu renkte ve `ÖZEL LAB`
+etiketiyle görünür, kesin lablarla karışmaz. Çipin yanındaki × ile listeden çıkarırsın.
+
+<br clear="all">
+
+## Hangi odalar lab sayılıyor
+
+Şu an listede bilgisayar mühendisliğinin (CMPE) labları var: CMPE134, 135, 136, 137,
+227, 228, 230, 231, 235, 236, 238 ve 239. Hepsi doğrulanmış; tahminle eklenen yok.
+
+Başka bölümdeysen programında kırmızı bir şey çıkmayabilir. Kendi labını yukarıdaki
+gibi ekleyebilirsin, ya da [bir issue açıp](https://github.com/Asilturkmen/Emu-Labmarker/issues/new) oda kodunu yazman yeter.
 
 ## Gizlilik
 
-Eklenti yalnızca ders programı sayfasını okur. Hiçbir veri toplanmaz ve hiçbir
-yere gönderilmez. İstenen tek izin `storage`; o da aç/kapa tercihini ve kendi
-eklediğin sınıfların listesini yalnızca senin tarayıcında saklamak için
-kullanılır.
+Eklenti sadece `student.emu.edu.tr` üzerinde çalışır, orada da yalnızca ders programı
+sayfasına bakar. Hiçbir veri toplamaz, hiçbir yere göndermez. İstediği tek izin
+`storage`; o da aç/kapa tercihini ve eklediğin sınıfları kendi tarayıcında saklamak için.
 
-## Eksik bir laboratuvar mı var
+## Merhaba
 
-Doğrulanmış odalar `src/data/labRooms.ts` dosyasındaki listede durur ve listeye
-yalnızca gerçekten laboratuvar olduğu doğrulanmış odalar girer.
+Ben Asil. Bu eklenti bağımsız bir öğrenci projesi; üniversitenin resmî bir ürünü değil,
+kendi ihtiyacımdan çıktı. Başka neler yaptığımı görmek ya da bir şey söylemek istersen:
+**[asilturkmen.com](https://asilturkmen.com)**
 
-Eksik bir odayı pop-up'tan özel lab olarak ekleyebilirsin, ya da
-[bir issue aç](https://github.com/Asilturkmen/Emu-Labmarker/issues/new) —
-oda kodunu yazman yeterli.
+İşine yaradıysa bir kahve ısmarlayabilirsin:
 
-## Destek
-
-Eklenti ücretsiz ve açık kaynak. İşine yaradıysa bir kahve ısmarlayabilirsin:
-
-<a href="https://buymeacoffee.com/turkmenasil">
-  <img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-turkmenasil-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee">
-</a>
-
-## Geliştirici
-
-EMU LabMark'ı **[Asil Türkmen](https://asilturkmen.com)** geliştirdi ve
-sürdürüyor. Diğer projeler ve iletişim için:
-[asilturkmen.com](https://asilturkmen.com)
+<a href="https://buymeacoffee.com/turkmenasil"><img src="https://img.shields.io/badge/Buy%20Me%20a%20Coffee-turkmenasil-FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy Me a Coffee"></a>
 
 ## Lisans
 
-MIT — ayrıntılar için [LICENSE](LICENSE). Telif © 2026 Asil Türkmen.
+MIT. Ayrıntı [LICENSE](LICENSE) dosyasında.
 
----
+<br>
 
 <p align="center">
-  <a href="https://asilturkmen.com">asilturkmen.com</a> ·
-  <a href="https://github.com/Asilturkmen/Emu-Labmarker">GitHub</a>
+  <sub>© 2026 <a href="https://asilturkmen.com">Asil Türkmen</a></sub>
 </p>
