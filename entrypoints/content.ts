@@ -20,13 +20,17 @@ import {
 // collapses a burst of mutations into a single rescan.
 const RESCAN_DELAY_MS = 100;
 
+// A match pattern compares the path case sensitively, so every spelling the
+// portal uses would need its own entry. Matching the site and checking the
+// path here covers them all, including spellings a future release invents.
+const TIMETABLE_PATH = /^\/academic\/timetable/i;
+
 export default defineContentScript({
-  matches: [
-    "https://student.emu.edu.tr/Academic/TimeTable*",
-    "https://student.emu.edu.tr/academic/timetable*",
-  ],
+  matches: ["https://student.emu.edu.tr/*"],
   runAt: "document_idle",
   async main() {
+    if (!TIMETABLE_PATH.test(location.pathname)) return;
+
     let rescan: ReturnType<typeof setTimeout> | null = null;
     let enabled = await getLabMarkEnabled();
     let customRooms: ReadonlySet<string> = new Set(await getCustomLabRooms());
