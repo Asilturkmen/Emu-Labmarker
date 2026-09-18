@@ -5,12 +5,21 @@ import { matchCourseRoom, normalizeRoom } from "./courseRoom";
  * Values are normalized before lookup, so spacing and letter case do not matter.
  */
 export const VERIFIED_LAB_ROOMS: ReadonlySet<string> = new Set([
- "CMPE134",
- "CMPE135",
- "CMPE136",
- "CMPE137",
- "CMPE230",
 
+  //1. kat
+  "CMPE134",
+  "CMPE135",
+  "CMPE136",
+  "CMPE137",
+  //2. kat
+  "CMPE227",
+  "CMPE228",
+  "CMPE230",
+  "CMPE231",
+  "CMPE235",
+  "CMPE236",
+  "CMPE238",
+  "CMPE239",
 ]);
 
 // The text fallback checks every text node on the page, so normalizing the
