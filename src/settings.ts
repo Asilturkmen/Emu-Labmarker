@@ -6,16 +6,16 @@ import {
 } from "./data/labRooms";
 import { normalizeRoom } from "./data/courseRoom";
 
-export const LABMARK_ENABLED_KEY = "emuLabmarkEnabled";
-export const CUSTOM_ROOMS_KEY = "emuLabmarkCustomRooms";
+export const LABMARKER_ENABLED_KEY = "emuLabmarkerEnabled";
+export const CUSTOM_ROOMS_KEY = "emuLabmarkerCustomRooms";
 
-export async function getLabMarkEnabled(): Promise<boolean> {
-  const stored = await browser.storage.local.get(LABMARK_ENABLED_KEY);
-  return stored[LABMARK_ENABLED_KEY] !== false;
+export async function getLabMarkerEnabled(): Promise<boolean> {
+  const stored = await browser.storage.local.get(LABMARKER_ENABLED_KEY);
+  return stored[LABMARKER_ENABLED_KEY] !== false;
 }
 
-export async function setLabMarkEnabled(enabled: boolean): Promise<void> {
-  await browser.storage.local.set({ [LABMARK_ENABLED_KEY]: enabled });
+export async function setLabMarkerEnabled(enabled: boolean): Promise<void> {
+  await browser.storage.local.set({ [LABMARKER_ENABLED_KEY]: enabled });
 }
 
 /**

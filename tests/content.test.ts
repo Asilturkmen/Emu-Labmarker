@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { portalTimetable } from "./fixtures/portalTimetable";
-import { CUSTOM_ROOMS_KEY, LABMARK_ENABLED_KEY } from "../src/settings";
+import { CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY } from "../src/settings";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
 // The script collapses a burst of mutations into one rescan after 100ms.
@@ -87,8 +87,8 @@ function notifyStorage(
 
 function marks(kind?: string): HTMLElement[] {
   const selector = kind
-    ? `[data-emu-labmark="${kind}"]`
-    : "[data-emu-labmark]";
+    ? `[data-emu-labmarker="${kind}"]`
+    : "[data-emu-labmarker]";
   return [...document.querySelectorAll<HTMLElement>(selector)];
 }
 
@@ -144,7 +144,7 @@ describe("content script", () => {
   });
 
   it("leaves the timetable alone while the extension is switched off", async () => {
-    stubEnvironment({ [LABMARK_ENABLED_KEY]: false });
+    stubEnvironment({ [LABMARKER_ENABLED_KEY]: false });
     const before = document.body.innerHTML;
 
     await startContentScript("/Academic/Timetable");
@@ -168,7 +168,7 @@ describe("content script", () => {
     await startContentScript("/Academic/Timetable");
     expect(marks().length).toBeGreaterThan(0);
 
-    notifyStorage({ [LABMARK_ENABLED_KEY]: { newValue: false } });
+    notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: false } });
     await settle();
 
     expect(marks()).toHaveLength(0);
@@ -189,7 +189,7 @@ describe("content script", () => {
     await startContentScript("/Academic/Timetable");
     const before = document.body.innerHTML;
 
-    notifyStorage({ [LABMARK_ENABLED_KEY]: { newValue: false } }, "sync");
+    notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: false } }, "sync");
     notifyStorage({ someoneElsesKey: { newValue: "x" } });
     await settle();
 
@@ -207,7 +207,7 @@ describe("content script", () => {
     await settle();
 
     expect(marks()).toHaveLength(marked);
-    expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+    expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
   });
 
   // Regression guard: the scan reconnects the observer in a finally block, so

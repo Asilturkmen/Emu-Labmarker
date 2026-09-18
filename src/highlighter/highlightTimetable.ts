@@ -2,10 +2,10 @@ import type { ResolvedMeeting, RoomClassification } from "../types/timetable";
 import { isVerifiedLabRoom, NO_ROOMS, VERIFIED_LAB_ROOMS } from "../data/labRooms";
 import { matchCourseRoom } from "../data/courseRoom";
 
-const MARKER_ATTRIBUTE = "data-emu-labmark";
-const BADGE_CLASS = "emu-labmark-badge";
-const FALLBACK_ATTRIBUTE = "data-emu-labmark-text-match";
-const INK_ATTRIBUTE = "data-emu-labmark-ink";
+const MARKER_ATTRIBUTE = "data-emu-labmarker";
+const BADGE_CLASS = "emu-labmarker-badge";
+const FALLBACK_ATTRIBUTE = "data-emu-labmarker-text-match";
+const INK_ATTRIBUTE = "data-emu-labmarker-ink";
 
 type LabClassification = Exclude<RoomClassification, "normal">;
 
@@ -104,20 +104,20 @@ function getHighlightTarget(element: HTMLElement): HTMLElement | null {
 
 export function clearTimetableHighlights(root: ParentNode = document): void {
   root.querySelectorAll<HTMLElement>(`[${MARKER_ATTRIBUTE}]`).forEach(clearMark);
-  root.querySelectorAll(".emu-labmark-legend").forEach((legend) => legend.remove());
+  root.querySelectorAll(".emu-labmarker-legend").forEach((legend) => legend.remove());
 }
 
 function createLegendItem(classification: LabClassification): HTMLElement {
   const item = document.createElement("span");
-  item.className = "emu-labmark-legend-item";
+  item.className = "emu-labmarker-legend-item";
 
   const swatch = document.createElement("span");
-  swatch.className = "emu-labmark-swatch";
+  swatch.className = "emu-labmarker-swatch";
   swatch.dataset.kind = classification;
   swatch.setAttribute("aria-hidden", "true");
 
   const badge = document.createElement("span");
-  badge.className = "emu-labmark-legend-badge";
+  badge.className = "emu-labmarker-legend-badge";
   badge.dataset.kind = classification;
   badge.textContent = BADGES[classification].text;
 
@@ -130,7 +130,7 @@ function createLegendItem(classification: LabClassification): HTMLElement {
 }
 
 function updateLegends(root: ParentNode = document): void {
-  root.querySelectorAll(".emu-labmark-legend").forEach((legend) => legend.remove());
+  root.querySelectorAll(".emu-labmarker-legend").forEach((legend) => legend.remove());
   for (const table of root.querySelectorAll(".schedule-panel, table")) {
     if (table.matches("table") && (table.closest(".schedule-panel") || table.querySelector(".schedule-panel"))) continue;
     // Only the kinds actually present are explained, so a timetable without a
@@ -141,7 +141,7 @@ function updateLegends(root: ParentNode = document): void {
     if (!kinds.length) continue;
 
     const legend = document.createElement("div");
-    legend.className = "emu-labmark-legend";
+    legend.className = "emu-labmarker-legend";
     legend.append(...kinds.map(createLegendItem));
     table.after(legend);
   }
@@ -240,7 +240,7 @@ export function highlightLabRoomText(
     if (!room || !parent) continue;
     const classification = classifyRoom(room, verifiedRooms, customRooms);
     if (classification === "normal") continue;
-    if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmark-badge, .emu-labmark-legend")) continue;
+    if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmarker-badge, .emu-labmarker-legend")) continue;
 
     const target =
       parent.closest<HTMLElement>("a, button, [role='button']") ?? parent;

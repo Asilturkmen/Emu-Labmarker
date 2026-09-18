@@ -136,7 +136,7 @@ describe("popup custom room list", () => {
     toggle.checked = false;
     toggle.dispatchEvent(new Event("change"));
 
-    await vi.waitFor(() => expect(storage.emuLabmarkEnabled).toBe(false));
+    await vi.waitFor(() => expect(storage.emuLabmarkerEnabled).toBe(false));
     expect(document.querySelector("#status-text")?.textContent).toBe("Kapalı");
   });
 });

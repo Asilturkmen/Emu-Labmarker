@@ -1,10 +1,10 @@
 import type { AddRoomStatus } from "../../src/data/labRooms";
 import {
   addCustomLabRoom,
-  getLabMarkEnabled,
+  getLabMarkerEnabled,
   getCustomLabRooms,
   removeCustomLabRoom,
-  setLabMarkEnabled,
+  setLabMarkerEnabled,
 } from "../../src/settings";
 
 function requireElement<T extends Element>(selector: string): T {
@@ -71,7 +71,7 @@ const ADD_MESSAGES: Record<AddRoomStatus, (room: string) => string> = {
 
 async function initialize(): Promise<void> {
   try {
-    render(await getLabMarkEnabled());
+    render(await getLabMarkerEnabled());
     toggle.disabled = false;
     renderRooms(await getCustomLabRooms());
   } catch {
@@ -87,7 +87,7 @@ toggle.addEventListener("change", async () => {
   const enabled = toggle.checked;
   render(enabled);
   try {
-    await setLabMarkEnabled(enabled);
+    await setLabMarkerEnabled(enabled);
   } catch {
     // The switch must not claim a state that was never written to storage.
     render(!enabled);

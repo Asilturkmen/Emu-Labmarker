@@ -11,8 +11,8 @@ import { resolveMeetings } from "../src/resolver/resolveMeetings";
 import {
   CUSTOM_ROOMS_KEY,
   getCustomLabRooms,
-  getLabMarkEnabled,
-  LABMARK_ENABLED_KEY,
+  getLabMarkerEnabled,
+  LABMARKER_ENABLED_KEY,
   parseCustomLabRooms,
 } from "../src/settings";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
@@ -38,7 +38,7 @@ export default defineContentScript({
     void browser.runtime.sendMessage(TIMETABLE_ACTIVE_MESSAGE).catch(() => {});
 
     let rescan: ReturnType<typeof setTimeout> | null = null;
-    let enabled = await getLabMarkEnabled();
+    let enabled = await getLabMarkerEnabled();
     let customRooms: ReadonlySet<string> = new Set(await getCustomLabRooms());
 
     const observer = new MutationObserver(() => scheduleRun());
@@ -74,7 +74,7 @@ export default defineContentScript({
     browser.storage.onChanged.addListener((changes, areaName) => {
       if (areaName !== "local") return;
 
-      const enabledChange = changes[LABMARK_ENABLED_KEY];
+      const enabledChange = changes[LABMARKER_ENABLED_KEY];
       const roomsChange = changes[CUSTOM_ROOMS_KEY];
       if (!enabledChange && !roomsChange) return;
 

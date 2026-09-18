@@ -37,31 +37,31 @@ describe("supplied UL/LI portal timetable", () => {
     scan();
     for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
       const container = document.querySelector(selector)!;
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark]:not([data-emu-labmark="verified"])')).toHaveLength(0);
-      expect(container.querySelectorAll('li.ctime:not([data-emu-labmark])')).toHaveLength(21);
-      expect(container.hasAttribute("data-emu-labmark")).toBe(false);
-      for (const cell of container.querySelectorAll("[data-emu-labmark]")) {
-        expect(cell.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
-        expect(cell.getAttribute("data-emu-labmark")).toBe("verified");
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker="verified"]')).toHaveLength(4);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker]:not([data-emu-labmarker="verified"])')).toHaveLength(0);
+      expect(container.querySelectorAll('li.ctime:not([data-emu-labmarker])')).toHaveLength(21);
+      expect(container.hasAttribute("data-emu-labmarker")).toBe(false);
+      for (const cell of container.querySelectorAll("[data-emu-labmarker]")) {
+        expect(cell.querySelectorAll(".emu-labmarker-badge")).toHaveLength(1);
+        expect(cell.getAttribute("data-emu-labmarker")).toBe("verified");
       }
     }
-    expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
-    expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
-    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);
-    expect(document.querySelector(".schedule-panel")?.nextElementSibling?.className).toBe("emu-labmark-legend");
+    expect(document.querySelectorAll("a[data-emu-labmarker], ul[data-emu-labmarker], div[data-emu-labmarker]")).toHaveLength(0);
+    expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
+    expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(1);
+    expect(document.querySelector(".schedule-panel")?.nextElementSibling?.className).toBe("emu-labmarker-legend");
   });
 
   it("preserves links, removes old per-link badges and remains stable on rescans", () => {
     const originalLinks = [...document.querySelectorAll("a")].map((a) => [a.textContent, a.href, a.target]);
     const oldLink = [...document.querySelectorAll("a")].find((a) => a.textContent?.includes("CMPE230"))!;
-    oldLink.setAttribute("data-emu-labmark", "verified");
-    oldLink.setAttribute("data-emu-labmark-text-match", "");
-    oldLink.insertAdjacentHTML("beforeend", '<span class="emu-labmark-badge">LAB</span>');
+    oldLink.setAttribute("data-emu-labmarker", "verified");
+    oldLink.setAttribute("data-emu-labmarker-text-match", "");
+    oldLink.insertAdjacentHTML("beforeend", '<span class="emu-labmarker-badge">LAB</span>');
     for (let i = 0; i < 3; i++) {
       expect(scan().rows).toHaveLength(54);
-      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(8);
-      expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+      expect(document.querySelectorAll(".emu-labmarker-badge")).toHaveLength(8);
+      expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
       expect([...document.querySelectorAll("a")].map((a) => [a.textContent, a.href, a.target])).toEqual(originalLinks);
     }
   });
@@ -69,7 +69,7 @@ describe("supplied UL/LI portal timetable", () => {
   it("does not parse or highlight a matching course elsewhere on the page", () => {
     document.body.insertAdjacentHTML("afterbegin", '<aside><a data-day="Monday" data-start="08:30" data-end="09:20">CMSE423/CMPE230</a></aside>');
     expect(scan().rows).toHaveLength(54);
-    expect(document.querySelector("aside [data-emu-labmark]")).toBeNull();
+    expect(document.querySelector("aside [data-emu-labmarker]")).toBeNull();
   });
 
   // The content script runs the text fallback after the parser, so the two
@@ -81,12 +81,12 @@ describe("supplied UL/LI portal timetable", () => {
 
       for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
         const container = document.querySelector(selector)!;
-        expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
-        expect(container.querySelectorAll("li.ctime:not([data-emu-labmark])")).toHaveLength(21);
+        expect(container.querySelectorAll('li.ctime[data-emu-labmarker="verified"]')).toHaveLength(4);
+        expect(container.querySelectorAll("li.ctime:not([data-emu-labmarker])")).toHaveLength(21);
       }
-      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(8);
-      expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
-      expect(document.querySelectorAll("a[data-emu-labmark], ul[data-emu-labmark], div[data-emu-labmark]")).toHaveLength(0);
+      expect(document.querySelectorAll(".emu-labmarker-badge")).toHaveLength(8);
+      expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
+      expect(document.querySelectorAll("a[data-emu-labmarker], ul[data-emu-labmarker], div[data-emu-labmarker]")).toHaveLength(0);
     }
   });
 
@@ -101,10 +101,10 @@ describe("supplied UL/LI portal timetable", () => {
 
     for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
       const container = document.querySelector(selector)!;
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark="verified"]')).toHaveLength(4);
-      expect(container.querySelectorAll('li.ctime[data-emu-labmark="custom"]')).toHaveLength(4);
-      expect(container.querySelectorAll("li.ctime:not([data-emu-labmark])")).toHaveLength(17);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker="verified"]')).toHaveLength(4);
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker="custom"]')).toHaveLength(4);
+      expect(container.querySelectorAll("li.ctime:not([data-emu-labmarker])")).toHaveLength(17);
     }
-    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(2);
+    expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(2);
   });
 });

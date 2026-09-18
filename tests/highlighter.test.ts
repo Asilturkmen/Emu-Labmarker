@@ -55,9 +55,9 @@ describe("highlightTimetable", () => {
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
-    expect(link?.dataset.emuLabmark).toBe("verified");
-    expect(link?.querySelector(".emu-labmark-badge")?.textContent).toBe("LAB SINIFI");
-    expect(link?.querySelector(".emu-labmark-badge")?.getAttribute("aria-label")).toBe("LAB SINIFI");
+    expect(link?.dataset.emuLabmarker).toBe("verified");
+    expect(link?.querySelector(".emu-labmarker-badge")?.textContent).toBe("LAB SINIFI");
+    expect(link?.querySelector(".emu-labmarker-badge")?.getAttribute("aria-label")).toBe("LAB SINIFI");
   });
 
   it("leaves normal links unmarked and removes stale marks", () => {
@@ -68,8 +68,8 @@ describe("highlightTimetable", () => {
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
-    expect(link?.hasAttribute("data-emu-labmark")).toBe(false);
-    expect(link?.querySelector(".emu-labmark-badge")).toBeNull();
+    expect(link?.hasAttribute("data-emu-labmarker")).toBe(false);
+    expect(link?.querySelector(".emu-labmarker-badge")).toBeNull();
   });
 
   it("is idempotent", () => {
@@ -78,7 +78,7 @@ describe("highlightTimetable", () => {
     highlightTimetable([meeting]);
     highlightTimetable([meeting]);
 
-    expect(meeting.block.rows[0]?.link.querySelectorAll(".emu-labmark-badge")).toHaveLength(
+    expect(meeting.block.rows[0]?.link.querySelectorAll(".emu-labmarker-badge")).toHaveLength(
       1,
     );
   });
@@ -91,7 +91,7 @@ describe("highlightTimetable", () => {
     highlightLabRoomText(document, LAB_ROOMS);
 
     const course = document.querySelector<HTMLElement>(".portal-course");
-    expect(course?.dataset.emuLabmark).toBe("verified");
+    expect(course?.dataset.emuLabmarker).toBe("verified");
     expect(course?.textContent).toContain("LAB SINIFI");
   });
 
@@ -109,16 +109,16 @@ describe("highlightTimetable", () => {
       expect(rows.map((row) => row.room)).toEqual(["CMPE230", "CMPE134"]);
       highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS));
       highlightLabRoomText(document, LAB_ROOMS);
-      expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
-      expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
-      expect(document.querySelectorAll(".emu-labmark-badge")).toHaveLength(1);
-      expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
+      expect(document.querySelectorAll("[data-emu-labmarker]")).toHaveLength(1);
+      expect(document.querySelector("#shared")?.getAttribute("data-emu-labmarker")).toBe("verified");
+      expect(document.querySelectorAll(".emu-labmarker-badge")).toHaveLength(1);
+      expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
     }
     document.querySelectorAll("#shared a").forEach((link) => { link.textContent = "CMSE423/CMPE025"; });
     clearTimetableHighlights();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS));
     highlightLabRoomText(document, LAB_ROOMS);
-    expect(document.querySelectorAll("[data-emu-labmark], .emu-labmark-legend")).toHaveLength(0);
+    expect(document.querySelectorAll("[data-emu-labmarker], .emu-labmarker-legend")).toHaveLength(0);
   });
 
   it("does not guess that an exceptional room is a laboratory", () => {
@@ -139,7 +139,7 @@ describe("highlightTimetable", () => {
     highlightTimetable(resolveMeetings(blocks, new Set()));
 
     expect(blocks).toHaveLength(3);
-    expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(0);
+    expect(document.querySelectorAll("[data-emu-labmarker]")).toHaveLength(0);
   });
 
   it("does not promote a course to an outer layout cell containing the timetable", () => {
@@ -152,8 +152,8 @@ describe("highlightTimetable", () => {
       </td></tr></table>
     `;
     highlightLabRoomText(document, LAB_ROOMS);
-    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
-    expect(document.querySelectorAll("#layout[data-emu-labmark], #schedule[data-emu-labmark], #normal[data-emu-labmark]")).toHaveLength(0);
+    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmarker")).toBe("verified");
+    expect(document.querySelectorAll("#layout[data-emu-labmarker], #schedule[data-emu-labmarker], #normal[data-emu-labmarker]")).toHaveLength(0);
   });
 
   it("keeps plain course links local when their nearest td wraps several blocks", () => {
@@ -167,9 +167,9 @@ describe("highlightTimetable", () => {
     meeting.block.rows[0]!.link = document.querySelector<HTMLAnchorElement>("#lab")!;
     highlightTimetable([meeting]);
     highlightLabRoomText(document, LAB_ROOMS);
-    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmark")).toBe("verified");
-    expect(document.querySelector("#layout")?.hasAttribute("data-emu-labmark")).toBe(false);
-    expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmark")).toBe(false);
+    expect(document.querySelector("#lab")?.getAttribute("data-emu-labmarker")).toBe("verified");
+    expect(document.querySelector("#layout")?.hasAttribute("data-emu-labmarker")).toBe(false);
+    expect(document.querySelector("#normal")?.hasAttribute("data-emu-labmarker")).toBe(false);
   });
 
   it("renders the custom label for a room the user added", () => {
@@ -178,8 +178,8 @@ describe("highlightTimetable", () => {
     highlightTimetable([meeting]);
 
     const link = meeting.block.rows[0]?.link;
-    const badge = link?.querySelector(".emu-labmark-badge");
-    expect(link?.dataset.emuLabmark).toBe("custom");
+    const badge = link?.querySelector(".emu-labmarker-badge");
+    expect(link?.dataset.emuLabmarker).toBe("custom");
     expect(badge?.textContent).toBe("ÖZEL LAB");
     expect(badge?.getAttribute("aria-label")).toBe(
       "ÖZEL LAB (senin eklediğin sınıf)",
@@ -194,7 +194,7 @@ describe("highlightTimetable", () => {
     highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
 
     const course = document.querySelector<HTMLElement>(".portal-course");
-    expect(course?.dataset.emuLabmark).toBe("custom");
+    expect(course?.dataset.emuLabmarker).toBe("custom");
     expect(course?.textContent).toContain("ÖZEL LAB");
   });
 
@@ -213,8 +213,8 @@ describe("highlightTimetable", () => {
     );
     highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
 
-    expect(document.querySelectorAll("[data-emu-labmark]")).toHaveLength(1);
-    expect(document.querySelector("#shared")?.getAttribute("data-emu-labmark")).toBe("verified");
+    expect(document.querySelectorAll("[data-emu-labmarker]")).toHaveLength(1);
+    expect(document.querySelector("#shared")?.getAttribute("data-emu-labmarker")).toBe("verified");
   });
 
   it("explains only the kinds that the timetable actually contains", () => {
@@ -230,16 +230,16 @@ describe("highlightTimetable", () => {
 
     highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_ROOMS));
 
-    const items = document.querySelectorAll(".emu-labmark-legend-item");
-    expect(document.querySelectorAll(".emu-labmark-legend")).toHaveLength(1);
-    expect([...items].map((item) => item.querySelector(".emu-labmark-legend-badge")?.textContent))
+    const items = document.querySelectorAll(".emu-labmarker-legend-item");
+    expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
+    expect([...items].map((item) => item.querySelector(".emu-labmarker-legend-badge")?.textContent))
       .toEqual(["LAB SINIFI", "ÖZEL LAB"]);
 
     // With no custom room left, its legend row goes away too.
     clearTimetableHighlights();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, new Set()));
-    expect(document.querySelectorAll(".emu-labmark-legend-item")).toHaveLength(1);
-    expect(document.querySelector(".emu-labmark-legend-badge")?.textContent).toBe("LAB SINIFI");
+    expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(1);
+    expect(document.querySelector(".emu-labmarker-legend-badge")?.textContent).toBe("LAB SINIFI");
   });
   it("writes the readable text colour onto the cell and restores it on clear", () => {
     document.body.innerHTML = `
@@ -252,13 +252,13 @@ describe("highlightTimetable", () => {
 
     const cell = document.querySelector<HTMLElement>("li.ctime")!;
     const link = document.querySelector<HTMLElement>("a")!;
-    expect(cell.dataset.emuLabmark).toBe("verified");
+    expect(cell.dataset.emuLabmarker).toBe("verified");
     // Inline !important is what beats the portal's own white-text rule.
     for (const node of [cell, document.querySelector<HTMLElement>("strong")!, link]) {
       expect(node.style.getPropertyValue("color")).toBe("rgb(23, 54, 93)");
       expect(node.style.getPropertyPriority("color")).toBe("important");
     }
-    const badge = cell.querySelector<HTMLElement>(".emu-labmark-badge")!;
+    const badge = cell.querySelector<HTMLElement>(".emu-labmarker-badge")!;
     expect(badge.style.getPropertyValue("color")).toBe("");
 
     clearTimetableHighlights();
@@ -267,7 +267,7 @@ describe("highlightTimetable", () => {
     expect(link.style.getPropertyValue("color")).toBe("rgb(255, 255, 255)");
     expect(link.style.getPropertyPriority("color")).toBe("");
     expect(cell.style.getPropertyValue("color")).toBe("");
-    expect(document.querySelectorAll("[data-emu-labmark-ink]")).toHaveLength(0);
+    expect(document.querySelectorAll("[data-emu-labmarker-ink]")).toHaveLength(0);
   });
 
   it("forces the readable text colour for a room the user added too", () => {

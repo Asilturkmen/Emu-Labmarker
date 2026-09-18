@@ -1,4 +1,4 @@
-[data-emu-labmark] {
+[data-emu-labmarker] {
   position: relative !important;
   background: #ffd3d7 !important;
   color: #17365d !important;
@@ -7,7 +7,7 @@
   text-align: left !important;
 }
 
-td[data-emu-labmark] {
+td[data-emu-labmarker] {
   padding-inline: 16px !important;
   vertical-align: middle !important;
 }
@@ -15,31 +15,31 @@ td[data-emu-labmark] {
 /* The portal's real cells are LI elements; its SPAN is the content wrapper.
    Stacking the cell puts the badge under the courses rather than beside
    them, whatever layout the portal gives the cell itself. */
-li.ctime[data-emu-labmark] {
+li.ctime[data-emu-labmarker] {
   box-sizing: border-box !important;
   display: flex !important;
   flex-direction: column !important;
   justify-content: center !important;
 }
 
-li.ctime[data-emu-labmark] > .emu-labmark-badge {
+li.ctime[data-emu-labmarker] > .emu-labmarker-badge {
   margin-right: 16px !important;
 }
 
-li.ctime[data-emu-labmark] > span {
+li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
   padding-inline: 16px !important;
   text-align: left !important;
 }
 
-[data-emu-labmark] :is(a, button, span, strong, b, p, div):not(.emu-labmark-badge) {
+[data-emu-labmarker] :is(a, button, span, strong, b, p, div):not(.emu-labmarker-badge) {
   background: transparent !important;
   color: #17365d !important;
   text-align: left !important;
 }
 
-.emu-labmark-badge,
-.emu-labmark-legend-badge {
+.emu-labmarker-badge,
+.emu-labmarker-legend-badge {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -61,7 +61,7 @@ li.ctime[data-emu-labmark] > span {
 /* The badge stays in the cell's flow, below the course entries. Floating it
    over the corner used to cover the room code whenever a cell held two
    courses, because the room is the rightmost part of each entry. */
-.emu-labmark-badge {
+.emu-labmarker-badge {
   position: static !important;
   display: flex !important;
   align-self: flex-end !important;
@@ -75,7 +75,7 @@ li.ctime[data-emu-labmark] > span {
   cursor: help;
 }
 
-.emu-labmark-legend {
+.emu-labmarker-legend {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -88,13 +88,13 @@ li.ctime[data-emu-labmark] > span {
   column-gap: 22px;
 }
 
-.emu-labmark-legend-item {
+.emu-labmarker-legend-item {
   display: inline-flex;
   align-items: center;
   gap: 8px;
 }
 
-.emu-labmark-swatch {
+.emu-labmarker-swatch {
   display: inline-block;
   width: 36px;
   height: 25px;
@@ -107,23 +107,23 @@ li.ctime[data-emu-labmark] > span {
 
 /* Rooms the user added themselves are not confirmed laboratories, so they get
    their own colour. These selectors carry the same specificity as the shared
-   [data-emu-labmark] rules above and must therefore stay last in the file. */
-[data-emu-labmark="custom"] {
+   [data-emu-labmarker] rules above and must therefore stay last in the file. */
+[data-emu-labmarker="custom"] {
   background: #fef2d6 !important;
   box-shadow: inset 0 0 0 3px #f08c14 !important;
 }
 
-[data-emu-labmark="custom"],
-[data-emu-labmark="custom"] :is(a, button, span, strong, b, p, div):not(.emu-labmark-badge) {
+[data-emu-labmarker="custom"],
+[data-emu-labmarker="custom"] :is(a, button, span, strong, b, p, div):not(.emu-labmarker-badge) {
   color: #17365d !important;
 }
 
-[data-emu-labmark="custom"] > .emu-labmark-badge,
-.emu-labmark-legend-badge[data-kind="custom"] {
+[data-emu-labmarker="custom"] > .emu-labmarker-badge,
+.emu-labmarker-legend-badge[data-kind="custom"] {
   background: #f08c14 !important;
 }
 
-.emu-labmark-swatch[data-kind="custom"] {
+.emu-labmarker-swatch[data-kind="custom"] {
   border-color: #f08c14;
   background: #fef2d6;
 }

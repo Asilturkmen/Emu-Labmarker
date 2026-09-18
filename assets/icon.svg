@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
-  <title>EMU LabMark calendar</title>
+  <title>EMU LabMarker calendar</title>
   <rect x="12" y="20" width="92" height="92" rx="17" fill="#fff" stroke="#1269e8" stroke-width="9"/>
   <path d="M16 48h84" fill="none" stroke="#1269e8" stroke-width="9"/>
   <path d="M35 12v20M81 12v20" fill="none" stroke="#1269e8" stroke-width="11" stroke-linecap="round"/>

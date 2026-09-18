@@ -57,7 +57,7 @@ function parseCourseRoom(link: HTMLAnchorElement): {
   }
 
   const textCopy = link.cloneNode(true) as HTMLElement;
-  textCopy.querySelectorAll(".emu-labmark-badge").forEach((badge) => badge.remove());
+  textCopy.querySelectorAll(".emu-labmarker-badge").forEach((badge) => badge.remove());
   let href = link.getAttribute("href") ?? "";
   try { href = decodeURIComponent(href); } catch { /* Keep malformed URLs as text. */ }
   const candidates = [

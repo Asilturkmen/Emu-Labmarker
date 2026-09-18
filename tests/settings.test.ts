@@ -2,12 +2,12 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   addCustomLabRoom,
-  getLabMarkEnabled,
+  getLabMarkerEnabled,
   getCustomLabRooms,
-  LABMARK_ENABLED_KEY,
+  LABMARKER_ENABLED_KEY,
   parseCustomLabRooms,
   removeCustomLabRoom,
-  setLabMarkEnabled,
+  setLabMarkerEnabled,
   CUSTOM_ROOMS_KEY,
 } from "../src/settings";
 
@@ -37,27 +37,27 @@ describe("lab mark setting", () => {
   it("is enabled until it has been turned off", async () => {
     stubStorage();
 
-    expect(await getLabMarkEnabled()).toBe(true);
+    expect(await getLabMarkerEnabled()).toBe(true);
   });
 
   it("reads a stored value", async () => {
-    stubStorage({ [LABMARK_ENABLED_KEY]: false });
-    expect(await getLabMarkEnabled()).toBe(false);
+    stubStorage({ [LABMARKER_ENABLED_KEY]: false });
+    expect(await getLabMarkerEnabled()).toBe(false);
 
-    stubStorage({ [LABMARK_ENABLED_KEY]: true });
-    expect(await getLabMarkEnabled()).toBe(true);
+    stubStorage({ [LABMARKER_ENABLED_KEY]: true });
+    expect(await getLabMarkerEnabled()).toBe(true);
   });
 
   it("persists both states", async () => {
     const data = stubStorage();
 
-    await setLabMarkEnabled(false);
-    expect(data[LABMARK_ENABLED_KEY]).toBe(false);
-    expect(await getLabMarkEnabled()).toBe(false);
+    await setLabMarkerEnabled(false);
+    expect(data[LABMARKER_ENABLED_KEY]).toBe(false);
+    expect(await getLabMarkerEnabled()).toBe(false);
 
-    await setLabMarkEnabled(true);
-    expect(data[LABMARK_ENABLED_KEY]).toBe(true);
-    expect(await getLabMarkEnabled()).toBe(true);
+    await setLabMarkerEnabled(true);
+    expect(data[LABMARKER_ENABLED_KEY]).toBe(true);
+    expect(await getLabMarkerEnabled()).toBe(true);
   });
 });
 

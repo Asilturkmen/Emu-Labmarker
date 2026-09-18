@@ -6,7 +6,7 @@
  * The manifest ships the faded set as the default, and the content script only
  * runs on a timetable page, so a tab earns the active icon by reporting in.
  */
-export const TIMETABLE_ACTIVE_MESSAGE = "emu-labmark:timetable-active";
+export const TIMETABLE_ACTIVE_MESSAGE = "emu-labmarker:timetable-active";
 
 export const ACTIVE_ICON_PATHS: Readonly<Record<number, string>> = {
   16: "icons/icon-16.png",

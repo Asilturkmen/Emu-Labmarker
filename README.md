@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="public/icons/icon-128.png" width="88" alt="EMU LabMark simgesi">
+  <img src="public/icons/icon-128.png" width="88" alt="EMU LabMarker simgesi">
 </p>
 
-<h1 align="center">EMU LabMark</h1>
+<h1 align="center">EMU LabMarker</h1>
 
 <p align="center">
   Ders programında hangi ders lab, hangisi değil: bir bakışta.
@@ -30,7 +30,7 @@ Portaldaki ders programı her dersi aynı maviyle gösteriyor. CMSE423/CMPE230 l
 CMSE456/CMPE128 düz sınıf mı? Bunu anlamak için oda kodlarını ezbere bilmen lazım.
 Ben de ezberlemek yerine bunu yazdım.
 
-LabMark, lab olan saatleri kırmızı bir çerçeve ve küçük bir `LAB SINIFI` etiketiyle
+LabMarker, lab olan saatleri kırmızı bir çerçeve ve küçük bir `LAB SINIFI` etiketiyle
 işaretliyor. Geri kalan hiçbir şeye dokunmuyor. Hangi dersin lab olduğunu tahmin de
 etmiyor; sadece gerçekten lab olduğu bilinen odaları işaretliyor.
 

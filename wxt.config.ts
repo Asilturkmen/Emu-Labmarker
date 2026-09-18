@@ -2,7 +2,7 @@ import { defineConfig } from "wxt";
 
 export default defineConfig({
   manifest: {
-    name: "EMU LabMark",
+    name: "EMU LabMarker",
     description:
       "EMU ders programındaki laboratuvar derslerini renkli olarak işaretler.",
     homepage_url: "https://asilturkmen.com",
