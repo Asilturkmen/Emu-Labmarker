@@ -13,22 +13,38 @@ td[data-emu-labmarker] {
 }
 
 /* The portal's real cells are LI elements; its SPAN is the content wrapper.
-   Stacking the cell puts the badge under the courses rather than beside
-   them, whatever layout the portal gives the cell itself. */
+   The cell becomes a grid with one content column between two gutters, and
+   every child is placed in that column, so the badge stacks under the
+   courses rather than beside them, whatever layout the portal gives the
+   cell itself.
+
+   The gutters are what inset the text from the coloured border. They are
+   grid tracks rather than padding on the span because a course code such as
+   CMSE443/CMPE230 has no line-break opportunity, and on a laptop-sized
+   window the portal's cell is barely wider than the code. A fixed 16px
+   padding then pushed the text out through the right edge of the cell.
+   A minmax(0, 16px) track gives its width up before the content overflows,
+   so the inset is 16px where the cell has room and shrinks towards zero
+   where it does not. The content column must stay 1fr (an auto minimum),
+   not minmax(0, 1fr): the auto minimum is what lets the course text claim
+   its width from the gutters first. Should the code be wider than even the
+   bare cell, centring the grid spreads the excess over both edges, which is
+   how the portal's own centred cells behave too. */
 li.ctime[data-emu-labmarker] {
   box-sizing: border-box !important;
-  display: flex !important;
-  flex-direction: column !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 16px) 1fr minmax(0, 16px) !important;
   justify-content: center !important;
+  align-content: center !important;
 }
 
-li.ctime[data-emu-labmarker] > .emu-labmarker-badge {
-  margin-right: 16px !important;
+li.ctime[data-emu-labmarker] > * {
+  grid-column: 2 !important;
 }
 
 li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
-  padding-inline: 16px !important;
+  padding-inline: 0 !important;
   text-align: left !important;
 }
 
@@ -60,7 +76,8 @@ li.ctime[data-emu-labmarker] > span {
 
 /* The badge stays in the cell's flow, below the course entries. Floating it
    over the corner used to cover the room code whenever a cell held two
-   courses, because the room is the rightmost part of each entry. */
+   courses, because the room is the rightmost part of each entry. The auto
+   left margin is what pushes it to the right edge of the content column. */
 .emu-labmarker-badge {
   position: static !important;
   display: flex !important;
