@@ -111,6 +111,17 @@ afterEach(async () => {
 });
 
 describe("content script", () => {
+  // The portal is served from both hosts, and a missing one leaves the script
+  // silently absent from that host.
+  it("runs on both portal hosts", async () => {
+    const definition = (await import("../entrypoints/content")).default;
+
+    expect(definition.matches).toEqual([
+      "https://student.emu.edu.tr/*",
+      "https://students.emu.edu.tr/*",
+    ]);
+  });
+
   // Match patterns compare the path case sensitively, so the script matches the
   // whole site and decides for itself whether it is on the timetable.
   it.each([

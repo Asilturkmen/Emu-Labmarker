@@ -71,9 +71,9 @@ gibi ekleyebilirsin, ya da [bir issue açıp](https://github.com/Asilturkmen/Emu
 
 ## Gizlilik
 
-Eklenti sadece `student.emu.edu.tr` üzerinde çalışır, orada da yalnızca ders programı
-sayfasına bakar. Hiçbir veri toplamaz, hiçbir yere göndermez. İstediği tek izin
-`storage`; o da aç/kapa tercihini ve eklediğin sınıfları kendi tarayıcında saklamak için.
+Eklenti sadece `student.emu.edu.tr` ve `students.emu.edu.tr` üzerinde çalışır,
+orada da yalnızca ders programı sayfasına bakar. Hiçbir veri toplamaz, hiçbir yere
+göndermez. İstediği tek izin `storage`; o da aç/kapa tercihini ve eklediğin sınıfları kendi tarayıcında saklamak için.
 
 ## Merhaba
 

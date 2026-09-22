@@ -10,11 +10,11 @@ sunucusu yoktur ve hiçbir ağ isteği yapmaz.
 
 ## Eklenti ne yapıyor
 
-EMU LabMarker yalnızca `https://student.emu.edu.tr` alan adında, yalnızca ders
-programı sayfasında (`/Academic/Timetable`) çalışır. Bu sayfada zaten ekranda
-görünen ders programı tablosunu okur ve laboratuvar derslerini renkli olarak
-işaretler. Okunan bilgi tarayıcının dışına çıkmaz; sayfa kapandığında geriye
-hiçbir kayıt kalmaz.
+EMU LabMarker yalnızca `https://student.emu.edu.tr` ve `https://students.emu.edu.tr`
+alan adlarında, yalnızca ders programı sayfasında (`/Academic/Timetable`) çalışır.
+Bu sayfada zaten ekranda görünen ders programı tablosunu okur ve laboratuvar
+derslerini renkli olarak işaretler. Okunan bilgi tarayıcının dışına çıkmaz; sayfa
+kapandığında geriye hiçbir kayıt kalmaz.
 
 Adres ders programı sayfası değilse eklenti hiçbir şey yapmadan sonlanır.
 

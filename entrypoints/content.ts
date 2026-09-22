@@ -26,8 +26,9 @@ const RESCAN_DELAY_MS = 100;
 // path here covers them all, including spellings a future release invents.
 const TIMETABLE_PATH = /^\/academic\/timetable/i;
 
+// The portal answers on both hosts, and students reach it through either one.
 export default defineContentScript({
-  matches: ["https://student.emu.edu.tr/*"],
+  matches: ["https://student.emu.edu.tr/*", "https://students.emu.edu.tr/*"],
   runAt: "document_idle",
   async main() {
     if (!TIMETABLE_PATH.test(location.pathname)) return;
