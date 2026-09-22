@@ -46,7 +46,7 @@ En kolay yol Chrome Web Store: **[EMU LabMarker'ı Chrome'a ekle](https://chrome
 kendiliğinden gelir.
 
 <p align="center">
-  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="docs/store/promo-marquee-1400x560.png" alt="EMU LabMarker'ı Chrome Web Store'da aç" width="880"></a>
+  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="docs/store-banner.png" alt="EMU LabMarker'ı Chrome Web Store'da aç" width="880"></a>
 </p>
 
 <p align="center">
