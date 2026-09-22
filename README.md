@@ -13,7 +13,12 @@
 </p>
 
 <p align="center">
+  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="https://img.shields.io/badge/Chrome%20Web%20Store'dan-Y%C3%BCkle-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Web Store'dan yükle" height="40"></a>
+</p>
+
+<p align="center">
   <a href="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml"><img src="https://github.com/Asilturkmen/Emu-Labmarker/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="https://img.shields.io/chrome-web-store/v/nnggdjkckjilebbheccgoicocnjhiffd?label=Chrome%20Web%20Store&logo=googlechrome&logoColor=white" alt="Chrome Web Store sürümü"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/lisans-MIT-blue.svg" alt="MIT lisansı"></a>
   <a href="https://asilturkmen.com"><img src="https://img.shields.io/badge/asilturkmen.com-ziyaret%20et-17365d" alt="asilturkmen.com"></a>
 </p>
@@ -36,13 +41,30 @@ etmiyor; sadece gerçekten lab olduğu bilinen odaları işaretliyor.
 
 ## Kurulum
 
-Chrome Web Store'a çıkınca bağlantısı buraya gelecek. O zamana kadar elle kurabilirsin:
+En kolay yol Chrome Web Store: **[EMU LabMarker'ı Chrome'a ekle](https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb)**,
+**Chrome'a ekle**'ye bas, ders programı sayfasını bir kez yenile. O kadar. Güncellemeler de
+kendiliğinden gelir.
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="docs/store/promo-marquee-1400x560.png" alt="EMU LabMarker'ı Chrome Web Store'da aç" width="880"></a>
+</p>
+
+<p align="center">
+  <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="https://img.shields.io/badge/Chrome%20Web%20Store'dan-Y%C3%BCkle-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white" alt="Chrome Web Store'dan yükle" height="40"></a>
+</p>
+
+<details>
+<summary>Elle kurulum (Web Store kullanamıyorsan)</summary>
+
+<br>
 
 1. [Releases](https://github.com/Asilturkmen/Emu-Labmarker/releases) sayfasından son zip'i indir, bir klasöre çıkar.
 2. `chrome://extensions` adresini aç, sağ üstten **Geliştirici modu**'nu aç.
 3. **Paketlenmemiş öğe yükle**'ye bas, çıkardığın klasörü seç.
 
-Sonra ders programı sayfasını bir kez yenile, o kadar.
+Sonra ders programı sayfasını bir kez yenile. Bu yolla kurulan sürüm kendiliğinden güncellenmez.
+
+</details>
 
 ## Kullanım
 
