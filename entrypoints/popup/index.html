@@ -29,9 +29,10 @@
         <h2>Özel lab sınıfları</h2>
         <p class="hint">
           Listede olmayan ama lab olarak kullanılan bir sınıfı kendin ekle.
+          <span class="fill">Gün ve saat seçersen yalnızca o ders işaretlenir.</span>
         </p>
 
-        <form id="room-form" class="room-form" autocomplete="off">
+        <form id="room-form" class="room-form fill" autocomplete="off">
           <label class="visually-hidden" for="room-input">Sınıf kodu</label>
           <input
             id="room-input"
@@ -40,14 +41,24 @@
             spellcheck="false"
             autocapitalize="characters"
             maxlength="24"
-            aria-describedby="room-status"
+            aria-describedby="room-status form-hint"
           />
+          <label class="visually-hidden" for="day-select">Gün</label>
+          <select id="day-select" disabled>
+            <option value="">Her zaman</option>
+          </select>
+          <label class="visually-hidden" for="time-select">Ders saati</label>
+          <select id="time-select" disabled>
+            <option value="">Saat</option>
+          </select>
           <button type="submit">Ekle</button>
         </form>
 
-        <p id="room-status" class="room-status" role="status" aria-live="polite"></p>
+        <p id="form-hint" class="hint form-hint fill" hidden></p>
 
-        <ul id="room-list" class="chips"></ul>
+        <p id="room-status" class="room-status fill" role="status" aria-live="polite"></p>
+
+        <ul id="room-list" class="chips fill"></ul>
       </section>
 
       <div class="legend" aria-label="Renk açıklaması">

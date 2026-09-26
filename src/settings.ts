@@ -1,10 +1,12 @@
 import {
-  addRoomToList,
-  isValidRoomCode,
-  removeRoomFromList,
-  type AddRoomStatus,
-} from "./data/labRooms";
-import { normalizeRoom } from "./data/courseRoom";
+  addRuleToList,
+  parseCustomLabRules,
+  removeRuleFromList,
+  serializeCustomLabRules,
+  type AddRuleRequest,
+  type AddRuleResult,
+  type CustomLabRule,
+} from "./data/customRules";
 
 export const LABMARKER_ENABLED_KEY = "emuLabmarkerEnabled";
 export const CUSTOM_ROOMS_KEY = "emuLabmarkerCustomRooms";
@@ -18,44 +20,30 @@ export async function setLabMarkerEnabled(enabled: boolean): Promise<void> {
   await browser.storage.local.set({ [LABMARKER_ENABLED_KEY]: enabled });
 }
 
-/**
- * Rooms the user marked as laboratories themselves, in the order they added
- * them. Extension storage can be edited outside the popup, so anything that is
- * not a usable room code is dropped instead of trusted.
- */
-export function parseCustomLabRooms(value: unknown): string[] {
-  if (!Array.isArray(value)) return [];
-
-  const rooms: string[] = [];
-  for (const entry of value) {
-    if (typeof entry !== "string" || !isValidRoomCode(entry)) continue;
-    const room = normalizeRoom(entry);
-    if (!rooms.includes(room)) rooms.push(room);
-  }
-  return rooms;
-}
-
-export async function getCustomLabRooms(): Promise<string[]> {
+/** The user's own laboratory rules, in the order they were added. */
+export async function getCustomLabRules(): Promise<CustomLabRule[]> {
   const stored = await browser.storage.local.get(CUSTOM_ROOMS_KEY);
-  return parseCustomLabRooms(stored[CUSTOM_ROOMS_KEY]);
+  return parseCustomLabRules(stored[CUSTOM_ROOMS_KEY]);
 }
 
-async function setCustomLabRooms(rooms: string[]): Promise<void> {
-  await browser.storage.local.set({ [CUSTOM_ROOMS_KEY]: rooms });
+async function setCustomLabRules(rules: ReadonlyArray<CustomLabRule>): Promise<void> {
+  await browser.storage.local.set({
+    [CUSTOM_ROOMS_KEY]: serializeCustomLabRules(rules),
+  });
 }
 
-export async function addCustomLabRoom(
-  input: string,
-): Promise<{ status: AddRoomStatus; room: string; rooms: string[] }> {
-  const result = addRoomToList(await getCustomLabRooms(), input);
-  if (result.status === "added") await setCustomLabRooms(result.rooms);
+export async function addCustomLabRule(request: AddRuleRequest): Promise<AddRuleResult> {
+  const result = addRuleToList(await getCustomLabRules(), request);
+  if (result.status === "added") await setCustomLabRules(result.rules);
   return result;
 }
 
-export async function removeCustomLabRoom(
-  room: string,
-): Promise<string[]> {
-  const rooms = removeRoomFromList(await getCustomLabRooms(), room);
-  await setCustomLabRooms(rooms);
-  return rooms;
+/** Removes every rule whose key is listed; unknown keys are ignored. */
+export async function removeCustomLabRules(
+  keys: ReadonlyArray<string>,
+): Promise<CustomLabRule[]> {
+  let rules = await getCustomLabRules();
+  for (const key of keys) rules = removeRuleFromList(rules, key);
+  await setCustomLabRules(rules);
+  return rules;
 }

@@ -50,7 +50,7 @@ describe("resolveMeetings", () => {
     const resolved = resolveMeetings(
       [block("CMPE025", "tuesday"), block("CMPE127", "tuesday")],
       new Set(["CMPE134"]),
-      new Set(["cmpe 025"]),
+      [{ room: "CMPE025" }],
     );
 
     expect(resolved.map(({ classification }) => classification)).toEqual([
@@ -63,7 +63,44 @@ describe("resolveMeetings", () => {
     const resolved = resolveMeetings(
       [block("CMPE134", "tuesday")],
       new Set(["CMPE134"]),
+      [{ room: "CMPE134" }],
+    );
+
+    expect(resolved[0]?.classification).toBe("verified");
+  });
+
+  // A room that hosts one tutorial a week must not turn every other course
+  // taught in it into a laboratory.
+  it("marks only the meeting a timed rule names", () => {
+    const friday = block("CMPE030", "friday");
+    const resolved = resolveMeetings(
+      [block("CMPE030", "monday"), friday, { ...friday, startMinutes: 9 * 60 + 30, endMinutes: 10 * 60 + 20 }],
+      new Set(),
+      [{ room: "CMPE030", day: "friday", startMinutes: 14 * 60 + 30 }],
+    );
+
+    expect(resolved.map(({ classification }) => classification)).toEqual([
+      "normal",
+      "custom",
+      "normal",
+    ]);
+  });
+
+  it("covers the whole meeting when a timed rule names its second hour", () => {
+    const resolved = resolveMeetings(
+      [block("CMPE030", "friday")],
+      new Set(),
+      [{ room: "CMPE030", day: "friday", startMinutes: 15 * 60 + 30 }],
+    );
+
+    expect(resolved[0]?.classification).toBe("custom");
+  });
+
+  it("keeps a confirmed laboratory verified under a timed rule too", () => {
+    const resolved = resolveMeetings(
+      [block("CMPE134", "friday")],
       new Set(["CMPE134"]),
+      [{ room: "CMPE134", day: "friday", startMinutes: 14 * 60 + 30 }],
     );
 
     expect(resolved[0]?.classification).toBe("verified");

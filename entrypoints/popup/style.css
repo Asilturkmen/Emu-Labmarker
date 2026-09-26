@@ -105,6 +105,17 @@ p {
 
 .rooms { margin-top: 16px; }
 
+/* Chrome sizes a popup to its content's natural width. Long hints, status
+   messages, a row of chips or the form would each stretch the popup far
+   wider than it has always been, so they fill the width the rest of the
+   popup sets without adding to it. */
+.fill {
+  width: 0;
+  min-width: 100%;
+}
+
+span.fill { display: block; }
+
 h2 {
   margin: 0 0 3px;
   font-size: 13px;
@@ -120,11 +131,23 @@ h2 {
 
 .room-form {
   display: grid;
-  grid-template-columns: 1fr auto;
+  /* The room and its button keep the row they always had. The day column
+     is as wide as its longest name, so no font can clip it, and the time,
+     which names the course too, takes the rest of the row below. */
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    "room room add"
+    "day time time";
   gap: 7px;
 }
 
-.room-form input {
+.room-form #room-input { grid-area: room; }
+.room-form #day-select { grid-area: day; }
+.room-form #time-select { grid-area: time; }
+.room-form button { grid-area: add; }
+
+.room-form input,
+.room-form select {
   min-width: 0;
   padding: 8px 10px;
   border: 1px solid #dce4ee;
@@ -133,11 +156,15 @@ h2 {
   color: inherit;
   font: inherit;
   font-size: 13px;
-  text-transform: uppercase;
 }
 
+.room-form #room-input { text-transform: uppercase; }
+.room-form select { padding-inline: 6px; }
+.room-form select:disabled { background: #f2f5f9; color: #a9b5c4; }
+
 .room-form input::placeholder { color: #a9b5c4; text-transform: none; }
-.room-form input:focus-visible {
+.room-form input:focus-visible,
+.room-form select:focus-visible {
   border-color: #1269b5;
   outline: 3px solid rgb(18 105 181 / 22%);
   outline-offset: 0;
@@ -157,6 +184,8 @@ h2 {
 
 .room-form button:hover { background: #0f5a9c; }
 .room-form button:focus-visible { outline: 3px solid rgb(18 105 181 / 35%); outline-offset: 2px; }
+
+.form-hint { margin: 7px 0 0; }
 
 .room-status {
   margin: 7px 0 0;

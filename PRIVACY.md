@@ -1,6 +1,6 @@
 # Gizlilik Politikası
 
-**EMU LabMarker** — son güncelleme: 18 Eylül 2026
+**EMU LabMarker** — son güncelleme: 26 Eylül 2026
 
 ## Kısaca
 
@@ -13,8 +13,9 @@ sunucusu yoktur ve hiçbir ağ isteği yapmaz.
 EMU LabMarker yalnızca `https://student.emu.edu.tr` ve `https://students.emu.edu.tr`
 alan adlarında, yalnızca ders programı sayfasında (`/Academic/Timetable`) çalışır.
 Bu sayfada zaten ekranda görünen ders programı tablosunu okur ve laboratuvar
-derslerini renkli olarak işaretler. Okunan bilgi tarayıcının dışına çıkmaz; sayfa
-kapandığında geriye hiçbir kayıt kalmaz.
+derslerini renkli olarak işaretler. Kullanıcı tek bir dersi seçebilsin diye eklenti
+penceresi de bu sayfadaki derslerin gününü ve saatini okuyabilir. Okunan bilgi
+tarayıcının dışına çıkmaz; sayfa kapandığında geriye hiçbir kayıt kalmaz.
 
 Adres ders programı sayfası değilse eklenti hiçbir şey yapmadan sonlanır.
 
@@ -23,7 +24,8 @@ Adres ders programı sayfası değilse eklenti hiçbir şey yapmadan sonlanır.
 Eklenti, Chrome'un `storage` iznini yalnızca iki şey için kullanır:
 
 - Eklentinin açık mı kapalı mı olduğu bilgisi
-- Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`)
+- Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`); yalnızca tek
+  bir ders için eklendiyse o dersin günü, başlangıç saati ve ders kodu
 
 Bu iki bilgi yalnızca kullanıcının kendi tarayıcısında durur. Hiçbir yere
 gönderilmez. Eklenti kaldırıldığında tarayıcı bu verileri de siler; kullanıcı

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { portalTimetable } from "./fixtures/portalTimetable";
 import { CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY } from "../src/settings";
+import { LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
 // The script collapses a burst of mutations into one rescan after 100ms.
@@ -24,12 +25,19 @@ let storage: Record<string, unknown>;
 let changeListeners: ChangeListener[];
 let observers: MutationObserver[];
 let sentMessages: unknown[];
+type MessageListener = (
+  message: unknown,
+  sender: unknown,
+  sendResponse: (response: unknown) => void,
+) => unknown;
+let messageListeners: MessageListener[];
 
 function stubEnvironment(stored: Record<string, unknown>): void {
   storage = { ...stored };
   changeListeners = [];
   observers = [];
   sentMessages = [];
+  messageListeners = [];
 
   // Each test loads a fresh copy of the script, and the copy from the previous
   // test would otherwise keep watching the document and mark it with its own
@@ -65,6 +73,10 @@ function stubEnvironment(stored: Record<string, unknown>): void {
       sendMessage: async (message: unknown) => {
         sentMessages.push(message);
       },
+      onMessage: {
+        addListener: (listener: MessageListener) =>
+          messageListeners.push(listener),
+      },
     },
   });
 }
@@ -83,6 +95,17 @@ function notifyStorage(
   areaName = "local",
 ): void {
   for (const listener of changeListeners) listener(changes, areaName);
+}
+
+/** Sends a message the way the popup does and returns what came back. */
+function ask(message: unknown): unknown {
+  let response: unknown;
+  for (const listener of messageListeners) {
+    listener(message, {}, (value) => {
+      response = value;
+    });
+  }
+  return response;
 }
 
 function marks(kind?: string): HTMLElement[] {
@@ -150,6 +173,7 @@ describe("content script", () => {
     expect(marks()).toHaveLength(0);
     expect(changeListeners).toHaveLength(0);
     expect(observers).toHaveLength(0);
+    expect(messageListeners).toHaveLength(0);
     // The toolbar icon stays faded on every other page of the portal.
     expect(sentMessages).toHaveLength(0);
   });
@@ -194,6 +218,63 @@ describe("content script", () => {
 
     expect(marks("custom").length).toBeGreaterThan(0);
     expect(marks("verified").length).toBeGreaterThan(0);
+  });
+
+  it("marks only the meeting a timed rule names", async () => {
+    // CMPE025 also meets on Monday afternoon; only Friday 08:30 is chosen.
+    stubEnvironment({
+      [CUSTOM_ROOMS_KEY]: [{ room: "CMPE025", day: "friday", start: "08:30" }],
+    });
+
+    await startContentScript("/Academic/Timetable");
+
+    // Two hours of one meeting, in each of the two layouts.
+    expect(marks("custom")).toHaveLength(4);
+    const mobile = document.querySelector(".schedule-table-content-mobile")!;
+    for (const mark of mobile.querySelectorAll('[data-emu-labmarker="custom"]')) {
+      expect(mark.parentElement?.firstElementChild?.textContent).toBe("Cuma");
+    }
+  });
+
+  it("drops the marks of a timed rule removed in the popup", async () => {
+    stubEnvironment({
+      [CUSTOM_ROOMS_KEY]: [{ room: "CMPE025", day: "friday", start: "08:30" }],
+    });
+    await startContentScript("/Academic/Timetable");
+    expect(marks("custom")).toHaveLength(4);
+
+    notifyStorage({ [CUSTOM_ROOMS_KEY]: { newValue: [] } });
+    await settle();
+
+    expect(marks("custom")).toHaveLength(0);
+  });
+
+  it("tells the popup which meetings the timetable holds", async () => {
+    await startContentScript("/Academic/Timetable");
+
+    const sessions = ask(LIST_SESSIONS_MESSAGE) as Array<Record<string, unknown>>;
+
+    // Both layouts show the same meetings, and each is listed once.
+    expect(sessions).toHaveLength(14);
+    expect(sessions[0]).toEqual({
+      courseCode: "CMSE423",
+      room: "CMPE025",
+      day: "monday",
+      startMinutes: 750,
+      endMinutes: 860,
+    });
+    expect(sessions.filter((session) => session.room === "CMPE025").map((session) => session.day))
+      .toEqual(["monday", "friday"]);
+    // Anything else is not answered.
+    expect(ask("something else")).toBeUndefined();
+  });
+
+  it("still lists the meetings while marking is switched off", async () => {
+    stubEnvironment({ [LABMARKER_ENABLED_KEY]: false });
+    await startContentScript("/Academic/Timetable");
+
+    expect(ask(LIST_SESSIONS_MESSAGE)).toHaveLength(14);
+    expect(marks()).toHaveLength(0);
   });
 
   it("ignores storage changes from another area or another key", async () => {

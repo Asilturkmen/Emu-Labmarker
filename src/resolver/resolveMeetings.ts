@@ -1,17 +1,18 @@
-import { isVerifiedLabRoom, NO_ROOMS, VERIFIED_LAB_ROOMS } from "../data/labRooms";
+import { ruleMatches, type CustomLabRule } from "../data/customRules";
+import { isVerifiedLabRoom, VERIFIED_LAB_ROOMS } from "../data/labRooms";
 import type { MeetingBlock, ResolvedMeeting } from "../types/timetable";
 
 export function resolveMeetings(
   blocks: MeetingBlock[],
   verifiedRooms: ReadonlySet<string> = VERIFIED_LAB_ROOMS,
-  customRooms: ReadonlySet<string> = NO_ROOMS,
+  customRules: ReadonlyArray<CustomLabRule> = [],
 ): ResolvedMeeting[] {
   return blocks.map((block) => ({
     block,
     // A confirmed laboratory stays confirmed even if the user also added it.
     classification: isVerifiedLabRoom(block.room, verifiedRooms)
       ? "verified"
-      : isVerifiedLabRoom(block.room, customRooms)
+      : customRules.some((rule) => ruleMatches(rule, block))
         ? "custom"
         : "normal",
   }));

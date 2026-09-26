@@ -6,6 +6,7 @@ import {
   highlightTimetable,
   highlightLabRoomText,
 } from "../src/highlighter/highlightTimetable";
+import type { CustomLabRule } from "../src/data/customRules";
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
 import type {
@@ -17,6 +18,7 @@ import type {
 // Pinned so that editing the verified room list cannot change these results.
 const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
 const CUSTOM_ROOMS: ReadonlySet<string> = new Set(["CMPE025"]);
+const CUSTOM_RULES: ReadonlyArray<CustomLabRule> = [{ room: "CMPE025" }];
 
 function resolved(classification: RoomClassification): ResolvedMeeting {
   const link = document.createElement("a");
@@ -209,7 +211,7 @@ describe("highlightTimetable", () => {
     const rows = parseTimetable();
 
     highlightTimetable(
-      resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_ROOMS),
+      resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_RULES),
     );
     highlightLabRoomText(document, LAB_ROOMS, CUSTOM_ROOMS);
 
@@ -228,7 +230,7 @@ describe("highlightTimetable", () => {
     `;
     const rows = parseTimetable();
 
-    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_ROOMS));
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, CUSTOM_RULES));
 
     const items = document.querySelectorAll(".emu-labmarker-legend-item");
     expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
@@ -237,7 +239,7 @@ describe("highlightTimetable", () => {
 
     // With no custom room left, its legend row goes away too.
     clearTimetableHighlights();
-    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, new Set()));
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, []));
     expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(1);
     expect(document.querySelector(".emu-labmarker-legend-badge")?.textContent).toBe("LAB SINIFI");
   });

@@ -9,12 +9,17 @@ import {
 import { parseTimetable } from "../src/parser/parseTimetable";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
 import {
+  parseCustomLabRules,
+  roomWideRooms,
+  type CustomLabRule,
+} from "../src/data/customRules";
+import {
   CUSTOM_ROOMS_KEY,
-  getCustomLabRooms,
+  getCustomLabRules,
   getLabMarkerEnabled,
   LABMARKER_ENABLED_KEY,
-  parseCustomLabRooms,
 } from "../src/settings";
+import { collectSessions, LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
 // The portal re-renders the timetable in several steps. Waiting briefly
@@ -38,9 +43,23 @@ export default defineContentScript({
     // not keep the timetable from being marked.
     void browser.runtime.sendMessage(TIMETABLE_ACTIVE_MESSAGE).catch(() => {});
 
+    // The popup offers only the days and times a room is used, read from
+    // here. The page is read afresh on every request, even while marking is
+    // switched off, so the answer always matches what is on screen. It is sent
+    // synchronously: a listener that returns a promise is not honoured by
+    // every browser this runs in.
+    browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+      if (message !== LIST_SESSIONS_MESSAGE) return;
+      try {
+        sendResponse(collectSessions(groupMeetingBlocks(parseTimetable())));
+      } catch {
+        sendResponse([]);
+      }
+    });
+
     let rescan: ReturnType<typeof setTimeout> | null = null;
     let enabled = await getLabMarkerEnabled();
-    let customRooms: ReadonlySet<string> = new Set(await getCustomLabRooms());
+    let customRules: ReadonlyArray<CustomLabRule> = await getCustomLabRules();
 
     const observer = new MutationObserver(() => scheduleRun());
 
@@ -56,11 +75,13 @@ export default defineContentScript({
         if (enabled) {
           const rows = parseTimetable();
           const blocks = groupMeetingBlocks(rows);
-          const meetings = resolveMeetings(blocks, undefined, customRooms);
+          const meetings = resolveMeetings(blocks, undefined, customRules);
           highlightTimetable(meetings);
           // Some portal releases render course entries as plain text instead
-          // of links, which the timetable parser cannot see.
-          highlightLabRoomText(document, undefined, customRooms);
+          // of links, which the timetable parser cannot see. Text carries no
+          // day or hour, so only rules covering every hour apply here; a
+          // timed rule would otherwise spill onto the room's other meetings.
+          highlightLabRoomText(document, undefined, roomWideRooms(customRules));
         }
       } finally {
         observer.observe(document.body, { childList: true, subtree: true });
@@ -81,7 +102,7 @@ export default defineContentScript({
 
       if (enabledChange) enabled = enabledChange.newValue !== false;
       if (roomsChange) {
-        customRooms = new Set(parseCustomLabRooms(roomsChange.newValue));
+        customRules = parseCustomLabRules(roomsChange.newValue);
       }
       scheduleRun();
     });

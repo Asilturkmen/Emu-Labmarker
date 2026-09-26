@@ -4,6 +4,7 @@ import { parseTimetable } from "../src/parser/parseTimetable";
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import { resolveMeetings } from "../src/resolver/resolveMeetings";
 import { clearTimetableHighlights, highlightTimetable, highlightLabRoomText } from "../src/highlighter/highlightTimetable";
+import { roomWideRooms, type CustomLabRule } from "../src/data/customRules";
 
 // Pinned so that editing the verified room list cannot break these tests.
 const LAB_ROOMS: ReadonlySet<string> = new Set(["CMPE134", "CMPE230"]);
@@ -93,11 +94,11 @@ describe("supplied UL/LI portal timetable", () => {
   it("marks a user added room in its own colour without touching the verified ones", () => {
     // CMPE025 fills four cells per layout: Monday 12:30 and 13:30,
     // Friday 08:30 and 09:30.
-    const custom: ReadonlySet<string> = new Set(["CMPE025"]);
+    const custom: ReadonlyArray<CustomLabRule> = [{ room: "CMPE025" }];
     clearTimetableHighlights();
     const rows = parseTimetable();
     highlightTimetable(resolveMeetings(groupMeetingBlocks(rows), LAB_ROOMS, custom));
-    highlightLabRoomText(document, LAB_ROOMS, custom);
+    highlightLabRoomText(document, LAB_ROOMS, roomWideRooms(custom));
 
     for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
       const container = document.querySelector(selector)!;
@@ -106,5 +107,51 @@ describe("supplied UL/LI portal timetable", () => {
       expect(container.querySelectorAll("li.ctime:not([data-emu-labmarker])")).toHaveLength(17);
     }
     expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(2);
+  });
+
+  // The reported bug: a room used for a Friday tutorial was marked on every
+  // day it appears. The text fallback runs too, exactly as the content script
+  // runs it, because that pass once had no idea of days at all.
+  it.each([
+    ["the first hour", "08:30"],
+    ["the second hour", "09:30"],
+  ])("marks only the Friday meeting when a timed rule names %s", (_hour, start) => {
+    const [hours, minutes] = start.split(":").map(Number) as [number, number];
+    const custom: ReadonlyArray<CustomLabRule> = [
+      { room: "CMPE025", day: "friday", startMinutes: hours * 60 + minutes },
+    ];
+    for (let i = 0; i < 2; i++) {
+      clearTimetableHighlights();
+      highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS, custom));
+      highlightLabRoomText(document, LAB_ROOMS, roomWideRooms(custom));
+    }
+
+    const desktop = document.querySelector(".schedule-table-content")!;
+    const customCells = [...desktop.querySelectorAll('li.ctime[data-emu-labmarker="custom"]')];
+    // Friday is the fifth day column; the first column holds the time.
+    expect(customCells.map((cell) => [cell.parentElement!.firstElementChild!.textContent, [...cell.parentElement!.children].indexOf(cell)]))
+      .toEqual([["08:30-09:20", 5], ["09:30-10:20", 5]]);
+
+    const mobile = document.querySelector(".schedule-table-content-mobile")!;
+    const mobileCells = [...mobile.querySelectorAll('li.ctime[data-emu-labmarker="custom"]')];
+    expect(mobileCells).toHaveLength(2);
+    for (const cell of mobileCells) {
+      expect(cell.parentElement!.firstElementChild!.textContent).toBe("Cuma");
+    }
+
+    for (const container of [desktop, mobile]) {
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker="verified"]')).toHaveLength(4);
+    }
+  });
+
+  it("marks nothing when a timed rule matches no meeting", () => {
+    const custom: ReadonlyArray<CustomLabRule> = [
+      { room: "CMPE025", day: "friday", startMinutes: 12 * 60 + 30 },
+    ];
+    clearTimetableHighlights();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS, custom));
+    highlightLabRoomText(document, LAB_ROOMS, roomWideRooms(custom));
+
+    expect(document.querySelectorAll('[data-emu-labmarker="custom"]')).toHaveLength(0);
   });
 });

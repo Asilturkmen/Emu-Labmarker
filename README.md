@@ -81,6 +81,12 @@ gibi kalır. Sayfayı yenilemeye gerek yok.
 olarak kullanıyor. Oda kodunu yaz, Ekle'ye bas.Bu sınıflar turuncu renkte ve `ÖZEL LAB`
 etiketiyle görünür, kesin lablarla karışmaz. Çipin yanındaki × ile listeden çıkarabilirsiniz.
 
+**Sadece tek bir dersi işaretleme.** Bazen bir sınıf haftada yalnızca bir kez lab oluyor,
+mesela cuma 10:30'daki tutorial. Pencereyi ders programı sayfasındayken aç ve oda kodunu
+yaz: gün menüsünde sadece o sınıfta dersinin olduğu günler, saat menüsünde de o günkü dersler
+çıkar. Birini seç, Ekle'ye bas. Sadece o ders turuncu olur; aynı sınıftaki diğer dersler
+olduğu gibi kalır. Gün seçmezsen sınıf eskisi gibi her saat işaretlenir.
+
 <br clear="all">
 
 ## Hangi odalar lab sayılıyor
