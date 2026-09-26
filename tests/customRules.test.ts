@@ -194,3 +194,66 @@ describe("rule helpers", () => {
     expect([...roomWideRooms([{ room: "CL116" }, FRIDAY_1030])]).toEqual(["CL116"]);
   });
 });
+
+describe("tutorial rules", () => {
+  const TUTORIAL_1030: CustomLabRule = { ...FRIDAY_1030, kind: "tutorial" };
+
+  it("are added with their kind and labelled as tutorials", () => {
+    const timed = addRuleToList([], { room: "CMPE030", day: "friday", start: "10:30", kind: "tutorial" }, VERIFIED);
+    const roomWide = addRuleToList([], { room: "CMPE030", kind: "tutorial" }, VERIFIED);
+
+    expect(timed).toMatchObject({ status: "added", rule: TUTORIAL_1030 });
+    expect(roomWide.rule).toEqual({ room: "CMPE030", kind: "tutorial" });
+    expect(ruleLabel(TUTORIAL_1030)).toBe("CMPE030 · Cum 10:30 · Tutorial");
+    expect(ruleLabel({ room: "CMPE030", kind: "tutorial" })).toBe("CMPE030 · Tutorial");
+  });
+
+  it("are stored with their kind and read back unchanged", () => {
+    const rules: CustomLabRule[] = [{ room: "CL116", kind: "tutorial" }, TUTORIAL_1030, { room: "CMPE025" }];
+
+    const stored = serializeCustomLabRules(rules);
+
+    expect(stored).toEqual([
+      { room: "CL116", kind: "tutorial" },
+      { room: "CMPE030", day: "friday", start: "10:30", kind: "tutorial" },
+      "CMPE025",
+    ]);
+    expect(parseCustomLabRules(stored)).toEqual(rules);
+    // An unknown kind reads as the default laboratory.
+    expect(parseCustomLabRules([{ room: "CL116", kind: "seminar" }])).toEqual([{ room: "CL116" }]);
+  });
+
+  it("cannot share a meeting with a laboratory rule", () => {
+    expect(addRuleToList([FRIDAY_1030], { room: "CMPE030", day: "friday", start: "10:30", kind: "tutorial" }, VERIFIED).status)
+      .toBe("duplicate");
+  });
+
+  it("are covered by a room-wide laboratory, but a timed laboratory still shows in a tutorial room", () => {
+    const request = { room: "CMPE030", day: "friday", start: "10:30" } as const;
+
+    expect(addRuleToList([{ room: "CMPE030" }], { ...request, kind: "tutorial" }, VERIFIED).status).toBe("covered");
+    expect(addRuleToList([{ room: "CMPE030", kind: "tutorial" }], { ...request, kind: "tutorial" }, VERIFIED).status).toBe("covered");
+    expect(addRuleToList([{ room: "CMPE030", kind: "tutorial" }], request, VERIFIED).status).toBe("added");
+  });
+
+  it("absorb only the timed rules they outrank when added for the whole room", () => {
+    const rules: CustomLabRule[] = [FRIDAY_1030, { ...FRIDAY_1030, day: "monday", kind: "tutorial" }];
+
+    expect(addRuleToList(rules, { room: "CMPE030", kind: "tutorial" }, VERIFIED)).toMatchObject({
+      status: "added",
+      rules: [FRIDAY_1030, { room: "CMPE030", kind: "tutorial" }],
+      absorbed: 1,
+    });
+    expect(addRuleToList(rules, { room: "CMPE030" }, VERIFIED)).toMatchObject({
+      rules: [{ room: "CMPE030" }],
+      absorbed: 2,
+    });
+  });
+
+  it("give the text fallback their own set of rooms", () => {
+    const rules: CustomLabRule[] = [{ room: "CL116", kind: "tutorial" }, { room: "CMPE025" }, TUTORIAL_1030];
+
+    expect([...roomWideRooms(rules, "tutorial")]).toEqual(["CL116"]);
+    expect([...roomWideRooms(rules)]).toEqual(["CMPE025"]);
+  });
+});

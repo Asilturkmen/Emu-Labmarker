@@ -96,6 +96,20 @@ describe("resolveMeetings", () => {
     expect(resolved[0]?.classification).toBe("custom");
   });
 
+  it("marks a tutorial rule as tutorial, and lets a laboratory rule win over it", () => {
+    const resolved = resolveMeetings(
+      [block("CMPE030", "friday"), block("CMPE031", "friday")],
+      new Set(),
+      [
+        { room: "CMPE030", kind: "tutorial" },
+        { room: "CMPE031", kind: "tutorial" },
+        { room: "CMPE031", day: "friday", startMinutes: 14 * 60 + 30 },
+      ],
+    );
+
+    expect(resolved.map(({ classification }) => classification)).toEqual(["tutorial", "custom"]);
+  });
+
   it("keeps a confirmed laboratory verified under a timed rule too", () => {
     const resolved = resolveMeetings(
       [block("CMPE134", "friday")],

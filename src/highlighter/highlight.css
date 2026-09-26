@@ -144,3 +144,25 @@ li.ctime[data-emu-labmarker] > span {
   border-color: #f08c14;
   background: #fef2d6;
 }
+
+/* Tutorial rooms are the user's own too, but not laboratories, so they get a
+   colour of their own. Same specificity rules as the custom block above. */
+[data-emu-labmarker="tutorial"] {
+  background: #efe7ff !important;
+  box-shadow: inset 0 0 0 3px #8b5cf6 !important;
+}
+
+[data-emu-labmarker="tutorial"],
+[data-emu-labmarker="tutorial"] :is(a, button, span, strong, b, p, div):not(.emu-labmarker-badge) {
+  color: #17365d !important;
+}
+
+[data-emu-labmarker="tutorial"] > .emu-labmarker-badge,
+.emu-labmarker-legend-badge[data-kind="tutorial"] {
+  background: #7c3aed !important;
+}
+
+.emu-labmarker-swatch[data-kind="tutorial"] {
+  border-color: #8b5cf6;
+  background: #efe7ff;
+}

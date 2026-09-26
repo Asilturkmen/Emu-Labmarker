@@ -2,10 +2,11 @@ export type TimetableLayout = "desktop" | "mobile";
 
 /**
  * "verified" rooms come from the curated list in src/data/labRooms.ts.
- * "custom" rooms are the ones a user added themselves, which are not
- * confirmed laboratories and are shown differently.
+ * "custom" rooms are laboratories a user added themselves, which are not
+ * confirmed and are shown differently. "tutorial" rooms are also the user's
+ * own, marked as tutorial rather than laboratory rooms.
  */
-export type RoomClassification = "verified" | "custom" | "normal";
+export type RoomClassification = "verified" | "custom" | "tutorial" | "normal";
 
 export interface ParsedMeetingRow {
   courseCode: string;

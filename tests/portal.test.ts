@@ -144,6 +144,35 @@ describe("supplied UL/LI portal timetable", () => {
     }
   });
 
+  it("marks a tutorial meeting in its own colour and explains it in the legend", () => {
+    const custom: ReadonlyArray<CustomLabRule> = [
+      { room: "CMPE025", day: "friday", startMinutes: 8 * 60 + 30, kind: "tutorial" },
+    ];
+    clearTimetableHighlights();
+    highlightTimetable(resolveMeetings(groupMeetingBlocks(parseTimetable()), LAB_ROOMS, custom));
+    highlightLabRoomText(document, LAB_ROOMS, roomWideRooms(custom), roomWideRooms(custom, "tutorial"));
+
+    for (const selector of [".schedule-table-content", ".schedule-table-content-mobile"]) {
+      const container = document.querySelector(selector)!;
+      const tutorials = container.querySelectorAll('li.ctime[data-emu-labmarker="tutorial"]');
+      expect(tutorials).toHaveLength(2);
+      for (const cell of tutorials) {
+        expect(cell.querySelector(".emu-labmarker-badge")?.textContent).toBe("TUTORIAL");
+      }
+      expect(container.querySelectorAll('li.ctime[data-emu-labmarker="custom"]')).toHaveLength(0);
+    }
+    expect([...document.querySelectorAll(".emu-labmarker-legend-badge")].map((badge) => badge.textContent))
+      .toEqual(["LAB SINIFI", "TUTORIAL"]);
+  });
+
+  it("marks a room-wide tutorial through the text fallback too", () => {
+    document.body.innerHTML = '<div class="portal-course">MGMT101/CL 116</div>';
+
+    highlightLabRoomText(document, LAB_ROOMS, new Set(), new Set(["CL116"]));
+
+    expect(document.querySelector<HTMLElement>(".portal-course")?.dataset.emuLabmarker).toBe("tutorial");
+  });
+
   it("marks nothing when a timed rule matches no meeting", () => {
     const custom: ReadonlyArray<CustomLabRule> = [
       { room: "CMPE025", day: "friday", startMinutes: 12 * 60 + 30 },

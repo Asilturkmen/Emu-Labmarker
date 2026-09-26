@@ -348,6 +348,32 @@ describe("popup custom room list", () => {
     expect(press("Tab").defaultPrevented).toBe(false);
   });
 
+  it("adds a tutorial when that kind is chosen, shown in its own colour", async () => {
+    await openPopup({}, SESSIONS);
+    // A laboratory unless said otherwise.
+    expect(document.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value).toBe("lab");
+
+    document.querySelector<HTMLInputElement>('input[name="kind"][value="tutorial"]')!.click();
+    addTimedRoom("CMPE030", "friday", "10:30");
+    await vi.waitFor(() => expect(chips()).toEqual(["CMPE030 · Cum 10:30 · Tutorial"]));
+
+    expect(status()).toBe("CMPE030 · Cum 10:30 · Tutorial eklendi.");
+    expect(storage[CUSTOM_ROOMS_KEY]).toEqual([
+      { room: "CMPE030", day: "friday", start: "10:30", course: "CMPE224", kind: "tutorial" },
+    ]);
+    expect(document.querySelector<HTMLElement>("#room-list .chip")?.dataset.kind).toBe("tutorial");
+  });
+
+  it("names the stored entry when the same meeting is added as the other kind", async () => {
+    await openPopup({ [CUSTOM_ROOMS_KEY]: [{ room: "CMPE030", day: "friday", start: "10:30" }] }, SESSIONS);
+
+    document.querySelector<HTMLInputElement>('input[name="kind"][value="tutorial"]')!.click();
+    addTimedRoom("CMPE030", "friday", "10:30");
+
+    await vi.waitFor(() => expect(status()).toBe("CMPE030 · Cum 10:30 listede zaten var."));
+    expect(chips()).toEqual(["CMPE030 · Cum 10:30"]);
+  });
+
   it("removes a timed entry without touching the plain room", async () => {
     await openPopup({
       [CUSTOM_ROOMS_KEY]: ["CL116", { room: "CMPE030", day: "friday", start: "10:30" }],

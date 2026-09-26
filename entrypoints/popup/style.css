@@ -102,6 +102,7 @@ p {
 .dot { width: 9px; height: 9px; border-radius: 3px; }
 .dot.verified { background: #f12e4b; }
 .dot.custom { background: #f08c14; }
+.dot.tutorial { background: #8b5cf6; }
 
 .rooms { margin-top: 16px; }
 
@@ -136,11 +137,13 @@ h2 {
      which names the course too, takes the rest of the row below. */
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-areas:
+    "kind kind kind"
     "room room add"
     "day time time";
   gap: 7px;
 }
 
+.room-form .kind-switch { grid-area: kind; }
 .room-form .room-field { grid-area: room; }
 .room-form #day-select { grid-area: day; }
 .room-form #time-select { grid-area: time; }
@@ -212,6 +215,49 @@ h2 {
 
 .form-hint { margin: 7px 0 0; }
 
+.kind-switch {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.kind-label {
+  color: #61748b;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.kind-options {
+  display: inline-flex;
+  padding: 2px;
+  border: 1px solid #dce4ee;
+  border-radius: 9px;
+  background: #fff;
+}
+
+.kind-option input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.kind-option span {
+  display: block;
+  padding: 4px 12px;
+  border-radius: 7px;
+  color: #61748b;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.kind-option span:hover { color: #17365d; }
+/* Each kind wears the colour it gets on the timetable. */
+.kind-option input:checked + span { background: #f08c14; color: #fff; }
+.kind-option input[value="tutorial"]:checked + span { background: #7c3aed; }
+.kind-option input:focus-visible + span { outline: 2px solid #1269b5; outline-offset: 1px; }
+
 .room-status {
   margin: 7px 0 0;
   min-height: 15px;
@@ -268,6 +314,11 @@ h2 {
 .chip-remove:hover { background: #fbe3b0; }
 .chip-remove:focus-visible { outline: 2px solid #f08c14; outline-offset: 1px; }
 .chip-remove:disabled { opacity: .5; cursor: default; }
+
+.chip[data-kind="tutorial"] { border-color: #8b5cf6; background: #efe7ff; }
+.chip[data-kind="tutorial"] .chip-remove { color: #6d28d9; }
+.chip[data-kind="tutorial"] .chip-remove:hover { background: #ddd0ff; }
+.chip[data-kind="tutorial"] .chip-remove:focus-visible { outline-color: #8b5cf6; }
 
 .visually-hidden {
   position: absolute;

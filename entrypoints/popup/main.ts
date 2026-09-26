@@ -4,11 +4,13 @@ import {
   isTimedRule,
   isWeekday,
   ruleKey,
+  ruleKind,
   ruleLabel,
   WEEKDAYS,
   type AddRuleResult,
   type AddRuleStatus,
   type CustomLabRule,
+  type RuleKind,
   type Weekday,
 } from "../../src/data/customRules";
 import { isValidRoomCode } from "../../src/data/labRooms";
@@ -89,6 +91,7 @@ function renderRules(): void {
     const label = ruleLabel(rule);
     const item = document.createElement("li");
     item.className = "chip";
+    item.dataset.kind = ruleKind(rule);
     if (!isTimedRule(rule)) item.title = `${rule.room}: her gün, her saat`;
     else if (rule.course) item.title = `${rule.course} dersi`;
 
@@ -111,14 +114,20 @@ const ADD_MESSAGES: Record<AddRuleStatus, (rule: CustomLabRule) => string> = {
   added: (rule) => `${ruleLabel(rule)} eklendi.`,
   duplicate: (rule) => `${ruleLabel(rule)} listede zaten var.`,
   verified: (rule) => `${rule.room} zaten kesin lab listesinde.`,
-  covered: (rule) => `${rule.room} zaten her saat özel lab olarak ekli.`,
+  covered: (rule) => `${rule.room} zaten her saat için listede.`,
   invalid: () => "Geçerli bir sınıf kodu yaz (örnek: CMPE025).",
   "invalid-time": () => "Dersin başladığı saati seç.",
   limit: () => "Daha fazla sınıf eklenemiyor, önce birini çıkar.",
 };
 
-function reportAdd({ status, rule, absorbed }: AddRuleResult): void {
-  let message = ADD_MESSAGES[status](rule);
+function reportAdd({ status, rule, rules: current, absorbed }: AddRuleResult): void {
+  // A duplicate may be the same meeting stored as the other kind, and the
+  // message should name the entry that is actually in the list.
+  const shown =
+    status === "duplicate"
+      ? current.find((existing) => ruleKey(existing) === ruleKey(rule)) ?? rule
+      : rule;
+  let message = ADD_MESSAGES[status](shown);
   if (absorbed) message += " Bu sınıfın saatli kayıtları buna dahil edildi.";
   setRoomStatus(message, status === "added" ? "info" : "error");
 }
@@ -297,12 +306,17 @@ roomForm.addEventListener("submit", (event) => {
   const day = daySelect.value;
   const start = timeSelect.value;
   const course = chosenDaySessions().get(start)?.courseCode;
+  const kind: RuleKind =
+    roomForm.querySelector<HTMLInputElement>('input[name="kind"]:checked')?.value === "tutorial"
+      ? "tutorial"
+      : "lab";
 
   void serialize(async () => {
     let focusTarget: HTMLElement = roomInput;
     try {
       const result = await addCustomLabRule({
         room: input,
+        kind,
         ...(isWeekday(day) ? { day, start, course } : {}),
       });
       rules = result.rules;

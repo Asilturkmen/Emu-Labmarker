@@ -12,17 +12,22 @@ type LabClassification = Exclude<RoomClassification, "normal">;
 /** Confirmed laboratories outrank rooms a user added for themselves. */
 const CLASSIFICATION_RANK: Record<RoomClassification, number> = {
   normal: 0,
-  custom: 1,
-  verified: 2,
+  tutorial: 1,
+  custom: 2,
+  verified: 3,
 };
 
-const LAB_CLASSIFICATIONS = ["verified", "custom"] as const;
+const LAB_CLASSIFICATIONS = ["verified", "custom", "tutorial"] as const;
 
 const BADGES: Record<LabClassification, { text: string; label: string }> = {
   verified: { text: "LAB SINIFI", label: "LAB SINIFI" },
   custom: {
     text: "ÖZEL LAB",
     label: "ÖZEL LAB (senin eklediğin sınıf)",
+  },
+  tutorial: {
+    text: "TUTORIAL",
+    label: "TUTORIAL (senin eklediğin sınıf)",
   },
 };
 
@@ -36,12 +41,14 @@ const BADGES: Record<LabClassification, { text: string; label: string }> = {
 const TEXT_COLORS: Record<LabClassification, string> = {
   verified: "#17365d",
   custom: "#17365d",
+  tutorial: "#17365d",
 };
 
 // The badge already names the kind, so the legend only adds what it means.
 const LEGEND_TEXTS: Record<LabClassification, string> = {
   verified: " = Laboratuvar dersi",
   custom: " = Senin eklediğin sınıf",
+  tutorial: " = Senin eklediğin tutorial",
 };
 
 function inkTargets(element: HTMLElement, selector: string): HTMLElement[] {
@@ -207,9 +214,11 @@ function classifyRoom(
   room: string,
   verifiedRooms: ReadonlySet<string>,
   customRooms: ReadonlySet<string>,
+  tutorialRooms: ReadonlySet<string>,
 ): RoomClassification {
   if (isVerifiedLabRoom(room, verifiedRooms)) return "verified";
   if (isVerifiedLabRoom(room, customRooms)) return "custom";
+  if (isVerifiedLabRoom(room, tutorialRooms)) return "tutorial";
   return "normal";
 }
 
@@ -222,6 +231,7 @@ export function highlightLabRoomText(
   root: ParentNode = document,
   verifiedRooms: ReadonlySet<string> = VERIFIED_LAB_ROOMS,
   customRooms: ReadonlySet<string> = NO_ROOMS,
+  tutorialRooms: ReadonlySet<string> = NO_ROOMS,
 ): void {
   root
     .querySelectorAll<HTMLElement>(`[${FALLBACK_ATTRIBUTE}]`)
@@ -238,7 +248,7 @@ export function highlightLabRoomText(
     const room = matchCourseRoom(node.textContent ?? "")?.room;
     const parent = node.parentElement;
     if (!room || !parent) continue;
-    const classification = classifyRoom(room, verifiedRooms, customRooms);
+    const classification = classifyRoom(room, verifiedRooms, customRooms, tutorialRooms);
     if (classification === "normal") continue;
     if (parent.closest("script, style, textarea, input, [contenteditable], .emu-labmarker-badge, .emu-labmarker-legend")) continue;
 

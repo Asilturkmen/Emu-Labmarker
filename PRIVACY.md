@@ -25,7 +25,8 @@ Eklenti, Chrome'un `storage` iznini yalnızca iki şey için kullanır:
 
 - Eklentinin açık mı kapalı mı olduğu bilgisi
 - Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`); yalnızca tek
-  bir ders için eklendiyse o dersin günü, başlangıç saati ve ders kodu
+  bir ders için eklendiyse o dersin günü, başlangıç saati ve ders kodu; ayrıca
+  sınıfın lab mı tutorial mı olarak eklendiği
 
 Bu iki bilgi yalnızca kullanıcının kendi tarayıcısında durur. Hiçbir yere
 gönderilmez. Eklenti kaldırıldığında tarayıcı bu verileri de siler; kullanıcı

@@ -236,6 +236,18 @@ describe("content script", () => {
     }
   });
 
+  it("marks a tutorial added in the popup in its own kind", async () => {
+    await startContentScript("/Academic/Timetable");
+
+    notifyStorage({
+      [CUSTOM_ROOMS_KEY]: { newValue: [{ room: "CMPE025", day: "friday", start: "08:30", kind: "tutorial" }] },
+    });
+    await settle();
+
+    expect(marks("tutorial")).toHaveLength(4);
+    expect(marks("custom")).toHaveLength(0);
+  });
+
   it("drops the marks of a timed rule removed in the popup", async () => {
     stubEnvironment({
       [CUSTOM_ROOMS_KEY]: [{ room: "CMPE025", day: "friday", start: "08:30" }],

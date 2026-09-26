@@ -88,6 +88,9 @@ Gün menüsünde sadece o sınıfta dersinin olduğu günler, saat menüsünde d
 çıkar. Birini seç, Ekle'ye bas. Sadece o ders turuncu olur; aynı sınıftaki diğer dersler
 olduğu gibi kalır. Gün seçmezsen sınıf eskisi gibi her saat işaretlenir.
 
+**Lab mı, tutorial mı?** Formun üstündeki **Tür** anahtarından Tutorial'ı seçersen sınıf mor
+renkte ve `TUTORIAL` etiketiyle işaretlenir; lablarla karışmaz.
+
 <br clear="all">
 
 ## Hangi odalar lab sayılıyor

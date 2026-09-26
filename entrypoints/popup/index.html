@@ -26,13 +26,26 @@
       </label>
 
       <section class="rooms">
-        <h2>Özel lab sınıfları</h2>
+        <h2>Özel lab ve tutorial sınıfları</h2>
         <p class="hint">
           Listede olmayan ama lab olarak kullanılan bir sınıfı kendin ekle.
           <span class="fill">Gün ve saat seçersen yalnızca o ders işaretlenir.</span>
         </p>
 
         <form id="room-form" class="room-form fill" autocomplete="off">
+          <div class="kind-switch" role="radiogroup" aria-labelledby="kind-label">
+            <span id="kind-label" class="kind-label">Tür</span>
+            <span class="kind-options">
+              <label class="kind-option">
+                <input type="radio" name="kind" value="lab" checked />
+                <span>Lab</span>
+              </label>
+              <label class="kind-option">
+                <input type="radio" name="kind" value="tutorial" />
+                <span>Tutorial</span>
+              </label>
+            </span>
+          </div>
           <div class="room-field">
             <label class="visually-hidden" for="room-input">Sınıf kodu</label>
             <input
@@ -68,6 +81,7 @@
       <div class="legend" aria-label="Renk açıklaması">
         <span><i class="dot verified"></i>Kesin lab</span>
         <span><i class="dot custom"></i>Özel lab</span>
+        <span><i class="dot tutorial"></i>Tutorial</span>
       </div>
 
       <p class="disclaimer">

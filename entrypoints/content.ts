@@ -81,7 +81,12 @@ export default defineContentScript({
           // of links, which the timetable parser cannot see. Text carries no
           // day or hour, so only rules covering every hour apply here; a
           // timed rule would otherwise spill onto the room's other meetings.
-          highlightLabRoomText(document, undefined, roomWideRooms(customRules));
+          highlightLabRoomText(
+            document,
+            undefined,
+            roomWideRooms(customRules, "lab"),
+            roomWideRooms(customRules, "tutorial"),
+          );
         }
       } finally {
         observer.observe(document.body, { childList: true, subtree: true });
