@@ -22,6 +22,7 @@ import {
 import {
   LIST_SESSIONS_MESSAGE,
   parseSessions,
+  suggestRoom,
   type TimetableSession,
 } from "../../src/timetableSessions";
 
@@ -40,6 +41,7 @@ const timeSelect = requireElement<HTMLSelectElement>("#time-select");
 const roomStatus = requireElement<HTMLElement>("#room-status");
 const roomList = requireElement<HTMLUListElement>("#room-list");
 const formHint = requireElement<HTMLElement>("#form-hint");
+const roomGhost = requireElement<HTMLElement>("#room-ghost");
 
 let rules: CustomLabRule[] = [];
 /**
@@ -48,6 +50,8 @@ let rules: CustomLabRule[] = [];
  * time lists never offer an hour the room is not used.
  */
 let sessions: TimetableSession[] | null = null;
+/** The timetable room the typed text completes to, shown greyed out. */
+let suggestion: string | null = null;
 
 const WEEKDAY_NAMES: Record<Weekday, string> = {
   monday: "Pazartesi",
@@ -207,6 +211,20 @@ function renderTimeOptions(): void {
   timeSelect.disabled = options.length === 0;
 }
 
+function renderSuggestion(): void {
+  suggestion = sessions ? suggestRoom(roomInput.value, sessions) : null;
+  roomGhost.replaceChildren();
+  if (!suggestion) return;
+
+  const typed = document.createElement("span");
+  typed.className = "room-ghost-typed";
+  typed.textContent = roomInput.value;
+  const rest = document.createElement("span");
+  rest.className = "room-ghost-rest";
+  rest.textContent = suggestion.slice(normalizeRoom(roomInput.value).length);
+  roomGhost.append(typed, rest);
+}
+
 function setFormHint(message: string | null): void {
   formHint.textContent = message ?? "";
   formHint.hidden = message === null;
@@ -225,6 +243,7 @@ function renderDayOptions(): void {
   daySelect.value = (days as string[]).includes(previous) ? previous : "";
   daySelect.disabled = days.length === 0;
   renderTimeOptions();
+  renderSuggestion();
 
   const room = typedRoom();
   if (sessions === null) {
@@ -237,6 +256,22 @@ function renderDayOptions(): void {
 }
 
 roomInput.addEventListener("input", renderDayOptions);
+
+// Tab takes the suggestion, as does the right arrow once the caret is at the
+// end. Without a suggestion both keep their usual meaning, so Tab still moves
+// on to the next field.
+roomInput.addEventListener("keydown", (event) => {
+  if (!suggestion || event.altKey || event.ctrlKey || event.metaKey) return;
+  const end = roomInput.value.length;
+  const atEnd = roomInput.selectionStart === end && roomInput.selectionEnd === end;
+  const accept =
+    (event.key === "Tab" && !event.shiftKey) || (event.key === "ArrowRight" && atEnd);
+  if (!accept) return;
+
+  event.preventDefault();
+  roomInput.value = suggestion;
+  renderDayOptions();
+});
 daySelect.addEventListener("change", renderTimeOptions);
 
 async function loadSessions(): Promise<TimetableSession[] | null> {

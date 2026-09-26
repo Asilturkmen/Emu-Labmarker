@@ -1,4 +1,6 @@
+import { normalizeRoom } from "./data/courseRoom";
 import { isWeekday, WEEKDAYS, type Weekday } from "./data/customRules";
+import { isVerifiedLabRoom, VERIFIED_LAB_ROOMS } from "./data/labRooms";
 import type { MeetingBlock } from "./types/timetable";
 
 /**
@@ -63,4 +65,26 @@ function isSession(value: unknown): value is TimetableSession {
 /** Whatever answers the message is checked before the popup relies on it. */
 export function parseSessions(value: unknown): TimetableSession[] | null {
   return Array.isArray(value) ? value.filter(isSession) : null;
+}
+
+/**
+ * The first timetable room that starts with what has been typed, which the
+ * popup offers as an inline completion. Nothing is offered once the typed
+ * text is a room in its own right, and confirmed laboratories are left out:
+ * they are marked already and cannot be added.
+ */
+export function suggestRoom(
+  input: string,
+  sessions: ReadonlyArray<TimetableSession>,
+  verifiedRooms: ReadonlySet<string> = VERIFIED_LAB_ROOMS,
+): string | null {
+  const typed = normalizeRoom(input);
+  if (!/^[A-Z0-9]+$/.test(typed)) return null;
+
+  const rooms = new Set(sessions.map((session) => session.room));
+  if (rooms.has(typed)) return null;
+  const matches = [...rooms]
+    .filter((room) => room.startsWith(typed) && !isVerifiedLabRoom(room, verifiedRooms))
+    .sort();
+  return matches[0] ?? null;
 }

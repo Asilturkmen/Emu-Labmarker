@@ -33,16 +33,20 @@
         </p>
 
         <form id="room-form" class="room-form fill" autocomplete="off">
-          <label class="visually-hidden" for="room-input">Sınıf kodu</label>
-          <input
-            id="room-input"
-            type="text"
-            placeholder="CMPE025"
-            spellcheck="false"
-            autocapitalize="characters"
-            maxlength="24"
-            aria-describedby="room-status form-hint"
-          />
+          <div class="room-field">
+            <label class="visually-hidden" for="room-input">Sınıf kodu</label>
+            <input
+              id="room-input"
+              type="text"
+              placeholder="CMPE025"
+              spellcheck="false"
+              autocapitalize="characters"
+              maxlength="24"
+              aria-autocomplete="inline"
+              aria-describedby="room-status form-hint"
+            />
+            <span id="room-ghost" class="room-ghost" aria-hidden="true"></span>
+          </div>
           <label class="visually-hidden" for="day-select">Gün</label>
           <select id="day-select" disabled>
             <option value="">Her zaman</option>

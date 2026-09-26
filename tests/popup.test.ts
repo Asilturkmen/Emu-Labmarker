@@ -28,6 +28,8 @@ const SESSIONS: Session[] = [
   { courseCode: "CMPE224", room: "CMPE030", day: "friday", startMinutes: 630, endMinutes: 680 },
   { courseCode: "CMPE211", room: "CMPE030", day: "friday", startMinutes: 810, endMinutes: 920 },
   { courseCode: "MGMT101", room: "CL116", day: "tuesday", startMinutes: 750, endMinutes: 800 },
+  { courseCode: "CMSE423", room: "CMPE025", day: "wednesday", startMinutes: 510, endMinutes: 620 },
+  { courseCode: "CMSE456", room: "CMPE134", day: "thursday", startMinutes: 750, endMinutes: 860 },
 ];
 
 /**
@@ -112,6 +114,17 @@ function addTimedRoom(room: string, day: string, time: string): void {
   chooseDay(day);
   document.querySelector<HTMLSelectElement>("#time-select")!.value = time;
   submit();
+}
+
+/** The greyed-out completion after the typed text, if any. */
+function ghost(): string {
+  return document.querySelector("#room-ghost .room-ghost-rest")?.textContent ?? "";
+}
+
+function press(key: string, init: KeyboardEventInit = {}): KeyboardEvent {
+  const event = new KeyboardEvent("keydown", { key, cancelable: true, bubbles: true, ...init });
+  document.querySelector<HTMLInputElement>("#room-input")!.dispatchEvent(event);
+  return event;
 }
 
 function hint(): string | null {
@@ -281,6 +294,58 @@ describe("popup custom room list", () => {
     expect(options("#day-select")).toEqual(["Her zaman"]);
     expect(document.querySelector<HTMLSelectElement>("#day-select")!.disabled).toBe(true);
     expect(hint()).toBe("Tek bir dersi eklemek için bu pencereyi ders programı sayfasında aç.");
+  });
+
+  it("completes a room from the timetable with Tab", async () => {
+    await openPopup({}, SESSIONS);
+
+    typeRoom("cmpe0");
+    expect(ghost()).toBe("25");
+    typeRoom("cmpe03");
+    expect(ghost()).toBe("0");
+
+    const tab = press("Tab");
+    expect(tab.defaultPrevented).toBe(true);
+    expect(document.querySelector<HTMLInputElement>("#room-input")!.value).toBe("CMPE030");
+    expect(ghost()).toBe("");
+    // The completed room fills the day list like a typed one.
+    expect(options("#day-select")).toEqual(["Her zaman", "Pazartesi", "Cuma"]);
+  });
+
+  it("completes with the right arrow only when the caret is at the end", async () => {
+    await openPopup({}, SESSIONS);
+    const input = document.querySelector<HTMLInputElement>("#room-input")!;
+
+    typeRoom("cmpe03");
+    input.setSelectionRange(2, 2);
+    expect(press("ArrowRight").defaultPrevented).toBe(false);
+    expect(input.value).toBe("cmpe03");
+
+    input.setSelectionRange(6, 6);
+    expect(press("ArrowRight").defaultPrevented).toBe(true);
+    expect(input.value).toBe("CMPE030");
+  });
+
+  it("leaves Tab alone when there is nothing to complete", async () => {
+    await openPopup({}, SESSIONS);
+
+    typeRoom("CMPE030");
+    expect(press("Tab").defaultPrevented).toBe(false);
+    typeRoom("CMPE13");
+    // CMPE134 is a confirmed laboratory, so it is never offered.
+    expect(ghost()).toBe("");
+    expect(press("Tab").defaultPrevented).toBe(false);
+    typeRoom("cmpe0");
+    expect(press("Tab", { shiftKey: true }).defaultPrevented).toBe(false);
+  });
+
+  it("offers no completion outside the timetable", async () => {
+    await openPopup();
+
+    typeRoom("cmpe0");
+
+    expect(ghost()).toBe("");
+    expect(press("Tab").defaultPrevented).toBe(false);
   });
 
   it("removes a timed entry without touching the plain room", async () => {
