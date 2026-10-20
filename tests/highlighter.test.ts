@@ -123,7 +123,7 @@ describe("highlightTimetable", () => {
     expect(document.querySelectorAll("[data-emu-labmarker], .emu-labmarker-legend")).toHaveLength(0);
   });
 
-  it("does not guess that an exceptional room is a laboratory", () => {
+  it("does not highlight rooms absent from the verified list", () => {
     document.body.innerHTML = `
       <table>
         <thead><tr><th>Time</th><th>Tuesday</th><th>Thursday</th></tr></thead>
@@ -144,7 +144,7 @@ describe("highlightTimetable", () => {
     expect(document.querySelectorAll("[data-emu-labmarker]")).toHaveLength(0);
   });
 
-  it("does not promote a course to an outer layout cell containing the timetable", () => {
+  it("does not highlight an outer layout cell containing the timetable", () => {
     document.body.innerHTML = `
       <table><tr><td id="layout">
         <div class="schedule-table-content" id="schedule">
@@ -265,7 +265,7 @@ describe("highlightTimetable", () => {
 
     clearTimetableHighlights();
 
-    // The portal's own inline colour comes back, ours leaves no trace.
+    // Restore the original inline colour after clearing the highlight.
     expect(link.style.getPropertyValue("color")).toBe("rgb(255, 255, 255)");
     expect(link.style.getPropertyPriority("color")).toBe("");
     expect(cell.style.getPropertyValue("color")).toBe("");

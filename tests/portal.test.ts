@@ -109,9 +109,8 @@ describe("supplied UL/LI portal timetable", () => {
     expect(document.querySelectorAll(".emu-labmarker-legend-item")).toHaveLength(2);
   });
 
-  // The reported bug: a room used for a Friday tutorial was marked on every
-  // day it appears. The text fallback runs too, exactly as the content script
-  // runs it, because that pass once had no idea of days at all.
+  // Regression: a Friday-only rule previously highlighted the room on every day.
+  // Include the text fallback to check that it preserves the timed match.
   it.each([
     ["the first hour", "08:30"],
     ["the second hour", "09:30"],

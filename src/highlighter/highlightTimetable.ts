@@ -32,11 +32,8 @@ const BADGES: Record<LabClassification, { text: string; label: string }> = {
 };
 
 /**
- * The portal paints its course text white, and its own selectors outrank this
- * extension's stylesheet even with !important. On the pale cell background that
- * leaves white on pink, so the readable colour is written onto the elements
- * themselves: an inline !important declaration is the one thing an author
- * stylesheet cannot beat.
+ * Override the portal's white course text with inline !important colours
+ * so text remains readable against the highlighted cell background.
  */
 const TEXT_COLORS: Record<LabClassification, string> = {
   verified: "#17365d",
@@ -58,8 +55,7 @@ function inkTargets(element: HTMLElement, selector: string): HTMLElement[] {
 function paintInk(element: HTMLElement, classification: LabClassification): void {
   for (const node of inkTargets(element, "*")) {
     if (node.classList.contains(BADGE_CLASS)) continue;
-    // Whatever inline colour the portal had is remembered, so that clearing a
-    // mark gives the cell back exactly as it was found.
+    // Save the original inline colour value so it can be restored when clearing.
     if (!node.hasAttribute(INK_ATTRIBUTE)) {
       node.setAttribute(INK_ATTRIBUTE, node.style.getPropertyValue("color"));
     }
@@ -140,8 +136,7 @@ function updateLegends(root: ParentNode = document): void {
   root.querySelectorAll(".emu-labmarker-legend").forEach((legend) => legend.remove());
   for (const table of root.querySelectorAll(".schedule-panel, table")) {
     if (table.matches("table") && (table.closest(".schedule-panel") || table.querySelector(".schedule-panel"))) continue;
-    // Only the kinds actually present are explained, so a timetable without a
-    // user added room does not advertise one.
+    // Include only classifications present in this timetable.
     const kinds = LAB_CLASSIFICATIONS.filter((classification) =>
       table.querySelector(`[${MARKER_ATTRIBUTE}="${classification}"]`),
     );
@@ -165,8 +160,7 @@ function addMark(
   badge.className = BADGE_CLASS;
   badge.textContent = BADGES[classification].text;
   badge.title = BADGES[classification].label;
-  // A decorative span is not focusable, so role="img" is what lets assistive
-  // technology read the full label rather than the badge text alone.
+  // Expose the badge's full label to assistive technology.
   badge.setAttribute("role", "img");
   badge.setAttribute("aria-label", BADGES[classification].label);
   element.append(badge);
@@ -262,8 +256,8 @@ export function highlightLabRoomText(
 
   for (const [target, classification] of classificationByTarget) {
     if (classification === "normal") continue;
-    // The timetable pass already applied timed rules, which this pass cannot
-    // see. A mark it left that is at least as strong stays as it is.
+    // Preserve equal- or higher-priority marks, including timed-rule matches
+    // applied by the timetable pass.
     const existing = target.getAttribute(MARKER_ATTRIBUTE) as RoomClassification | null;
     if (existing && (CLASSIFICATION_RANK[existing] ?? 0) >= CLASSIFICATION_RANK[classification]) continue;
     clearMark(target);

@@ -331,8 +331,7 @@ describe("content script", () => {
     expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
   });
 
-  // Regression guard: the scan reconnects the observer in a finally block, so
-  // markup this version cannot read costs one scan rather than every later one.
+  // Verify that a parsing error does not stop observation of later updates.
   it("keeps watching the page after a scan throws", async () => {
     const parser = await vi.importActual<
       typeof import("../src/parser/parseTimetable")

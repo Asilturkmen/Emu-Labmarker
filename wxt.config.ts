@@ -7,9 +7,8 @@ export default defineConfig({
       "EMU ders programındaki laboratuvar derslerini renkli olarak işaretler.",
     homepage_url: "https://asilturkmen.com",
     permissions: ["storage"],
-    // The toolbar starts faded; entrypoints/background.ts swaps in the colour
-    // for a tab that reports a timetable. "icons" stays colourful because it
-    // is what the store and the extensions page show.
+    // Use grey toolbar icons by default; background.ts activates them per tab.
+    // Keep the store and extensions-page icons in colour.
     action: {
       default_icon: {
         16: "icons/icon-16-inactive.png",

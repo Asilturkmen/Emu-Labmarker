@@ -5,11 +5,11 @@
 <h1 align="center">EMU LabMarker</h1>
 
 <p align="center">
-  Ders programında hangi ders lab, hangisi değil: bir bakışta.
+  EMU ders programındaki lab sınıflarını işaretler.
 </p>
 
 <p align="center">
-  <a href="https://asilturkmen.com"><b>Asil Türkmen</b></a> Tarafından geliştirildi.
+  <a href="https://asilturkmen.com"><b>Asil Türkmen</b></a> tarafından geliştirildi.
 </p>
 
 <p align="center">
@@ -31,19 +31,18 @@
 
 <br>
 
-Portaldaki ders programı her dersi aynı maviyle gösteriyor. CMSE423/CMPE230 lab mı,
-CMSE456/CMPE128 düz sınıf mı? Bunu anlamak için oda kodlarını ezbere bilmen lazım.
-Ben de ezberlemek yerine bunu yazdım.
+EMU portalında tüm dersler aynı renkte görünüyor; lab sınıfları ayrıca belirtilmiyor.
+Bu eklentiyi kendi ders programımda lab sınıflarını ayırt etmek için yazdım.
 
-LabMarker, lab olan saatleri kırmızı bir çerçeve ve küçük bir `LAB SINIFI` etiketiyle
-işaretliyor. Geri kalan hiçbir şeye dokunmuyor. Hangi dersin lab olduğunu tahmin de
-etmiyor; sadece gerçekten lab olduğu bilinen odaları işaretliyor.
+LabMarker, kayıtlı lab sınıflarındaki dersleri kırmızı çerçeve ve `LAB SINIFI`
+etiketiyle işaretler. İşaretleme, dersin adına veya türüne değil, oda koduna dayanır.
+Kendi eklediğin lab ve tutorial kayıtları da ayrı renklerde gösterilir.
 
 ## Kurulum
 
-En kolay yol Chrome Web Store: **[EMU LabMarker'ı Chrome'a ekle](https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb)**,
-**Chrome'a ekle**'ye bas, ders programı sayfasını bir kez yenile. O kadar. Güncellemeler de
-kendiliğinden gelir.
+**[Chrome Web Store sayfasını aç](https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb)**,
+**Chrome'a ekle** düğmesine tıkla ve ders programı sayfasını yenile.
+Bu şekilde kurduğunda güncellemeler otomatik yüklenir.
 
 <p align="center">
   <a href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb"><img src="docs/store-banner.png" alt="EMU LabMarker'ı Chrome Web Store'da aç" width="880"></a>
@@ -70,47 +69,51 @@ Sonra ders programı sayfasını bir kez yenile. Bu yolla kurulan sürüm kendil
 
 <img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: aç/kapa anahtarı ve özel lab listesi">
 
-Kurulduğu an çalışır, ayar yapmadan da işini görür. Araç çubuğundaki simgesi ders
-programı sayfasındayken renkli, başka yerde gri olur. Tıklayınca açılan pencerede
-iki şey var:
+Eklenti, ders programı sayfasını yeniledikten sonra ek ayar gerektirmeden çalışır.
+Araç çubuğundaki simgesi ders programı sayfasında renkli, diğer sayfalarda gridir.
+Simgeye tıklayarak aşağıdaki ayarlara ulaşabilirsin:
 
-**Aç / kapa.** Anahtarı kapattığında işaretler anında kalkar, ders programı olduğu
-gibi kalır. Sayfayı yenilemeye gerek yok.
+**Aç / kapa.** Eklentiyi kapattığında işaretler kaldırılır.
+Değişiklik için sayfayı yenilemen gerekmez.
 
-**Kendi lab sınıfını ekleme.** Bazen hoca normalde lab olmayan bir sınıfı o dönem lab
-olarak kullanıyor. Oda kodunu yaz, Ekle'ye bas.Bu sınıflar turuncu renkte ve `ÖZEL LAB`
-etiketiyle görünür, kesin lablarla karışmaz. Çipin yanındaki × ile listeden çıkarabilirsiniz.
+**Lab sınıfı ekleme.** Listede bulunmayan bir sınıfta lab dersin varsa oda kodunu
+yazıp **Ekle** düğmesine tıkla. Eklediğin sınıflar turuncu renkte ve `ÖZEL LAB`
+etiketiyle gösterilir. Bir kaydı kaldırmak için yanındaki **×** düğmesine tıkla.
 
-**Sadece tek bir dersi işaretleme.** Bazen bir sınıf haftada yalnızca bir kez lab oluyor,
-mesela cuma 10:30'daki tutorial. Pencereyi ders programı sayfasındayken aç ve oda kodunu
-yaz; başını yazman yeter, programındaki oda gri olarak tamamlanır, Tab'a basınca dolar.
-Gün menüsünde sadece o sınıfta dersinin olduğu günler, saat menüsünde de o günkü dersler
-çıkar. Birini seç, Ekle'ye bas. Sadece o ders turuncu olur; aynı sınıftaki diğer dersler
-olduğu gibi kalır. Gün seçmezsen sınıf eskisi gibi her saat işaretlenir.
+**Belirli bir dersi işaretleme.** Aynı sınıftaki derslerden yalnızca birini işaretlemek
+için eklenti penceresini ders programı sayfasında aç ve oda kodunu yaz.
+Kodun ilk birkaç karakterini yazdığında programındaki sınıflardan bir öneri görünür;
+**Tab** tuşuyla tamamlayabilirsin. Gün ve saat menülerinde o sınıftaki derslerin
+listelenir. İlgili dersi seçip **Ekle** düğmesine tıkla.
+Gün seçmeden eklersen o sınıftaki tüm dersler işaretlenir.
 
-**Lab mı, tutorial mı?** Formun üstündeki **Tür** anahtarından Tutorial'ı seçersen sınıf mor
-renkte ve `TUTORIAL` etiketiyle işaretlenir; lablarla karışmaz.
+**Tutorial ekleme.** Formdaki **Tür** alanından **Tutorial** seçeneğini seç.
+Bu kayıtlar mor renkte ve `TUTORIAL` etiketiyle gösterilir.
 
 <br clear="all">
 
-## Hangi odalar lab sayılıyor
+## Kayıtlı lab sınıfları
 
-Şu an listede bilgisayar mühendisliğinin (CMPE) labları var: CMPE134, 135, 136, 137,
-227, 228, 230, 231, 235, 236, 238 ve 239. Hepsi doğrulanmış; tahminle eklenen yok.
+Listede, lab olarak kullanılan şu Bilgisayar Mühendisliği (CMPE) sınıfları bulunuyor:
+CMPE134, 135, 136, 137, 227, 228, 230, 231, 235, 236, 238 ve 239.
 
-Başka bölümdeysen programında kırmızı bir şey çıkmayabilir. Kendi labını yukarıdaki
-gibi ekleyebilirsin, ya da [bir issue açıp](https://github.com/Asilturkmen/Emu-Labmarker/issues/new) oda kodunu yazman yeter.
+Diğer bölümlerin lab sınıfları henüz listede yok. Bu sınıfları kendin ekleyebilir
+veya [GitHub'da bir issue açarak](https://github.com/Asilturkmen/Emu-Labmarker/issues/new)
+listeye eklenmesini istediğin oda kodunu bildirebilirsin.
 
 ## Gizlilik
 
-Eklenti sadece `student.emu.edu.tr` ve `students.emu.edu.tr` üzerinde çalışır,
-orada da yalnızca ders programı sayfasına bakar. Hiçbir veri toplamaz, hiçbir yere
-göndermez. İstediği tek izin `storage`; o da aç/kapa tercihini ve eklediğin sınıfları kendi tarayıcında saklamak için.
+Eklenti, `student.emu.edu.tr` ve `students.emu.edu.tr` üzerindeki ders programını
+tarayıcı içinde okur ve işaretler. Ders programı ve ayarların bir sunucuya gönderilmez.
+`storage` izni, aç/kapa tercihini ve eklediğin lab veya tutorial kayıtlarını
+tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
 
-## Merhaba
+## Geliştirici
 
-Ben Asil. Bu eklentiyi kendi ihtiyacımdan ortaya çıkan bağımsız bir öğrenci projesi olarak geliştirdim. Üniversitenin resmi bir ürünü değildir. Başka neler yaptığımı görmek ya da bir şey söylemek isterseneniz web sitemi ziyaret edebilirsiniz:
-**[asilturkmen.com](https://asilturkmen.com)**
+Ben Asil Türkmen. EMU LabMarker, kendi kullanımım için geliştirdiğim bağımsız bir
+öğrenci projesi; Doğu Akdeniz Üniversitesinin resmî ürünü değil.
+Diğer projelerimi ve iletişim bilgilerimi
+**[asilturkmen.com](https://asilturkmen.com)** adresinde bulabilirsin.
 
 İşine yaradıysa bir kahve ısmarlayabilirsin:
 

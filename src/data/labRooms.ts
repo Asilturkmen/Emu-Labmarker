@@ -45,13 +45,12 @@ export function isVerifiedLabRoom(
 
 export const NO_ROOMS: ReadonlySet<string> = new Set<string>();
 
-/** Keeps a hand-maintained list from growing without bound. */
+/** Maximum number of user-defined rules. */
 export const MAX_CUSTOM_ROOMS = 50;
 
 /**
- * Rooms are always compared as whole normalized codes, so an unusually short
- * code cannot match unrelated courses. The shape can therefore stay permissive:
- * it only has to look like a room rather than free text.
+ * Accept varied room-code formats. Matching uses the complete normalized code,
+ * so short codes cannot match part of another code.
  */
 export function isValidRoomCode(room: string): boolean {
   const normalized = normalizeRoom(room);

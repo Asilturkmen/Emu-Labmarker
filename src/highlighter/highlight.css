@@ -12,24 +12,11 @@ td[data-emu-labmarker] {
   vertical-align: middle !important;
 }
 
-/* The portal's real cells are LI elements; its SPAN is the content wrapper.
-   The cell becomes a grid with one content column between two gutters, and
-   every child is placed in that column, so the badge stacks under the
-   courses rather than beside them, whatever layout the portal gives the
-   cell itself.
-
-   The gutters are what inset the text from the coloured border. They are
-   grid tracks rather than padding on the span because a course code such as
-   CMSE443/CMPE230 has no line-break opportunity, and on a laptop-sized
-   window the portal's cell is barely wider than the code. A fixed 16px
-   padding then pushed the text out through the right edge of the cell.
-   A minmax(0, 16px) track gives its width up before the content overflows,
-   so the inset is 16px where the cell has room and shrinks towards zero
-   where it does not. The content column must stay 1fr (an auto minimum),
-   not minmax(0, 1fr): the auto minimum is what lets the course text claim
-   its width from the gutters first. Should the code be wider than even the
-   bare cell, centring the grid spreads the excess over both edges, which is
-   how the portal's own centred cells behave too. */
+/* Stack the course content and badge in the centre column of each LI cell.
+   Shrinkable minmax(0, 16px) gutters prevent fixed padding from pushing long
+   course codes out of narrow cells. Keep the content column at 1fr so its
+   automatic minimum width shrinks the gutters before the text overflows.
+   If the code still exceeds the cell width, centre the overflow on both sides. */
 li.ctime[data-emu-labmarker] {
   box-sizing: border-box !important;
   display: grid !important;
@@ -74,10 +61,8 @@ li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
 }
 
-/* The badge stays in the cell's flow, below the course entries. Floating it
-   over the corner used to cover the room code whenever a cell held two
-   courses, because the room is the rightmost part of each entry. The auto
-   left margin is what pushes it to the right edge of the content column. */
+/* Place the badge below the course entries so it cannot cover a room code.
+   The auto left margin aligns it to the right of the content column. */
 .emu-labmarker-badge {
   position: static !important;
   display: flex !important;
@@ -122,9 +107,8 @@ li.ctime[data-emu-labmarker] > span {
   background: #ffd3d7;
 }
 
-/* Rooms the user added themselves are not confirmed laboratories, so they get
-   their own colour. These selectors carry the same specificity as the shared
-   [data-emu-labmarker] rules above and must therefore stay last in the file. */
+/* Use a separate colour for user-defined labs.
+   Keep these rules after the shared rules, which have the same specificity. */
 [data-emu-labmarker="custom"] {
   background: #fef2d6 !important;
   box-shadow: inset 0 0 0 3px #f08c14 !important;
@@ -145,8 +129,7 @@ li.ctime[data-emu-labmarker] > span {
   background: #fef2d6;
 }
 
-/* Tutorial rooms are the user's own too, but not laboratories, so they get a
-   colour of their own. Same specificity rules as the custom block above. */
+/* Use purple for tutorials. Keep these rules after the shared rules. */
 [data-emu-labmarker="tutorial"] {
   background: #efe7ff !important;
   box-shadow: inset 0 0 0 3px #8b5cf6 !important;

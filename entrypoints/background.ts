@@ -7,9 +7,7 @@ export default defineBackground(() => {
     const tabId = sender.tab?.id;
     if (tabId === undefined) return;
 
-    // Only this tab is changed. A tab specific icon is dropped by the browser
-    // as soon as the tab navigates, so leaving the portal restores the faded
-    // default without anything here having to watch for it.
+    // Apply the icon to this tab. Navigation resets it to the manifest default.
     void browser.action.setIcon({ tabId, path: { ...ACTIVE_ICON_PATHS } });
   });
 });

@@ -16,7 +16,7 @@ function classify(
   const kinds = customRules
     .filter((rule) => ruleMatches(rule, block))
     .map(ruleKind);
-  // Where both apply, the laboratory is what matters.
+  // Lab rules take priority over tutorial rules.
   if (kinds.includes("lab")) return "custom";
   if (kinds.includes("tutorial")) return "tutorial";
   return "normal";

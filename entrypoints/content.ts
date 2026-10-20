@@ -26,9 +26,7 @@ import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 // collapses a burst of mutations into a single rescan.
 const RESCAN_DELAY_MS = 100;
 
-// A match pattern compares the path case sensitively, so every spelling the
-// portal uses would need its own entry. Matching the site and checking the
-// path here covers them all, including spellings a future release invents.
+// Match both portal hosts, then check the timetable path without case sensitivity.
 const TIMETABLE_PATH = /^\/academic\/timetable/i;
 
 // The portal answers on both hosts, and students reach it through either one.
@@ -38,16 +36,12 @@ export default defineContentScript({
   async main() {
     if (!TIMETABLE_PATH.test(location.pathname)) return;
 
-    // Lets the background worker light up this tab's toolbar icon. Nothing
-    // here depends on the answer, and a worker that is still starting up must
-    // not keep the timetable from being marked.
+    // Request the active icon without delaying highlighting if the worker is unavailable.
     void browser.runtime.sendMessage(TIMETABLE_ACTIVE_MESSAGE).catch(() => {});
 
-    // The popup offers only the days and times a room is used, read from
-    // here. The page is read afresh on every request, even while marking is
-    // switched off, so the answer always matches what is on screen. It is sent
-    // synchronously: a listener that returns a promise is not honoured by
-    // every browser this runs in.
+    // Read the current timetable for each popup request, even when highlighting is off.
+    // Use sendResponse for compatibility with browsers that do not support
+    // Promise-returning message listeners.
     browser.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (message !== LIST_SESSIONS_MESSAGE) return;
       try {
@@ -67,9 +61,7 @@ export default defineContentScript({
       rescan = null;
       observer.disconnect();
 
-      // Reconnecting in a finally block matters: a scan that throws on markup
-      // this version cannot read would otherwise leave the page unobserved,
-      // and every later portal re-render would go unnoticed until a reload.
+      // Reconnect the observer even if parsing fails, so later updates are still detected.
       try {
         clearTimetableHighlights();
         if (enabled) {
@@ -77,10 +69,8 @@ export default defineContentScript({
           const blocks = groupMeetingBlocks(rows);
           const meetings = resolveMeetings(blocks, undefined, customRules);
           highlightTimetable(meetings);
-          // Some portal releases render course entries as plain text instead
-          // of links, which the timetable parser cannot see. Text carries no
-          // day or hour, so only rules covering every hour apply here; a
-          // timed rule would otherwise spill onto the room's other meetings.
+          // Handle plain-text entries that the link parser misses.
+          // This pass has no day/time context, so it accepts only room-wide rules.
           highlightLabRoomText(
             document,
             undefined,

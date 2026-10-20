@@ -47,9 +47,8 @@ const roomGhost = requireElement<HTMLElement>("#room-ghost");
 
 let rules: CustomLabRule[] = [];
 /**
- * The open timetable's meetings, or null when the popup was opened anywhere
- * else. A single meeting can only be picked from these, so that the day and
- * time lists never offer an hour the room is not used.
+ * Meetings from the active timetable, or null when unavailable.
+ * These populate the day and time options for the entered room.
  */
 let sessions: TimetableSession[] | null = null;
 /** The timetable room the typed text completes to, shown greyed out. */
@@ -113,8 +112,8 @@ function renderRules(): void {
 const ADD_MESSAGES: Record<AddRuleStatus, (rule: CustomLabRule) => string> = {
   added: (rule) => `${ruleLabel(rule)} eklendi.`,
   duplicate: (rule) => `${ruleLabel(rule)} listede zaten var.`,
-  verified: (rule) => `${rule.room} zaten kesin lab listesinde.`,
-  covered: (rule) => `${rule.room} zaten her saat için listede.`,
+  verified: (rule) => `${rule.room} kayıtlı lab sınıfları arasında.`,
+  covered: (rule) => `${rule.room} için tüm ders saatlerini kapsayan bir kayıt var.`,
   invalid: () => "Geçerli bir sınıf kodu yaz (örnek: CMPE025).",
   "invalid-time": () => "Dersin başladığı saati seç.",
   limit: () => "Daha fazla sınıf eklenemiyor, önce birini çıkar.",
@@ -128,13 +127,12 @@ function reportAdd({ status, rule, rules: current, absorbed }: AddRuleResult): v
       ? current.find((existing) => ruleKey(existing) === ruleKey(rule)) ?? rule
       : rule;
   let message = ADD_MESSAGES[status](shown);
-  if (absorbed) message += " Bu sınıfın saatli kayıtları buna dahil edildi.";
+  if (absorbed) message += " Bu kaydın kapsadığı gün ve saat kayıtları birleştirildi.";
   setRoomStatus(message, status === "added" ? "info" : "error");
 }
 
-// Every change reads the stored list, edits it and writes it back. Two quick
-// clicks must not both start from the same list, or the second write would
-// silently drop the first, so changes run one after another.
+// Serialize read-modify-write operations to prevent concurrent changes from
+// overwriting each other.
 let pending: Promise<void> = Promise.resolve();
 
 function serialize(task: () => Promise<void>): Promise<void> {
@@ -150,8 +148,7 @@ async function initialize(): Promise<void> {
     rules = await getCustomLabRules();
     renderRules();
   } catch {
-    // Without this the popup would sit on "Durum yükleniyor…" with a dead
-    // switch, which reads as a frozen popup rather than a storage failure.
+    // Replace the loading status with an error when storage cannot be read.
     statusText.textContent = "Ayarlar okunamadı";
     setRoomStatus("Ayarlar okunamadı. Tarayıcıyı yeniden başlatmayı dene.", "error");
   }
@@ -164,7 +161,7 @@ toggle.addEventListener("change", async () => {
   try {
     await setLabMarkerEnabled(enabled);
   } catch {
-    // The switch must not claim a state that was never written to storage.
+    // Restore the previous toggle state if saving fails.
     render(!enabled);
     setRoomStatus("Tercih kaydedilemedi.", "error");
   } finally {
@@ -208,7 +205,7 @@ function renderTimeOptions(): void {
     createOption(start, `${start}–${formatMinutes(session.endMinutes)} · ${session.courseCode}`),
   );
 
-  // A single meeting is simply chosen; there is nothing to pick between.
+  // Select the time automatically when there is only one meeting.
   timeSelect.replaceChildren(
     ...(options.length === 1 ? options : [createOption("", "Saat"), ...options]),
   );
@@ -266,9 +263,8 @@ function renderDayOptions(): void {
 
 roomInput.addEventListener("input", renderDayOptions);
 
-// Tab takes the suggestion, as does the right arrow once the caret is at the
-// end. Without a suggestion both keep their usual meaning, so Tab still moves
-// on to the next field.
+// Accept a suggestion with Tab, or ArrowRight at the end of the input.
+// Otherwise, preserve normal keyboard navigation.
 roomInput.addEventListener("keydown", (event) => {
   if (!suggestion || event.altKey || event.ctrlKey || event.metaKey) return;
   const end = roomInput.value.length;
@@ -356,10 +352,9 @@ roomList.addEventListener("click", (event) => {
 });
 
 void (async () => {
-  // Queued, so an entry submitted before the list has loaded cannot write
-  // over rules it never saw.
+  // Load stored rules before processing any submitted changes.
   await serialize(initialize);
-  // Outside the queue: nothing the user does has to wait for the tab.
+  // Fetch timetable sessions separately from the storage update queue.
   sessions = await loadSessions();
   renderDayOptions();
 })();

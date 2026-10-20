@@ -33,9 +33,8 @@ const SESSIONS: Session[] = [
 ];
 
 /**
- * Loads the popup exactly as the browser would: real markup, real script.
- * With sessions, the active tab is a timetable that answers the popup;
- * without, it is any other page and has nobody to answer.
+ * Load the popup markup and script with mocked extension APIs.
+ * With sessions, mock a timetable response; otherwise, reject the tab message.
  */
 async function openPopup(
   stored: Record<string, unknown> = {},
@@ -186,7 +185,7 @@ describe("popup custom room list", () => {
 
     addRoom("CMPE134");
     await vi.waitFor(() =>
-      expect(status()).toBe("CMPE134 zaten kesin lab listesinde."),
+      expect(status()).toBe("CMPE134 kayıtlı lab sınıfları arasında."),
     );
     expect(document.querySelector("#room-status")?.getAttribute("data-tone")).toBe("error");
 

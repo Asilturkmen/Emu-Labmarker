@@ -62,16 +62,14 @@ function isSession(value: unknown): value is TimetableSession {
   );
 }
 
-/** Whatever answers the message is checked before the popup relies on it. */
+/** Validate the session response before using it in the popup. */
 export function parseSessions(value: unknown): TimetableSession[] | null {
   return Array.isArray(value) ? value.filter(isSession) : null;
 }
 
 /**
- * The first timetable room that starts with what has been typed, which the
- * popup offers as an inline completion. Nothing is offered once the typed
- * text is a room in its own right, and confirmed laboratories are left out:
- * they are marked already and cannot be added.
+ * Suggest the first matching room in alphabetical order.
+ * Skip exact room matches and verified labs, which cannot be added manually.
  */
 export function suggestRoom(
   input: string,

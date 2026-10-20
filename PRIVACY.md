@@ -1,43 +1,43 @@
 # Gizlilik Politikası
 
-**EMU LabMarker** — son güncelleme: 26 Eylül 2026
+**EMU LabMarker** — son güncelleme: 21 Ekim 2026
 
 ## Kısaca
 
-EMU LabMarker hiçbir veri toplamaz, saklamaz veya üçüncü taraflarla paylaşmaz.
-Eklentinin geliştiricisi dahil hiç kimseye hiçbir bilgi gönderilmez. Eklentinin
-sunucusu yoktur ve hiçbir ağ isteği yapmaz.
+EMU LabMarker ders programını tarayıcı içinde okur ve işaretler.
+Ayarlar ve kullanıcının eklediği kayıtlar yerel olarak saklanır; geliştiriciye
+veya üçüncü taraflara gönderilmez. Eklentinin sunucusu yoktur.
 
 ## Eklenti ne yapıyor
 
-EMU LabMarker yalnızca `https://student.emu.edu.tr` ve `https://students.emu.edu.tr`
-alan adlarında, yalnızca ders programı sayfasında (`/Academic/Timetable`) çalışır.
-Bu sayfada zaten ekranda görünen ders programı tablosunu okur ve laboratuvar
-derslerini renkli olarak işaretler. Kullanıcı tek bir dersi seçebilsin diye eklenti
-penceresi de bu sayfadaki derslerin gününü ve saatini okuyabilir. Okunan bilgi
-tarayıcının dışına çıkmaz; sayfa kapandığında geriye hiçbir kayıt kalmaz.
+Eklenti, `https://student.emu.edu.tr` ve `https://students.emu.edu.tr`
+üzerindeki ders programı sayfasını (`/Academic/Timetable`) okur.
+Ders kodlarını ve oda bilgilerini kullanarak lab ve tutorial işaretlerini ekler.
+Eklenti penceresindeki gün ve saat seçenekleri de bu programdan alınır.
 
-Adres ders programı sayfası değilse eklenti hiçbir şey yapmadan sonlanır.
+Ders programının bir kopyası kalıcı olarak saklanmaz. Kullanıcının eklediği
+lab ve tutorial kayıtları ise aşağıda açıklandığı şekilde tarayıcıda tutulur.
+Ders programı dışındaki portal sayfalarında içerik okunmaz veya işaretlenmez.
 
 ## Tarayıcıda saklananlar
 
-Eklenti, Chrome'un `storage` iznini yalnızca iki şey için kullanır:
+Eklenti, Chrome'un `storage.local` alanında şu ayarları saklar:
 
 - Eklentinin açık mı kapalı mı olduğu bilgisi
 - Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`); yalnızca tek
   bir ders için eklendiyse o dersin günü, başlangıç saati ve ders kodu; ayrıca
   sınıfın lab mı tutorial mı olarak eklendiği
 
-Bu iki bilgi yalnızca kullanıcının kendi tarayıcısında durur. Hiçbir yere
-gönderilmez. Eklenti kaldırıldığında tarayıcı bu verileri de siler; kullanıcı
-dilediği zaman eklediği sınıfları eklenti penceresinden tek tek kaldırabilir.
+Bu ayarlar tarayıcıda saklanır ve bir sunucuya gönderilmez.
+Kullanıcı, eklediği kayıtları eklenti penceresinden kaldırabilir.
+Eklenti kaldırıldığında tarayıcıdaki kayıtları da silinir.
 
 ## Toplanmayan veriler
 
-Aşağıdakilerin hiçbiri toplanmaz, işlenmez veya aktarılmaz: kimlik bilgileri,
-ad, e-posta adresi, öğrenci numarası, sağlık bilgisi, finansal bilgi, kimlik
-doğrulama bilgisi, kişisel iletişim içeriği, konum, web geçmişi, kullanıcı
-etkinliği ve web sitesi içeriği.
+Eklenti; ad, e-posta adresi, öğrenci numarası, kimlik ve giriş bilgileri,
+sağlık veya finansal bilgiler, kişisel mesajlar, konum ya da tarama geçmişi
+toplamaz. Kullanıcı etkinliğini izlemez. Sayfa içeriğini yalnızca yukarıda
+açıklanan ders programı işlevleri için tarayıcı içinde işler.
 
 Eklenti çerez kullanmaz, analitik veya izleme aracı içermez, reklam göstermez.
 

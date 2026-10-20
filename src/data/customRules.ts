@@ -38,19 +38,16 @@ export function weekdayShortLabel(day: Weekday): string {
 }
 
 /**
- * What the user says a room is used for. A laboratory is the default and is
- * never written down, so rules saved before tutorials existed read unchanged.
+ * The user-selected room type. Omit the default "lab" value from storage
+ * to remain compatible with records saved before tutorial support.
  */
 export type RuleKind = "lab" | "tutorial";
 
 /**
- * A room the user marked as a laboratory or a tutorial room themselves.
- * Without a time it covers every meeting in the room. With one it covers only
- * the meeting held there on that day at that time: a room that hosts a single
- * tutorial a week must not turn every other course taught in it into one.
- *
- * The course code is only a label for the popup. Matching deliberately ignores
- * it, so a rule keeps working when the portal spells the course differently.
+ * A user-defined lab or tutorial rule. Room-wide rules cover all meetings;
+ * timed rules cover the meeting containing the specified day and time.
+ * The course code is a display label, not a matching condition, so differences
+ * in the portal's course-code format do not affect matching.
  */
 export type CustomLabRule =
   | { room: string; day?: undefined; startMinutes?: undefined; course?: undefined; kind?: "tutorial" }
@@ -67,8 +64,7 @@ export function ruleKind(rule: CustomLabRule): RuleKind {
 }
 
 /**
- * Where two rules land on one meeting, the laboratory wins: it is the one the
- * extension exists to point out.
+ * Lab rules take priority over tutorial rules when both match a meeting.
  */
 const KIND_RANK: Record<RuleKind, number> = { tutorial: 1, lab: 2 };
 
@@ -93,8 +89,8 @@ function isValidCourseCode(course: string): boolean {
 }
 
 /**
- * Identifies a rule, so the same one cannot be added twice. The kind is left
- * out on purpose: one meeting cannot be both a laboratory and a tutorial.
+ * Deduplicate rules by room, day and time. Exclude kind so the same entry
+ * cannot be added again under a different type.
  */
 export function ruleKey(rule: CustomLabRule): string {
   return isTimedRule(rule)
@@ -127,8 +123,8 @@ export function ruleMatches(
 }
 
 /**
- * Rooms of one kind covered at every hour. The text fallback cannot tell which
- * day or hour a piece of text belongs to, so this is all it may be given.
+ * Return room-wide rules of the requested kind.
+ * The text fallback cannot apply timed rules because it has no day/time context.
  */
 export function roomWideRooms(
   rules: ReadonlyArray<CustomLabRule>,
@@ -168,9 +164,8 @@ function parseRule(entry: unknown): CustomLabRule | null {
 }
 
 /**
- * Extension storage can be edited outside the popup, so anything that is not
- * a usable rule is dropped instead of trusted. Earlier versions stored plain
- * room codes, and those still read as rules covering every hour.
+ * Validate stored rules and discard invalid entries.
+ * Read legacy room-code strings as room-wide lab rules.
  */
 export function parseCustomLabRules(value: unknown): CustomLabRule[] {
   if (!Array.isArray(value)) return [];
@@ -187,9 +182,7 @@ export function parseCustomLabRules(value: unknown): CustomLabRule[] {
 }
 
 /**
- * Laboratories covering every hour stay plain strings, exactly as earlier
- * versions wrote them, so their stored lists read the same in either
- * direction.
+ * Store room-wide lab rules as strings for compatibility with earlier versions.
  */
 export function serializeCustomLabRules(rules: ReadonlyArray<CustomLabRule>): unknown[] {
   return rules.map((rule) => {
@@ -278,8 +271,7 @@ export function addRuleToList(
   if (rules.some((existing) => ruleKey(existing) === key)) {
     return { status: "duplicate", rule, ...unchanged };
   }
-  // A meeting shows the stronger kind, so a timed rule under an every-hour
-  // rule of at least its own rank would never be seen.
+  // Reject a timed rule already covered by a room-wide rule of equal or higher priority.
   const outranks = (existing: CustomLabRule, other: CustomLabRule) =>
     kindRank(ruleKind(existing)) >= kindRank(ruleKind(other));
   if (
@@ -289,10 +281,8 @@ export function addRuleToList(
     return { status: "covered", rule, ...unchanged };
   }
 
-  // For the same reason an every-hour rule makes the room's timed rules of
-  // its rank or below redundant, and keeping them would only leave chips
-  // behind that change nothing. A timed laboratory inside a tutorial room
-  // still shows, so it stays.
+  // A room-wide rule replaces timed rules of equal or lower priority.
+  // Keep higher-priority timed rules, such as a lab within a tutorial room.
   const kept = isTimedRule(rule)
     ? [...rules]
     : rules.filter((existing) => existing.room !== room || !outranks(rule, existing));

@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { isValidRoomCode } from "../src/data/labRooms";
 
 describe("isValidRoomCode", () => {
-  it("accepts room codes however they are typed", () => {
+  it("accepts room codes with varying case and spacing", () => {
     for (const room of ["CMPE025", "cmpe 025", " cl114 ", "CL 116", "LAB1"]) {
       expect(isValidRoomCode(room), room).toBe(true);
     }

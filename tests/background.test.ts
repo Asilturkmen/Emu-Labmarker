@@ -49,7 +49,7 @@ afterEach(() => {
 });
 
 describe("toolbar icon", () => {
-  it("lights up the tab that reports a timetable", async () => {
+  it("sets the active icon for the tab that reports a timetable", async () => {
     await startBackground();
 
     notify(TIMETABLE_ACTIVE_MESSAGE, { tab: { id: 7 } });
@@ -79,7 +79,7 @@ describe("toolbar icon", () => {
     expect(setIconCalls).toHaveLength(0);
   });
 
-  it("points at icon files the extension actually ships", () => {
+  it("references icon files included in the extension", () => {
     expect(Object.values(ACTIVE_ICON_PATHS)).toEqual([
       "icons/icon-16.png",
       "icons/icon-32.png",

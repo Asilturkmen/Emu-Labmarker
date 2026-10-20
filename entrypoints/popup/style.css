@@ -109,10 +109,7 @@ p {
 
 .rooms { margin-top: 16px; }
 
-/* Chrome sizes a popup to its content's natural width. Long hints, status
-   messages, a row of chips or the form would each stretch the popup far
-   wider than it has always been, so they fill the width the rest of the
-   popup sets without adding to it. */
+/* Fill the available width without letting long form content widen the popup. */
 .fill {
   width: 0;
   min-width: 100%;
@@ -135,9 +132,8 @@ h2 {
 
 .room-form {
   display: grid;
-  /* The room and its button keep the row they always had. The day column
-     is as wide as its longest name, so no font can clip it, and the time,
-     which names the course too, takes the rest of the row below. */
+  /* Keep the room input and Add button on one row, with day and time below.
+     Size the day column to its content; let the time field use the remaining width. */
   grid-template-columns: auto minmax(0, 1fr) auto;
   grid-template-areas:
     "kind kind kind"
@@ -256,7 +252,7 @@ h2 {
 }
 
 .kind-option span:hover { color: #17365d; }
-/* Each kind wears the colour it gets on the timetable. */
+/* Match the chip colours to the timetable highlights. */
 .kind-option input:checked + span { background: #f08c14; color: #fff; }
 .kind-option input[value="tutorial"]:checked + span { background: #7c3aed; }
 .kind-option input:focus-visible + span { outline: 2px solid #1269b5; outline-offset: 1px; }
