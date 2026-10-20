@@ -262,6 +262,10 @@ export function highlightLabRoomText(
 
   for (const [target, classification] of classificationByTarget) {
     if (classification === "normal") continue;
+    // The timetable pass already applied timed rules, which this pass cannot
+    // see. A mark it left that is at least as strong stays as it is.
+    const existing = target.getAttribute(MARKER_ATTRIBUTE) as RoomClassification | null;
+    if (existing && (CLASSIFICATION_RANK[existing] ?? 0) >= CLASSIFICATION_RANK[classification]) continue;
     clearMark(target);
     target.setAttribute(FALLBACK_ATTRIBUTE, "");
     addMark(target, classification);

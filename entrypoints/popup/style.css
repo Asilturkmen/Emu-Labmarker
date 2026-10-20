@@ -22,6 +22,9 @@ body {
 }
 
 .brand img { border-radius: 10px; }
+.brand-link { display: flex; border-radius: 10px; transition: transform .15s; }
+.brand-link:hover { transform: scale(1.06); }
+.brand-link:focus-visible { outline: 3px solid rgb(18 105 181 / 35%); outline-offset: 2px; }
 
 h1 {
   margin: 0 0 2px;

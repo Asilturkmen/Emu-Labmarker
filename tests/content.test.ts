@@ -236,6 +236,23 @@ describe("content script", () => {
     }
   });
 
+  it("keeps a timed laboratory inside a room marked as a tutorial at every hour", async () => {
+    // The popup accepts this pair, because a laboratory outranks a tutorial.
+    // The text fallback only knows the every-hour rule and must not undo it.
+    stubEnvironment({
+      [CUSTOM_ROOMS_KEY]: [
+        { room: "CMPE025", kind: "tutorial" },
+        { room: "CMPE025", day: "friday", start: "08:30" },
+      ],
+    });
+
+    await startContentScript("/Academic/Timetable");
+
+    // Friday 08:30 and Monday 12:30, two hours each, in each of two layouts.
+    expect(marks("custom")).toHaveLength(4);
+    expect(marks("tutorial")).toHaveLength(4);
+  });
+
   it("marks a tutorial added in the popup in its own kind", async () => {
     await startContentScript("/Academic/Timetable");
 
