@@ -78,7 +78,8 @@ Değişiklik için sayfayı yenilemen gerekmez.
 
 **Lab sınıfı ekleme.** Listede bulunmayan bir sınıfta lab dersin varsa oda kodunu
 yazıp **Ekle** düğmesine tıkla. Eklediğin sınıflar turuncu renkte ve `ÖZEL LAB`
-etiketiyle gösterilir. Bir kaydı kaldırmak için yanındaki **×** düğmesine tıkla.
+etiketiyle gösterilir. Kayıtlar türüne göre gruplanır; grup satırına tıklayınca açılır.
+Bir kaydı kaldırmak için üstüne gelince çıkan **×** düğmesine tıkla.
 
 **Belirli bir dersi işaretleme.** Aynı sınıftaki derslerden yalnızca birini işaretlemek
 için eklenti penceresini ders programı sayfasında aç ve oda kodunu yaz.
@@ -89,6 +90,10 @@ Gün seçmeden eklersen o sınıftaki tüm dersler işaretlenir.
 
 **Tutorial ekleme.** Formdaki **Tür** alanından **Tutorial** seçeneğini seç.
 Bu kayıtlar mor renkte ve `TUTORIAL` etiketiyle gösterilir.
+
+**Renkler.** Başlıktaki palet düğmesinden kayıtlı lab, özel lab ve tutorial için
+sekiz renkten birini seçebilirsin. Seçtiğin renk ders programında hemen görünür.
+Seçim yapmazsan varsayılan renkler kullanılır.
 
 <br clear="all">
 
@@ -105,8 +110,8 @@ listeye eklenmesini istediğin oda kodunu bildirebilirsin.
 
 Eklenti, `student.emu.edu.tr` ve `students.emu.edu.tr` üzerindeki ders programını
 tarayıcı içinde okur ve işaretler. Ders programı ve ayarların bir sunucuya gönderilmez.
-`storage` izni, aç/kapa tercihini ve eklediğin lab veya tutorial kayıtlarını
-tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
+`storage` izni, aç/kapa tercihini, eklediğin lab veya tutorial kayıtlarını ve
+seçtiğin işaret renklerini tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
 
 ## Geliştirici
 

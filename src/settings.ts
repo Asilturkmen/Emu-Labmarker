@@ -1,4 +1,11 @@
 import {
+  COLOR_KINDS,
+  parseColorSettings,
+  presetColor,
+  type ColorKind,
+  type ColorSettings,
+} from "./colors";
+import {
   addRuleToList,
   parseCustomLabRules,
   removeRuleFromList,
@@ -10,6 +17,7 @@ import {
 
 export const LABMARKER_ENABLED_KEY = "emuLabmarkerEnabled";
 export const CUSTOM_ROOMS_KEY = "emuLabmarkerCustomRooms";
+export const COLORS_KEY = "emuLabmarkerColors";
 
 export async function getLabMarkerEnabled(): Promise<boolean> {
   const stored = await browser.storage.local.get(LABMARKER_ENABLED_KEY);
@@ -46,4 +54,21 @@ export async function removeCustomLabRules(
   for (const key of keys) rules = removeRuleFromList(rules, key);
   await setCustomLabRules(rules);
   return rules;
+}
+
+/** The chosen marking colours; invalid or missing values use the defaults. */
+export async function getColorSettings(): Promise<ColorSettings> {
+  const stored = await browser.storage.local.get(COLORS_KEY);
+  return parseColorSettings(stored[COLORS_KEY]);
+}
+
+/** Saves the colour of one kind and returns all colours as stored. */
+export async function setKindColor(kind: ColorKind, hex: string): Promise<ColorSettings> {
+  const chosen = presetColor(hex);
+  if (!(COLOR_KINDS as ReadonlyArray<string>).includes(kind) || chosen === null) {
+    throw new Error(`Invalid colour choice: ${kind} ${hex}`);
+  }
+  const colors = { ...(await getColorSettings()), [kind]: chosen };
+  await browser.storage.local.set({ [COLORS_KEY]: colors });
+  return colors;
 }

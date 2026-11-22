@@ -1,8 +1,12 @@
+/* Marking colours are custom properties. The content script sets them from
+   the user's choice; the fallbacks are the original colours, so the page looks
+   the same until a colour is picked. Text stays navy (#17365d) either way. */
+
 [data-emu-labmarker] {
   position: relative !important;
-  background: #ffd3d7 !important;
+  background: var(--emu-lm-verified-bg, #ffd3d7) !important;
   color: #17365d !important;
-  box-shadow: inset 0 0 0 3px #f12e4b !important;
+  box-shadow: inset 0 0 0 3px var(--emu-lm-verified-border, #f12e4b) !important;
   border-radius: 0 !important;
   text-align: left !important;
 }
@@ -46,8 +50,8 @@ li.ctime[data-emu-labmarker] > span {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #f12e4b !important;
-  color: #fff !important;
+  background: var(--emu-lm-verified-badge, #f12e4b) !important;
+  color: var(--emu-lm-verified-badge-ink, #fff) !important;
   border: 0 !important;
   border-radius: 7px !important;
   padding: 5px 8px !important;
@@ -102,16 +106,16 @@ li.ctime[data-emu-labmarker] > span {
   height: 25px;
   flex: 0 0 auto;
   box-sizing: border-box;
-  border: 3px solid #f12e4b;
+  border: 3px solid var(--emu-lm-verified-border, #f12e4b);
   border-radius: 6px;
-  background: #ffd3d7;
+  background: var(--emu-lm-verified-bg, #ffd3d7);
 }
 
 /* Use a separate colour for user-defined labs.
    Keep these rules after the shared rules, which have the same specificity. */
 [data-emu-labmarker="custom"] {
-  background: #fef2d6 !important;
-  box-shadow: inset 0 0 0 3px #f08c14 !important;
+  background: var(--emu-lm-custom-bg, #fef2d6) !important;
+  box-shadow: inset 0 0 0 3px var(--emu-lm-custom-border, #f08c14) !important;
 }
 
 [data-emu-labmarker="custom"],
@@ -121,18 +125,19 @@ li.ctime[data-emu-labmarker] > span {
 
 [data-emu-labmarker="custom"] > .emu-labmarker-badge,
 .emu-labmarker-legend-badge[data-kind="custom"] {
-  background: #f08c14 !important;
+  background: var(--emu-lm-custom-badge, #f08c14) !important;
+  color: var(--emu-lm-custom-badge-ink, #fff) !important;
 }
 
 .emu-labmarker-swatch[data-kind="custom"] {
-  border-color: #f08c14;
-  background: #fef2d6;
+  border-color: var(--emu-lm-custom-border, #f08c14);
+  background: var(--emu-lm-custom-bg, #fef2d6);
 }
 
 /* Use purple for tutorials. Keep these rules after the shared rules. */
 [data-emu-labmarker="tutorial"] {
-  background: #efe7ff !important;
-  box-shadow: inset 0 0 0 3px #8b5cf6 !important;
+  background: var(--emu-lm-tutorial-bg, #efe7ff) !important;
+  box-shadow: inset 0 0 0 3px var(--emu-lm-tutorial-border, #8b5cf6) !important;
 }
 
 [data-emu-labmarker="tutorial"],
@@ -142,10 +147,11 @@ li.ctime[data-emu-labmarker] > span {
 
 [data-emu-labmarker="tutorial"] > .emu-labmarker-badge,
 .emu-labmarker-legend-badge[data-kind="tutorial"] {
-  background: #7c3aed !important;
+  background: var(--emu-lm-tutorial-badge, #7c3aed) !important;
+  color: var(--emu-lm-tutorial-badge-ink, #fff) !important;
 }
 
 .emu-labmarker-swatch[data-kind="tutorial"] {
-  border-color: #8b5cf6;
-  background: #efe7ff;
+  border-color: var(--emu-lm-tutorial-border, #8b5cf6);
+  background: var(--emu-lm-tutorial-bg, #efe7ff);
 }

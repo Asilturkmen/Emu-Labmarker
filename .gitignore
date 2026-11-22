@@ -6,3 +6,6 @@ node_modules/
 # Magaza basvurusu icin hazirlanan metinler ve gorseller yerelde kalir.
 docs/store-listing.md
 docs/store/
+
+# Yerel geliştirme tarayıcısı ayarı (npm run dev için)
+web-ext.config.ts

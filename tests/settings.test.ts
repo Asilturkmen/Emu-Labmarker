@@ -8,6 +8,9 @@ import {
   removeCustomLabRules,
   setLabMarkerEnabled,
   CUSTOM_ROOMS_KEY,
+  COLORS_KEY,
+  getColorSettings,
+  setKindColor,
 } from "../src/settings";
 
 function stubStorage(stored: Record<string, unknown> = {}) {
@@ -117,5 +120,47 @@ describe("custom lab rules", () => {
       { room: "CL116" },
     ]);
     expect(await getCustomLabRules()).toEqual([{ room: "CL116" }]);
+  });
+});
+
+describe("marking colours", () => {
+  const DEFAULTS = { verified: "#f12e4b", custom: "#f08c14", tutorial: "#8b5cf6" };
+
+  it("use the defaults until a colour is chosen", async () => {
+    stubStorage();
+
+    expect(COLORS_KEY).toBe("emuLabmarkerColors");
+    expect(await getColorSettings()).toEqual(DEFAULTS);
+  });
+
+  it("persist one kind at a time and keep the others", async () => {
+    const data = stubStorage();
+
+    expect(await setKindColor("custom", "#22A55B")).toEqual({ ...DEFAULTS, custom: "#22a55b" });
+    expect(data[COLORS_KEY]).toEqual({ ...DEFAULTS, custom: "#22a55b" });
+
+    await setKindColor("tutorial", "#0fa3b1");
+    expect(await getColorSettings()).toEqual({
+      verified: "#f12e4b",
+      custom: "#22a55b",
+      tutorial: "#0fa3b1",
+    });
+  });
+
+  it("refuse anything but the presets", async () => {
+    const data = stubStorage();
+
+    await expect(setKindColor("custom", "#123456")).rejects.toThrow();
+    await expect(setKindColor("custom", "red")).rejects.toThrow();
+    await expect(setKindColor("nothing" as "custom", "#22a55b")).rejects.toThrow();
+    expect(data[COLORS_KEY]).toBeUndefined();
+  });
+
+  it("fall back to the defaults for corrupt storage, kind by kind", async () => {
+    stubStorage({ [COLORS_KEY]: { verified: "#22a55b", custom: "#123456", tutorial: 3 } });
+    expect(await getColorSettings()).toEqual({ ...DEFAULTS, verified: "#22a55b" });
+
+    stubStorage({ [COLORS_KEY]: "nonsense" });
+    expect(await getColorSettings()).toEqual(DEFAULTS);
   });
 });

@@ -13,8 +13,11 @@ import {
   roomWideRooms,
   type CustomLabRule,
 } from "../src/data/customRules";
+import { applyTimetableColors, parseColorSettings } from "../src/colors";
 import {
+  COLORS_KEY,
   CUSTOM_ROOMS_KEY,
+  getColorSettings,
   getCustomLabRules,
   getLabMarkerEnabled,
   LABMARKER_ENABLED_KEY,
@@ -55,6 +58,9 @@ export default defineContentScript({
     let enabled = await getLabMarkerEnabled();
     let customRules: ReadonlyArray<CustomLabRule> = await getCustomLabRules();
 
+    // Colours are CSS custom properties of the stylesheet, so a change needs no rescan.
+    applyTimetableColors(document.documentElement, await getColorSettings());
+
     const observer = new MutationObserver(() => scheduleRun());
 
     const run = () => {
@@ -93,6 +99,11 @@ export default defineContentScript({
 
       const enabledChange = changes[LABMARKER_ENABLED_KEY];
       const roomsChange = changes[CUSTOM_ROOMS_KEY];
+      const colorsChange = changes[COLORS_KEY];
+
+      if (colorsChange) {
+        applyTimetableColors(document.documentElement, parseColorSettings(colorsChange.newValue));
+      }
       if (!enabledChange && !roomsChange) return;
 
       if (enabledChange) enabled = enabledChange.newValue !== false;

@@ -1,107 +1,142 @@
 <!doctype html>
-<html lang="tr">
+<html lang="tr" class="preload">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>EMU LabMarker</title>
     <link rel="stylesheet" href="./style.css" />
   </head>
-  <body>
-    <main class="popup">
-      <header class="brand">
-        <a
-          class="brand-link"
-          href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd"
-          target="_blank"
-          rel="noopener"
-          title="Chrome Web Store'da aç"
-          ><img
-            src="/icons/icon-48.png"
-            width="42"
-            height="42"
-            alt="EMU LabMarker'ı Chrome Web Store'da aç"
-        /></a>
-        <div>
+  <body data-enabled="true" data-view="main">
+    <div class="views" id="views">
+      <main class="view view-main" id="view-main">
+        <header class="brand">
+          <a
+            class="brand-link"
+            href="https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd"
+            target="_blank"
+            rel="noopener"
+            title="Chrome Web Store'da aç"
+            ><img
+              src="/icons/icon-128.png"
+              width="42"
+              height="42"
+              alt="EMU LabMarker'ı Chrome Web Store'da aç"
+          /></a>
           <h1>EMU LabMarker</h1>
-          <p>Ders programındaki lab sınıfları</p>
+          <p class="brand-subtitle">Ders programındaki lab sınıfları</p>
+          <div class="actions">
+            <button type="button" class="icon-btn" id="open-colors" title="Renkler" aria-label="Renkler">
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.75a6.25 6.25 0 1 0 0 12.5c.85 0 1.4-.55 1.4-1.3 0-.38-.15-.66-.37-.92-.22-.26-.36-.53-.36-.88 0-.72.58-1.2 1.3-1.2h1.45a2.83 2.83 0 0 0 2.83-2.83C14.25 4.1 11.45 1.75 8 1.75Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><circle cx="4.6" cy="7.4" r="1" fill="currentColor"/><circle cx="6.6" cy="4.7" r="1" fill="currentColor"/><circle cx="9.9" cy="4.7" r="1" fill="currentColor"/></svg>
+            </button>
+            <label class="control" for="enabled-toggle" title="Eklentiyi aç veya kapat">
+              <small id="status-text">…</small>
+              <input
+                id="enabled-toggle"
+                type="checkbox"
+                role="switch"
+                aria-label="Eklenti"
+                aria-describedby="status-text"
+                disabled
+              />
+              <span class="switch" aria-hidden="true"></span>
+            </label>
+          </div>
+        </header>
+
+        <section class="rooms" aria-labelledby="rooms-title">
+          <h2 id="rooms-title">Özel lab ve tutorial sınıfları</h2>
+          <form id="room-form" class="card add" autocomplete="off">
+            <div class="kind-row" role="radiogroup" aria-labelledby="kind-label">
+              <span id="kind-label" class="kind-label">Tür</span>
+              <span class="segmented" id="kind-switch" data-value="lab">
+                <span class="seg-thumb" aria-hidden="true"></span>
+                <label class="seg"><input type="radio" name="kind" value="lab" checked /><span>Lab</span></label>
+                <label class="seg"><input type="radio" name="kind" value="tutorial" /><span>Tutorial</span></label>
+              </span>
+            </div>
+            <div class="entry">
+              <div class="room-field">
+                <label class="vh" for="room-input">Sınıf kodu</label>
+                <input
+                  id="room-input"
+                  class="field"
+                  type="text"
+                  placeholder="CMPE025"
+                  spellcheck="false"
+                  autocapitalize="characters"
+                  maxlength="24"
+                  aria-autocomplete="inline"
+                  aria-describedby="room-status form-hint"
+                />
+                <span id="room-ghost" class="ghost" aria-hidden="true"></span>
+              </div>
+              <button type="submit" class="primary">Ekle</button>
+            </div>
+            <div class="when">
+              <div class="select" id="day" title="Gün ve saat seçersen yalnızca o ders işaretlenir.">
+                <span class="vh" id="day-label">Gün</span>
+                <button type="button" class="select-btn" id="day-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="day-list" aria-labelledby="day-label day-value" disabled><span class="select-value" id="day-value">Her zaman</span><svg viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+              <div class="select" id="time">
+                <span class="vh" id="time-label">Ders saati</span>
+                <button type="button" class="select-btn" id="time-btn" aria-haspopup="listbox" aria-expanded="false" aria-controls="time-list" aria-labelledby="time-label time-value" disabled><span class="select-value" id="time-value">Saat</span><svg viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+              </div>
+            </div>
+            <p id="form-hint" class="form-hint" hidden>
+              <svg viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.25" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 5.4v3.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="6" cy="3.5" r=".8" fill="currentColor"/></svg><span></span>
+            </p>
+          </form>
+
+          <p id="room-status" class="room-status" role="status" aria-live="polite">
+            <svg class="i-error" viewBox="0 0 12 12" aria-hidden="true"><circle cx="6" cy="6" r="5.25" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M6 3.4v3.1" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="6" cy="8.6" r=".8" fill="currentColor"/></svg><svg class="i-ok" viewBox="0 0 12 12" aria-hidden="true"><path d="m2.5 6.3 2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span>
+          </p>
+
+          <div class="card records" aria-label="Eklediğin sınıflar"><div class="rec-scroll" id="room-list"></div></div>
+        </section>
+
+        <div class="credit-wrap">
+          <p class="credit"><a href="https://asilturkmen.com" target="_blank" rel="noopener" title="asilturkmen.com · Bağımsız bir öğrenci projesi">Asil Türkmen<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M2 6 6 2M2.6 2H6v3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a> tarafından geliştirildi</p>
         </div>
-      </header>
 
-      <label class="control" for="enabled-toggle">
-        <span>
-          <strong>Eklenti</strong>
-          <small id="status-text">Durum yükleniyor…</small>
-        </span>
-        <input id="enabled-toggle" type="checkbox" role="switch" disabled />
-        <span class="switch" aria-hidden="true"></span>
-      </label>
+        <ul class="menu-list" id="day-list" role="listbox" aria-labelledby="day-label" tabindex="-1" hidden></ul>
+        <ul class="menu-list" id="time-list" role="listbox" aria-labelledby="time-label" tabindex="-1" hidden></ul>
+        <div class="menu-list rule-pop" id="rule-pop" role="dialog" tabindex="-1" hidden><ul></ul></div>
+      </main>
 
-      <section class="rooms">
-        <h2>Özel lab ve tutorial sınıfları</h2>
-        <p class="hint">
-          Lab veya tutorial için bir sınıf ekleyebilirsin.
-          <span class="fill">Gün ve saat seçersen yalnızca o ders işaretlenir.</span>
-        </p>
-
-        <form id="room-form" class="room-form fill" autocomplete="off">
-          <div class="kind-switch" role="radiogroup" aria-labelledby="kind-label">
-            <span id="kind-label" class="kind-label">Tür</span>
-            <span class="kind-options">
-              <label class="kind-option">
-                <input type="radio" name="kind" value="lab" checked />
-                <span>Lab</span>
-              </label>
-              <label class="kind-option">
-                <input type="radio" name="kind" value="tutorial" />
-                <span>Tutorial</span>
-              </label>
-            </span>
+      <section class="view view-colors" id="view-colors" aria-labelledby="colors-title" inert>
+        <header class="sub-head">
+          <button type="button" class="icon-btn back" id="close-colors" title="Geri" aria-label="Geri">
+            <svg viewBox="0 0 9 15" aria-hidden="true"><path d="M7 1.5 1.5 7.5 7 13.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <h1 id="colors-title">Renkler</h1>
+        </header>
+        <div class="card colors" id="colors"></div>
+        <p id="color-status" class="color-status" role="status" aria-live="polite"></p>
+        <div class="preview" aria-hidden="true">
+          <p class="preview-title">Ders programında</p>
+          <div class="preview-cells">
+            <div class="pcell" data-kind="verified">CMSE443/<wbr />CMPE230<small>LAB SINIFI</small></div>
+            <div class="pcell" data-kind="custom">CMSE423/<wbr />CMPE025<small>ÖZEL LAB</small></div>
+            <div class="pcell" data-kind="tutorial">CMSE443/<wbr />CMPE026<small>TUTORIAL</small></div>
           </div>
-          <div class="room-field">
-            <label class="visually-hidden" for="room-input">Sınıf kodu</label>
-            <input
-              id="room-input"
-              type="text"
-              placeholder="CMPE025"
-              spellcheck="false"
-              autocapitalize="characters"
-              maxlength="24"
-              aria-autocomplete="inline"
-              aria-describedby="room-status form-hint"
-            />
-            <span id="room-ghost" class="room-ghost" aria-hidden="true"></span>
-          </div>
-          <label class="visually-hidden" for="day-select">Gün</label>
-          <select id="day-select" disabled>
-            <option value="">Her zaman</option>
-          </select>
-          <label class="visually-hidden" for="time-select">Ders saati</label>
-          <select id="time-select" disabled>
-            <option value="">Saat</option>
-          </select>
-          <button type="submit">Ekle</button>
-        </form>
-
-        <p id="form-hint" class="hint form-hint fill" hidden></p>
-
-        <p id="room-status" class="room-status fill" role="status" aria-live="polite"></p>
-
-        <ul id="room-list" class="chips fill"></ul>
+        </div>
+        <div class="credit-wrap">
+          <p class="credit"><a href="https://asilturkmen.com" target="_blank" rel="noopener" title="asilturkmen.com · Bağımsız bir öğrenci projesi">Asil Türkmen<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M2 6 6 2M2.6 2H6v3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></a> tarafından geliştirildi</p>
+        </div>
       </section>
+    </div>
 
-      <div class="legend" aria-label="Renk açıklaması">
-        <span><i class="dot verified"></i>Kayıtlı lab</span>
-        <span><i class="dot custom"></i>Özel lab</span>
-        <span><i class="dot tutorial"></i>Tutorial</span>
+    <template id="color-row">
+      <div class="color-row">
+        <div class="color-head">
+          <span class="color-name"></span>
+          <button type="button" class="reset" title="Varsayılana dön" hidden>
+            <svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3.2 5.2h5.3a3.1 3.1 0 0 1 0 6.2H5.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5.6 2.6 3 5.2l2.6 2.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <fieldset class="swatches"><legend class="vh"></legend></fieldset>
       </div>
-
-      <p class="disclaimer">
-        <a href="https://asilturkmen.com" target="_blank" rel="noopener"
-          >Asil Türkmen</a
-        >
-        tarafından geliştirilen bağımsız bir öğrenci projesi.
-      </p>
-    </main>
+    </template>
     <script type="module" src="./main.ts"></script>
   </body>
 </html>

@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { portalTimetable } from "./fixtures/portalTimetable";
-import { CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY } from "../src/settings";
+import { COLORS_KEY, CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY } from "../src/settings";
 import { LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
@@ -276,6 +276,69 @@ describe("content script", () => {
     await settle();
 
     expect(marks("custom")).toHaveLength(0);
+  });
+
+  describe("marking colours", () => {
+    const variable = (name: string): string =>
+      document.documentElement.style.getPropertyValue(name);
+
+    afterEach(() => {
+      document.documentElement.removeAttribute("style");
+    });
+
+    it("keeps the original colours when none was chosen", async () => {
+      await startContentScript("/Academic/Timetable");
+
+      expect(variable("--emu-lm-verified-border")).toBe("#f12e4b");
+      expect(variable("--emu-lm-verified-bg")).toBe("#ffd3d7");
+      expect(variable("--emu-lm-custom-bg")).toBe("#fef2d6");
+      expect(variable("--emu-lm-tutorial-badge")).toBe("#7c3aed");
+    });
+
+    it("reads the colour stored before the page was opened", async () => {
+      stubEnvironment({ [COLORS_KEY]: { custom: "#1269b5" } });
+
+      await startContentScript("/Academic/Timetable");
+
+      expect(variable("--emu-lm-custom-border")).toBe("#1269B5");
+      // The other kinds keep their defaults.
+      expect(variable("--emu-lm-verified-border")).toBe("#f12e4b");
+    });
+
+    it("follows a colour changed in the popup without a rescan", async () => {
+      await startContentScript("/Academic/Timetable");
+      const before = document.body.innerHTML;
+
+      notifyStorage({
+        [COLORS_KEY]: { newValue: { verified: "#0fa3b1", custom: "#f08c14", tutorial: "#8b5cf6" } },
+      });
+
+      // Only the stylesheet's variables change; the marked cells stay as they are.
+      expect(variable("--emu-lm-verified-border")).toBe("#0FA3B1");
+      expect(variable("--emu-lm-custom-bg")).toBe("#fef2d6");
+      expect(document.body.innerHTML).toBe(before);
+    });
+
+    it("falls back to the defaults when the stored colours become invalid", async () => {
+      stubEnvironment({ [COLORS_KEY]: { custom: "#1269b5" } });
+      await startContentScript("/Academic/Timetable");
+
+      notifyStorage({ [COLORS_KEY]: { newValue: { custom: "#123456" } } });
+      expect(variable("--emu-lm-custom-border")).toBe("#f08c14");
+
+      notifyStorage({ [COLORS_KEY]: { newValue: undefined } });
+      expect(variable("--emu-lm-verified-border")).toBe("#f12e4b");
+    });
+
+    it("recolours the marks even while the extension is switched off", async () => {
+      stubEnvironment({ [LABMARKER_ENABLED_KEY]: false });
+      await startContentScript("/Academic/Timetable");
+
+      notifyStorage({ [COLORS_KEY]: { newValue: { tutorial: "#22a55b" } } });
+
+      expect(variable("--emu-lm-tutorial-border")).toBe("#22A55B");
+      expect(marks()).toHaveLength(0);
+    });
   });
 
   it("tells the popup which meetings the timetable holds", async () => {
