@@ -5,7 +5,8 @@
 <h1 align="center">EMU LabMarker</h1>
 
 <p align="center">
-  EMU ders programındaki lab sınıflarını işaretler.
+  EMU ders programındaki lab sınıflarını işaretler.<br>
+  Bilgisayarda Chrome, iPhone'da Safari ile çalışır.
 </p>
 
 <p align="center">
@@ -41,6 +42,8 @@ Ders programının altındaki kısa açıklama, her etiketin ne anlama geldiğin
 
 ## Kurulum
 
+### Bilgisayar (Chrome)
+
 **[Chrome Web Store sayfasını aç](https://chromewebstore.google.com/detail/nnggdjkckjilebbheccgoicocnjhiffd?utm_source=item-share-cb)**,
 **Chrome'a ekle** düğmesine tıkla ve ders programı sayfasını yenile.
 Bu şekilde kurduğunda güncellemeler otomatik yüklenir.
@@ -65,6 +68,28 @@ Bu şekilde kurduğunda güncellemeler otomatik yüklenir.
 Sonra ders programı sayfasını bir kez yenile. Bu yolla kurulan sürüm kendiliğinden güncellenmez.
 
 </details>
+
+### iPhone (Safari)
+
+iPhone sürümü App Store'da inceleme aşamasında; yayına girdiğinde bağlantısı buraya eklenecek.
+iOS 17 veya sonrası gerekir.
+
+1. Uygulamayı aç ve **Safari ayarlarını aç** düğmesine dokun.
+2. EMU LabMarker'ı aç; **İzinler** bölümünde öğrenci portalı adresleri için **İzin Ver**'i seç.
+3. Safari'de öğrenci portalına girip ders programını aç.
+
+İzin henüz verilmediyse Safari'deki eklenti düğmesinde kırmızı **!** görünür.
+Eklentiyi açıp **İzin ver** düğmesine dokunman yeterli.
+
+<p align="center">
+  <img src="docs/iphone-ders-programi.png" width="260" alt="iPhone'da Safari: ders programında ÖZEL ve LAB SINIFI etiketli dersler">
+  &nbsp;&nbsp;
+  <img src="docs/iphone-tablo-gorunumu.png" width="260" alt="iPhone'da tablo görünümü: haftanın tamamı tek tabloda, lab ve özel dersler işaretli">
+</p>
+
+### Android
+
+Android'deki Chrome eklenti desteklemediği için LabMarker Android'de çalışmaz.
 
 ## Kullanım
 
@@ -103,6 +128,16 @@ seçtiğin renklerin ders programında nasıl görüneceğini gösterir.
 
 <br clear="all">
 
+### iPhone'a özel
+
+**Tablo görünümü.** Portal, telefonda ders programını gün gün uzun bir liste olarak
+gösterir. Eklenti penceresindeki **Tablo görünümü** anahtarını açarsan haftanın tamamı
+bilgisayardaki gibi tek tabloda görünür. Ekrana sığması için dersin olmayan günler ve
+haftanın ilk dersinden önceki, son dersinden sonraki boş saatler gizlenir.
+
+**Başlıktaki düğme.** Ders programında **Zaman Çizelgesi** başlığının yanındaki
+LabMarker düğmesine dokunarak eklenti penceresini açabilirsin.
+
 ## Kayıtlı lab sınıfları
 
 Listede, lab olarak kullanılan şu Bilgisayar Mühendisliği (CMPE) sınıfları bulunuyor:
@@ -117,7 +152,21 @@ listeye eklenmesini istediğin oda kodunu bildirebilirsin.
 Eklenti, `student.emu.edu.tr` ve `students.emu.edu.tr` üzerindeki ders programını
 tarayıcı içinde okur ve işaretler. Ders programı ve ayarların bir sunucuya gönderilmez.
 `storage` izni, aç/kapa tercihini, eklediğin lab veya tutorial kayıtlarını ve
-seçtiğin işaret renklerini tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
+seçtiğin işaret renklerini tarayıcında saklamak için kullanılır. iPhone uygulaması da
+hesap istemez ve veri toplamaz. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
+
+## Geliştirme
+
+Eklenti [WXT](https://wxt.dev) ve TypeScript ile yazıldı; testler Vitest ile çalışır.
+
+```bash
+npm ci
+npm run dev        # eklenti yüklü bir tarayıcı açar
+npm test
+npm run typecheck
+npm run build      # Chrome: .output/chrome-mv3
+npm run zip        # Web Store için zip
+```
 
 <details>
 <summary>iPhone için Safari sürümünü derleme</summary>
