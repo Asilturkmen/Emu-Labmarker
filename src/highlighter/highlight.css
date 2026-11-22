@@ -23,13 +23,13 @@ td[data-emu-labmarker] {
 
 /* Portal cells (LI) have a fixed size, so the course codes shrink a little
    when the cell is narrower than the text. "CMSE443/CMPE230" is about 10.3em wide, so
-   9.6cqi keeps it inside the card; 12px is the portal's own size. */
+   9.5cqi keeps it inside the frame; 12px is the portal's own size. */
 li.ctime[data-emu-labmarker] {
   box-sizing: border-box !important;
   display: grid !important;
   grid-template-columns: minmax(0, 1fr) !important;
   align-content: center !important;
-  padding: 8px 7px !important;
+  padding: 8px 5px !important;
   container-type: inline-size !important;
 }
 
@@ -37,9 +37,24 @@ li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
   min-width: 0 !important;
   padding-inline: 0 !important;
-  font-size: clamp(10px, 9.6cqi, 12px) !important;
-  letter-spacing: -0.01em !important;
+  font-size: max(9px, min(1em, 9.5cqi)) !important;
   text-align: left !important;
+}
+
+/* The portal's own cells overflow too between about 1430px and 1530px screen
+   width ("CMSE443/CMPE230" is wider than a 131px cell). While the extension is
+   on, the side padding drops to 4px (the portal's own value below 1430px) and
+   the font shrinks only by what is still missing, so codes stay close to 12px.
+   1em is the portal's own size for that screen width (12px, or 10px/9px below
+   1430px), so text never grows. */
+[data-emu-labmarker-fit] .schedule-table-content li:is(.ctime, .ctime2):not([data-emu-labmarker]) {
+  padding-inline: 4px !important;
+  container-type: inline-size !important;
+}
+
+[data-emu-labmarker-fit] .schedule-table-content li:is(.ctime, .ctime2):not([data-emu-labmarker]) > span {
+  padding-inline: 0 !important;
+  font-size: max(9px, min(1em, 9.6cqi)) !important;
 }
 
 [data-emu-labmarker] :is(a, button, span, strong, b, p, div):not(.emu-labmarker-badge) {

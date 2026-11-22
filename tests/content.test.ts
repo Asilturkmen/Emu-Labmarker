@@ -186,6 +186,7 @@ describe("content script", () => {
 
     expect(marks()).toHaveLength(0);
     expect(document.body.innerHTML).toBe(before);
+    expect(document.documentElement.hasAttribute("data-emu-labmarker-fit")).toBe(false);
   });
 
   it("reads a room the user added before the page was opened", async () => {
@@ -207,6 +208,21 @@ describe("content script", () => {
     await settle();
 
     expect(marks()).toHaveLength(0);
+  });
+
+  // The portal's own cells overflow on narrow screens, so the stylesheet fits
+  // every course cell under this attribute, and only while the extension is on.
+  it("fits the portal's course cells only while the extension is on", async () => {
+    await startContentScript("/Academic/Timetable");
+    expect(document.documentElement.hasAttribute("data-emu-labmarker-fit")).toBe(true);
+
+    notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: false } });
+    await settle();
+    expect(document.documentElement.hasAttribute("data-emu-labmarker-fit")).toBe(false);
+
+    notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: true } });
+    await settle();
+    expect(document.documentElement.hasAttribute("data-emu-labmarker-fit")).toBe(true);
   });
 
   it("picks up a room added in the popup without a reload", async () => {

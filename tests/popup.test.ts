@@ -275,7 +275,7 @@ describe("popup custom room list", () => {
     await vi.waitFor(() => expect(chips()).toEqual(["CMPE030"]));
 
     expect(status()).toBe("CMPE030 · Cum 13:30 eklendi.");
-    expect(boxTitle("CMPE030")).toBe("CMPE030 — Özel lab: Cum 13:30 (CMPE211)");
+    expect(boxTitle("CMPE030")).toBe("CMPE030 — Özel: Cum 13:30 (CMPE211)");
     expect(storage[CUSTOM_ROOMS_KEY]).toEqual([
       { room: "CMPE030", day: "friday", start: "13:30", course: "CMPE211" },
     ]);
@@ -489,7 +489,7 @@ describe("popup record groups", () => {
     await openPopup({ [CUSTOM_ROOMS_KEY]: STORED });
 
     const heads = groupHeads();
-    expect(heads.map((head) => head.textContent?.trim())).toEqual(["Özel lab2 sınıf", "Tutorial1 sınıf"]);
+    expect(heads.map((head) => head.textContent?.trim())).toEqual(["Özel2 sınıf", "Tutorial1 sınıf"]);
     for (const head of heads) {
       expect(head.getAttribute("aria-expanded")).toBe("false");
       const body = document.getElementById(head.getAttribute("aria-controls")!)!;
@@ -541,7 +541,7 @@ describe("popup record groups", () => {
     expect(pop.hidden).toBe(false);
     expect(
       [...pop.querySelectorAll("li")].map((li) => li.textContent?.trim()),
-    ).toEqual(["Pzt 08:30Özel lab", "Cum 10:30Özel lab"]);
+    ).toEqual(["Pzt 08:30Özel", "Cum 10:30Özel"]);
 
     pop.querySelector<HTMLButtonElement>('.rule-x[data-rule="CMPE030|monday|08:30"]')!.click();
     await vi.waitFor(() => expect(storage[CUSTOM_ROOMS_KEY]).toHaveLength(1));

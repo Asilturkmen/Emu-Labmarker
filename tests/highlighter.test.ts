@@ -182,9 +182,9 @@ describe("highlightTimetable", () => {
     const link = meeting.block.rows[0]?.link;
     const badge = link?.querySelector(".emu-labmarker-badge");
     expect(link?.dataset.emuLabmarker).toBe("custom");
-    expect(badge?.textContent).toBe("ÖZEL LAB");
+    expect(badge?.textContent).toBe("ÖZEL");
     expect(badge?.getAttribute("aria-label")).toBe(
-      "ÖZEL LAB (senin eklediğin sınıf)",
+      "ÖZEL (senin eklediğin sınıf)",
     );
   });
 
@@ -197,7 +197,7 @@ describe("highlightTimetable", () => {
 
     const course = document.querySelector<HTMLElement>(".portal-course");
     expect(course?.dataset.emuLabmarker).toBe("custom");
-    expect(course?.textContent).toContain("ÖZEL LAB");
+    expect(course?.textContent).toContain("ÖZEL");
   });
 
   it("lets a confirmed laboratory win over a custom room in the same cell", () => {
@@ -235,7 +235,7 @@ describe("highlightTimetable", () => {
     const items = document.querySelectorAll(".emu-labmarker-legend-item");
     expect(document.querySelectorAll(".emu-labmarker-legend")).toHaveLength(1);
     expect([...items].map((item) => item.querySelector(".emu-labmarker-legend-badge")?.textContent))
-      .toEqual(["LAB SINIFI", "ÖZEL LAB"]);
+      .toEqual(["LAB SINIFI", "ÖZEL"]);
 
     // With no custom room left, its legend row goes away too.
     clearTimetableHighlights();

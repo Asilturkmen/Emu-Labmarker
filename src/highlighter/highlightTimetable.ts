@@ -22,8 +22,8 @@ const LAB_CLASSIFICATIONS = ["verified", "custom", "tutorial"] as const;
 const BADGES: Record<LabClassification, { text: string; label: string }> = {
   verified: { text: "LAB SINIFI", label: "LAB SINIFI" },
   custom: {
-    text: "ÖZEL LAB",
-    label: "ÖZEL LAB (senin eklediğin sınıf)",
+    text: "ÖZEL",
+    label: "ÖZEL (senin eklediğin sınıf)",
   },
   tutorial: {
     text: "TUTORIAL",

@@ -32,6 +32,9 @@ const RESCAN_DELAY_MS = 100;
 // Match both portal hosts, then check the timetable path without case sensitivity.
 const TIMETABLE_PATH = /^\/academic\/timetable/i;
 
+// Set on <html> while the extension is on; highlight.css fits every course cell under it.
+const FIT_ATTRIBUTE = "data-emu-labmarker-fit";
+
 // The portal answers on both hosts, and students reach it through either one.
 export default defineContentScript({
   matches: ["https://student.emu.edu.tr/*", "https://students.emu.edu.tr/*"],
@@ -70,6 +73,8 @@ export default defineContentScript({
       // Reconnect the observer even if parsing fails, so later updates are still detected.
       try {
         clearTimetableHighlights();
+        // Fit the portal's own course cells too, but only while the extension is on.
+        document.documentElement.toggleAttribute(FIT_ATTRIBUTE, enabled);
         if (enabled) {
           const rows = parseTimetable();
           const blocks = groupMeetingBlocks(rows);

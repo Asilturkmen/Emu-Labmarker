@@ -152,7 +152,7 @@ function applyTones(): void {
 
 const COLOR_NAMES: Record<ColorKind, string> = {
   verified: "Kayıtlı lab",
-  custom: "Özel lab",
+  custom: "Özel",
   tutorial: "Tutorial",
 };
 
@@ -511,7 +511,7 @@ const X_ICON =
   '<svg viewBox="0 0 8 8" aria-hidden="true"><path d="m1 1 6 6M7 1 1 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
 const CHEVRON =
   '<svg class="kchev" viewBox="0 0 10 6" aria-hidden="true"><path d="m1 1 4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-const KIND_NAMES: Record<RuleKind, string> = { lab: "Özel lab", tutorial: "Tutorial" };
+const KIND_NAMES: Record<RuleKind, string> = { lab: "Özel", tutorial: "Tutorial" };
 const KIND_ORDER: RuleKind[] = ["lab", "tutorial"];
 
 const whenShort = (rule: CustomLabRule): string =>

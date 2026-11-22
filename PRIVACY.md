@@ -27,7 +27,7 @@ Eklenti, Chrome'un `storage.local` alanında şu ayarları saklar:
 - Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`); yalnızca tek
   bir ders için eklendiyse o dersin günü, başlangıç saati ve ders kodu; ayrıca
   sınıfın lab mı tutorial mı olarak eklendiği
-- Kullanıcının kayıtlı lab, özel lab ve tutorial işaretleri için seçtiği renkler
+- Kullanıcının kayıtlı lab, özel ve tutorial işaretleri için seçtiği renkler
   (eklenti penceresindeki sekiz hazır renkten biri)
 
 Bu ayarlar tarayıcıda saklanır ve bir sunucuya gönderilmez.

@@ -67,7 +67,7 @@ Sonra ders programı sayfasını bir kez yenile. Bu yolla kurulan sürüm kendil
 
 ## Kullanım
 
-<img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: aç/kapa anahtarı ve özel lab listesi">
+<img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: aç/kapa anahtarı ve eklediğin sınıflar">
 
 Eklenti, ders programı sayfasını yeniledikten sonra ek ayar gerektirmeden çalışır.
 Araç çubuğundaki simgesi ders programı sayfasında renkli, diğer sayfalarda gridir.
@@ -77,7 +77,7 @@ Simgeye tıklayarak aşağıdaki ayarlara ulaşabilirsin:
 Değişiklik için sayfayı yenilemen gerekmez.
 
 **Lab sınıfı ekleme.** Listede bulunmayan bir sınıfta lab dersin varsa oda kodunu
-yazıp **Ekle** düğmesine tıkla. Eklediğin sınıflar turuncu renkte ve `ÖZEL LAB`
+yazıp **Ekle** düğmesine tıkla. Eklediğin sınıflar turuncu renkte ve `ÖZEL`
 etiketiyle gösterilir. Kayıtlar türüne göre gruplanır; grup satırına tıklayınca açılır.
 Bir kaydı kaldırmak için üstüne gelince çıkan **×** düğmesine tıkla.
 
@@ -91,7 +91,7 @@ Gün seçmeden eklersen o sınıftaki tüm dersler işaretlenir.
 **Tutorial ekleme.** Formdaki **Tür** alanından **Tutorial** seçeneğini seç.
 Bu kayıtlar mor renkte ve `TUTORIAL` etiketiyle gösterilir.
 
-**Renkler.** Başlıktaki palet düğmesinden kayıtlı lab, özel lab ve tutorial için
+**Renkler.** Başlıktaki palet düğmesinden kayıtlı lab, özel ve tutorial işaretleri için
 sekiz renkten birini seçebilirsin. Seçtiğin renk ders programında hemen görünür.
 Seçim yapmazsan varsayılan renkler kullanılır.
 
