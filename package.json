@@ -12,6 +12,7 @@
     "postinstall": "wxt prepare",
     "dev": "wxt",
     "build": "wxt build",
+    "build:safari": "wxt build -b safari --mv3",
     "zip": "wxt zip",
     "test": "vitest run",
     "typecheck": "wxt prepare && tsc --noEmit"

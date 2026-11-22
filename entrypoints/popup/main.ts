@@ -55,6 +55,14 @@ function requireElement<T extends Element>(selector: string): T {
 const views = requireElement<HTMLElement>("#views");
 const viewMain = requireElement<HTMLElement>("#view-main");
 const viewColors = requireElement<HTMLElement>("#view-colors");
+
+// The logo opens the Chrome Web Store page; Safari users have no use for it.
+if (import.meta.env.BROWSER === "safari") {
+  const brandLink = requireElement<HTMLAnchorElement>(".brand-link");
+  brandLink.href = "https://asilturkmen.com";
+  brandLink.title = "asilturkmen.com";
+  brandLink.querySelector("img")!.alt = "asilturkmen.com'u aç";
+}
 const toggle = requireElement<HTMLInputElement>("#enabled-toggle");
 const statusText = requireElement<HTMLElement>("#status-text");
 const roomForm = requireElement<HTMLFormElement>("#room-form");
@@ -263,7 +271,44 @@ async function initialize(): Promise<void> {
   }
   applyTones();
   renderColors();
+  await refreshAccess();
 }
+
+// ---------------------------------------------------------------------------
+// Site access. Safari asks the user for each site, even for hosts listed in
+// the manifest; Chrome grants them at install, so the card never shows there.
+// ---------------------------------------------------------------------------
+
+const PORTAL_ORIGINS = ["https://student.emu.edu.tr/*", "https://students.emu.edu.tr/*"];
+const accessCard = requireElement<HTMLElement>("#access");
+const accessButton = requireElement<HTMLButtonElement>("#access-btn");
+
+async function refreshAccess(): Promise<void> {
+  let granted = true;
+  try {
+    granted = await browser.permissions.contains({ origins: PORTAL_ORIGINS });
+  } catch {
+    // A browser without the permissions API has nothing to ask for.
+  }
+  accessCard.hidden = granted;
+  fitRecords();
+}
+
+accessButton.addEventListener("click", () => {
+  // Called straight from the tap: Safari only shows its prompt for a user gesture.
+  void browser.permissions
+    .request({ origins: PORTAL_ORIGINS })
+    .then(async (granted) => {
+      await refreshAccess();
+      if (!granted) return;
+      // The open portal page has no script yet; reload it so the marks appear.
+      const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+      if (tab?.id !== undefined && /^https:\/\/students?\.emu\.edu\.tr\//.test(tab.url ?? "")) {
+        await browser.tabs.reload(tab.id);
+      }
+    })
+    .catch(() => {});
+});
 
 toggle.addEventListener("change", async () => {
   toggle.disabled = true;
@@ -368,7 +413,9 @@ function renderDayOptions(): void {
   renderSuggestion();
 
   const room = typedRoom();
-  if (sessions === null) {
+  if (sessions === null && timetableNeedsReload) {
+    setFormHint("Ders programı sayfasını yenile, sonra bu pencereyi yeniden aç.");
+  } else if (sessions === null) {
     setFormHint("Tek dersi eklemek için bu pencereyi ders programı sayfasında aç.");
   } else if (!days.length && isValidRoomCode(room) && !suggestion) {
     // While a suggestion shows, "not in your timetable" would contradict it.
@@ -399,15 +446,29 @@ roomInput.addEventListener("keydown", (event) => {
   renderDayOptions();
 });
 
+const TIMETABLE_URL = /^https:\/\/students?\.emu\.edu\.tr\/academic\/timetable/i;
+
+/**
+ * True when the active tab is the timetable but its script did not answer.
+ * That happens when the page was open while the extension was installed or
+ * updated: the old script is cut off until the page is reloaded.
+ */
+let timetableNeedsReload = false;
+
 async function loadSessions(): Promise<TimetableSession[] | null> {
+  timetableNeedsReload = false;
+  let onTimetable = false;
   try {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
     if (tab?.id === undefined) return null;
+    onTimetable = TIMETABLE_URL.test(tab.url ?? "");
     return parseSessions(
       await browser.tabs.sendMessage(tab.id, LIST_SESSIONS_MESSAGE),
     );
   } catch {
     // Any other tab has no timetable script to answer.
+    // While the access card shows, the script is missing for want of permission.
+    timetableNeedsReload = onTimetable && accessCard.hidden === true;
     return null;
   }
 }

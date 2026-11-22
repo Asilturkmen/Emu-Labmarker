@@ -1,15 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'">
 
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
 
     <link rel="stylesheet" href="../Style.css">
+    <script src="../Script.js" defer></script>
 </head>
-<body>
-    <img src="../Icon.png" width="128" height="128" alt="EMU LabMarker Icon">
-    <p>You can turn on EMU LabMarker’s Safari extension in Settings.</p>
+<body data-enabled="unknown">
+    <main class="app">
+        <header class="brand">
+            <img src="../Icon.png" width="72" height="72" alt="">
+            <h1>EMU LabMarker</h1>
+            <p>Ders programındaki lab sınıflarını işaretler.</p>
+        </header>
+
+        <section class="card steps" aria-label="Kurulum">
+            <div class="step" id="step-enable">
+                <span class="mark" aria-hidden="true"><span class="num">1</span><svg viewBox="0 0 12 12"><path d="m2.5 6.3 2.3 2.3 4.7-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                <div>
+                    <p class="title">Safari'de eklentiyi aç</p>
+                    <p class="detail" id="enable-detail">Ayarlar › Uygulamalar › Safari › Uzantılar</p>
+                </div>
+            </div>
+            <div class="step">
+                <span class="mark" aria-hidden="true"><span class="num">2</span></span>
+                <div>
+                    <p class="title">Portalda izin ver</p>
+                    <p class="detail">Eklenti sorduğunda "Her Zaman İzin Ver"i seç.</p>
+                </div>
+            </div>
+        </section>
+
+        <div class="actions">
+            <button type="button" class="primary" id="open-settings">Safari ayarlarını aç</button>
+            <button type="button" class="secondary" id="open-portal">Öğrenci portalını aç</button>
+        </div>
+
+        <p class="credit"><button type="button" class="link" id="open-site">Asil Türkmen<svg viewBox="0 0 8 8" aria-hidden="true"><path d="M2 6 6 2M2.6 2H6v3.4" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg></button> tarafından geliştirildi</p>
+    </main>
 </body>
 </html>

@@ -36,13 +36,34 @@ const SESSIONS: Session[] = [
  * Load the popup markup and script with mocked extension APIs.
  * With sessions, mock a timetable response; otherwise, reject the tab message.
  */
+interface PopupEnv {
+  /** Safari: whether the portal is allowed, and what the prompt answers. Absent: no permissions API. */
+  access?: { granted: boolean; answer?: boolean };
+  /** URL of the active tab. */
+  tabUrl?: string;
+}
+
+let reloadedTabs: number[] = [];
+
 async function openPopup(
   stored: Record<string, unknown> = {},
   sessions?: Session[],
+  env: PopupEnv = {},
 ): Promise<void> {
   storage = { ...stored };
+  reloadedTabs = [];
   let tabAsked = false;
+  const access = env.access ? { ...env.access } : undefined;
   vi.stubGlobal("browser", {
+    ...(access && {
+      permissions: {
+        contains: async () => access.granted,
+        request: async () => {
+          if (access.answer) access.granted = true;
+          return access.answer ?? false;
+        },
+      },
+    }),
     storage: {
       local: {
         get: async (keys: string | string[]) =>
@@ -57,7 +78,10 @@ async function openPopup(
       },
     },
     tabs: {
-      query: async () => [{ id: 7 }],
+      query: async () => [{ id: 7, url: env.tabUrl }],
+      reload: async (tabId: number) => {
+        reloadedTabs.push(tabId);
+      },
       sendMessage: async (tabId: number, message: unknown) => {
         tabAsked = true;
         if (!sessions || tabId !== 7 || message !== LIST_SESSIONS_MESSAGE) {
@@ -789,5 +813,55 @@ describe("popup colours view", () => {
     const cell = document.querySelector<HTMLElement>('.pcell[data-kind="tutorial"]')!;
     expect(cell.style.getPropertyValue("--c").toLowerCase()).toBe("#22a55b");
     expect(cell.style.getPropertyValue("--cb")).not.toBe("");
+  });
+});
+
+describe("popup portal access (Safari)", () => {
+  const PORTAL = "https://student.emu.edu.tr/academic/timetable";
+  const card = () => document.querySelector<HTMLElement>("#access")!;
+
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("stays hidden where the browser has no permissions API", async () => {
+    await openPopup();
+    expect(card().hidden).toBe(true);
+  });
+
+  it("stays hidden once the portal is allowed, as Chrome does at install", async () => {
+    await openPopup({}, SESSIONS, { access: { granted: true } });
+    expect(card().hidden).toBe(true);
+  });
+
+  it("asks for the portal and reloads the open portal page once allowed", async () => {
+    await openPopup({}, undefined, { access: { granted: false, answer: true }, tabUrl: PORTAL });
+    expect(card().hidden).toBe(false);
+    // The card is for permission; the reload hint would point the wrong way.
+    typeRoom("CMPE030");
+    expect(hint()).toBe("Tek dersi eklemek için bu pencereyi ders programı sayfasında aç.");
+
+    document.querySelector<HTMLButtonElement>("#access-btn")!.click();
+
+    await vi.waitFor(() => expect(card().hidden).toBe(true));
+    await vi.waitFor(() => expect(reloadedTabs).toEqual([7]));
+  });
+
+  it("keeps the card and reloads nothing when the prompt is declined", async () => {
+    await openPopup({}, undefined, { access: { granted: false, answer: false }, tabUrl: PORTAL });
+
+    document.querySelector<HTMLButtonElement>("#access-btn")!.click();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    expect(card().hidden).toBe(false);
+    expect(reloadedTabs).toEqual([]);
+  });
+
+  it("asks for a reload when the timetable page does not answer", async () => {
+    await openPopup({}, undefined, { access: { granted: true }, tabUrl: PORTAL });
+
+    typeRoom("CMPE030");
+
+    expect(hint()).toBe("Ders programı sayfasını yenile, sonra bu pencereyi yeniden aç.");
   });
 });

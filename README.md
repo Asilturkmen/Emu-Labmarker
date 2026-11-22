@@ -113,6 +113,28 @@ tarayıcı içinde okur ve işaretler. Ders programı ve ayarların bir sunucuya
 `storage` izni, aç/kapa tercihini, eklediğin lab veya tutorial kayıtlarını ve
 seçtiğin işaret renklerini tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
 
+<details>
+<summary>iPhone ve iPad için Safari sürümünü derleme</summary>
+
+<br>
+
+Safari sürümü `ios/EMU LabMarker` altındaki Xcode projesiyle derlenir. Proje eklenti
+dosyalarını kopyalamaz, `.output/safari-mv3` klasöründen alır; bu yüzden önce eklentiyi derle:
+
+```bash
+npm run build:safari
+```
+
+Sonra `ios/EMU LabMarker/EMU LabMarker.xcodeproj` dosyasını Xcode'da aç ve
+**EMU LabMarker** şemasını bir simülatörde ya da iPhone'da çalıştır. Uygulama açıldıktan
+sonra eklentiyi Safari'de etkinleştir; portalda eklenti penceresindeki **İzin ver**
+düğmesiyle siteye erişim ver.
+
+Sürüm numarası iki yerde tutulur: `package.json` ve Xcode'daki `MARKETING_VERSION`.
+Yeni sürümde ikisini birlikte değiştir.
+
+</details>
+
 ## Geliştirici
 
 Ben Asil Türkmen. EMU LabMarker, kendi kullanımım için geliştirdiğim bağımsız bir

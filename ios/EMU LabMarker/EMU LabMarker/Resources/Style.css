@@ -1,29 +1,95 @@
-* {
-    -webkit-user-select: none;
-    -webkit-user-drag: none;
-    cursor: default;
-}
-
+/* Same palette as the extension popup; always light, like the popup. */
 :root {
-    color-scheme: light dark;
-
-    --spacing: 20px;
+    color-scheme: light;
+    --ink: #17365d;
+    --brand: #1269b5;
+    --brand-press: #0c4f88;
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --edge: #dce4ee;
+    --muted: #61748b;
+    --sep: #e6ecf4;
+    --done: #1f9d55;
+    --shadow-card: 0 1px 2px rgba(23, 54, 93, 0.04), 0 3px 10px rgba(23, 54, 93, 0.05);
 }
 
-html {
-    height: 100%;
+* {
+    box-sizing: border-box;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
 }
+
+html { height: 100%; background: var(--bg); }
 
 body {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-
-    gap: var(--spacing);
-    margin: 0 calc(var(--spacing) * 2);
-    height: 100%;
-
-    font: -apple-system-short-body;
-    text-align: center;
+    min-height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: -apple-system-body;
+    font-family: -apple-system, system-ui, sans-serif;
 }
+
+p, h1 { margin: 0; }
+
+.app {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    max-width: 480px;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: calc(40px + env(safe-area-inset-top)) 24px calc(20px + env(safe-area-inset-bottom));
+}
+
+.brand { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.brand img { width: 72px; height: 72px; margin-bottom: 8px; border-radius: 16px; }
+.brand h1 { font-size: 26px; line-height: 32px; font-weight: 700; letter-spacing: -0.01em; }
+.brand p { color: var(--muted); font-size: 16px; line-height: 22px; }
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--edge);
+    border-radius: 14px;
+    box-shadow: var(--shadow-card);
+}
+
+.step { display: flex; align-items: flex-start; gap: 14px; padding: 16px; }
+.step + .step { border-top: 1px solid var(--sep); }
+.title { font-size: 16px; line-height: 22px; font-weight: 600; }
+.detail { margin-top: 2px; color: var(--muted); font-size: 14px; line-height: 19px; }
+
+.mark {
+    display: flex; align-items: center; justify-content: center; flex: none;
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #eaf2fb; color: var(--brand);
+    font-size: 14px; font-weight: 700;
+}
+.mark svg { display: none; width: 13px; height: 13px; }
+body[data-enabled="true"] #step-enable .mark { background: var(--done); color: #fff; }
+body[data-enabled="true"] #step-enable .num { display: none; }
+body[data-enabled="true"] #step-enable .mark svg { display: block; }
+
+.actions { display: flex; flex-direction: column; gap: 10px; }
+
+button { font: inherit; cursor: pointer; }
+
+.primary, .secondary {
+    width: 100%; height: 50px; padding: 0 16px; border-radius: 12px;
+    font-size: 17px; font-weight: 600;
+}
+.primary { border: 0; background: var(--brand); color: #fff; }
+.primary:active { background: var(--brand-press); }
+.secondary { border: 1px solid var(--edge); background: var(--card); color: var(--brand); }
+.secondary:active { background: #eef5fc; }
+.primary[hidden], .secondary[hidden] { display: none; }
+
+.credit {
+    margin-top: auto; padding-top: 14px; border-top: 1px solid var(--sep);
+    color: var(--muted); font-size: 14px; line-height: 19px; text-align: center;
+}
+.link {
+    display: inline-flex; align-items: center; gap: 3px; padding: 0; border: 0; background: none;
+    color: var(--brand); font-size: inherit; font-weight: 600;
+}
+.link svg { width: 9px; height: 9px; }
