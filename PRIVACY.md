@@ -19,9 +19,14 @@ Ders programının bir kopyası kalıcı olarak saklanmaz. Kullanıcının ekled
 lab ve tutorial kayıtları ise aşağıda açıklandığı şekilde tarayıcıda tutulur.
 Ders programı dışındaki portal sayfalarında içerik okunmaz veya işaretlenmez.
 
+Bu politika eklentinin Chrome sürümü ve iPhone'daki Safari sürümü için aynıdır.
+iPhone uygulaması yalnızca eklentinin nasıl açılacağını gösterir; veri toplamaz
+ve hiçbir şey saklamaz. Safari'de eklenti, kullanıcı portal adreslerine izin
+verene kadar hiçbir sayfada çalışmaz.
+
 ## Tarayıcıda saklananlar
 
-Eklenti, Chrome'un `storage.local` alanında şu ayarları saklar:
+Eklenti, tarayıcının (Chrome ya da Safari) `storage.local` alanında şu ayarları saklar:
 
 - Eklentinin açık mı kapalı mı olduğu bilgisi
 - Kullanıcının kendi eklediği lab sınıfı kodları (örneğin `CMPE025`); yalnızca tek
