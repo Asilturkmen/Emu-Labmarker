@@ -26,7 +26,7 @@
 <br>
 
 <p align="center">
-  <img src="docs/screenshot.png" alt="Lab dersleri kırmızı, kullanıcının eklediği sınıflar turuncu işaretlenmiş EMU ders programı" width="880">
+  <img src="docs/screenshot.png" alt="EMU ders programı: kayıtlı lab dersleri kırmızı LAB SINIFI, eklenen sınıf turuncu ÖZEL, eklenen tutorial mor TUTORIAL etiketiyle işaretlenmiş" width="880">
 </p>
 
 <br>
@@ -37,6 +37,7 @@ Bu eklentiyi kendi ders programımda lab sınıflarını ayırt etmek için yazd
 LabMarker, kayıtlı lab sınıflarındaki dersleri kırmızı çerçeve ve `LAB SINIFI`
 etiketiyle işaretler. İşaretleme, dersin adına veya türüne değil, oda koduna dayanır.
 Kendi eklediğin lab ve tutorial kayıtları da ayrı renklerde gösterilir.
+Ders programının altındaki kısa açıklama, her etiketin ne anlama geldiğini gösterir.
 
 ## Kurulum
 
@@ -67,7 +68,7 @@ Sonra ders programı sayfasını bir kez yenile. Bu yolla kurulan sürüm kendil
 
 ## Kullanım
 
-<img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: aç/kapa anahtarı ve eklediğin sınıflar">
+<img src="docs/popup.png" align="right" width="250" alt="Eklenti penceresi: başlıkta renk düğmesi ve aç/kapa anahtarı, sınıf ekleme formu, türe göre gruplanmış kayıtlar">
 
 Eklenti, ders programı sayfasını yeniledikten sonra ek ayar gerektirmeden çalışır.
 Araç çubuğundaki simgesi ders programı sayfasında renkli, diğer sayfalarda gridir.
@@ -80,6 +81,8 @@ Değişiklik için sayfayı yenilemen gerekmez.
 yazıp **Ekle** düğmesine tıkla. Eklediğin sınıflar turuncu renkte ve `ÖZEL`
 etiketiyle gösterilir. Kayıtlar türüne göre gruplanır; grup satırına tıklayınca açılır.
 Bir kaydı kaldırmak için üstüne gelince çıkan **×** düğmesine tıkla.
+Aynı sınıfa birden fazla gün veya saat eklediysen sınıfa tıkla; kayıtlar bir listede
+açılır ve her birini oradan kaldırabilirsin.
 
 **Belirli bir dersi işaretleme.** Aynı sınıftaki derslerden yalnızca birini işaretlemek
 için eklenti penceresini ders programı sayfasında aç ve oda kodunu yaz.
@@ -91,9 +94,12 @@ Gün seçmeden eklersen o sınıftaki tüm dersler işaretlenir.
 **Tutorial ekleme.** Formdaki **Tür** alanından **Tutorial** seçeneğini seç.
 Bu kayıtlar mor renkte ve `TUTORIAL` etiketiyle gösterilir.
 
+<img src="docs/popup-colors.png" align="right" width="250" alt="Renkler ekranı: kayıtlı lab, özel ve tutorial için sekizer renk ve ders programı önizlemesi">
+
 **Renkler.** Başlıktaki palet düğmesinden kayıtlı lab, özel ve tutorial işaretleri için
 sekiz renkten birini seçebilirsin. Seçtiğin renk ders programında hemen görünür.
-Seçim yapmazsan varsayılan renkler kullanılır.
+Seçim yapmazsan varsayılan renkler kullanılır. Ekranın altındaki önizleme,
+seçtiğin renklerin ders programında nasıl görüneceğini gösterir.
 
 <br clear="all">
 
@@ -114,7 +120,7 @@ tarayıcı içinde okur ve işaretler. Ders programı ve ayarların bir sunucuya
 seçtiğin işaret renklerini tarayıcında saklamak için kullanılır. Ayrıntılar [gizlilik politikasında](PRIVACY.md).
 
 <details>
-<summary>iPhone ve iPad için Safari sürümünü derleme</summary>
+<summary>iPhone için Safari sürümünü derleme</summary>
 
 <br>
 
