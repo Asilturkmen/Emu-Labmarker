@@ -23,7 +23,7 @@ function show(enabled, canOpenSettings) {
     } else {
         detail.textContent = canOpenSettings
             ? "Aşağıdaki düğmeyle ayarları aç, \"Genişletmeye İzin Ver\"i aç."
-            : "Ayarlar › Uygulamalar › Safari › Genişletmeler › EMU LabMarker";
+            : "Ayarlar'da Safari › Genişletmeler › EMU LabMarker";
         settings.className = "primary";
         portal.className = "secondary";
         settings.parentElement.prepend(settings);
@@ -34,3 +34,4 @@ function show(enabled, canOpenSettings) {
 document.getElementById("open-settings").addEventListener("click", () => send("open-settings"));
 document.getElementById("open-portal").addEventListener("click", () => send("open-portal"));
 document.getElementById("open-site").addEventListener("click", () => send("open-site"));
+document.getElementById("open-privacy").addEventListener("click", () => send("open-privacy"));

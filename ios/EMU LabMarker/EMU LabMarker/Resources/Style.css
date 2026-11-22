@@ -93,3 +93,6 @@ button { font: inherit; cursor: pointer; }
     color: var(--brand); font-size: inherit; font-weight: 600;
 }
 .link svg { width: 9px; height: 9px; }
+.credit p + p { margin-top: 8px; }
+.fineprint { font-size: 12px; line-height: 17px; }
+.fineprint .link { font-weight: 500; text-decoration: underline; text-underline-offset: 2px; }

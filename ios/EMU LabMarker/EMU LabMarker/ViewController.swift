@@ -12,6 +12,7 @@ import WebKit
 private let extensionBundleIdentifier = "com.asilturkmen.emulabmarker.Extension"
 private let portalURL = URL(string: "https://student.emu.edu.tr/")!
 private let developerURL = URL(string: "https://asilturkmen.com")!
+private let privacyURL = URL(string: "https://github.com/Asilturkmen/Emu-Labmarker/blob/main/PRIVACY.md")!
 
 class ViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHandler {
 
@@ -61,6 +62,8 @@ class ViewController: UIViewController, WKNavigationDelegate, WKScriptMessageHan
             UIApplication.shared.open(portalURL)
         case "open-site":
             UIApplication.shared.open(developerURL)
+        case "open-privacy":
+            UIApplication.shared.open(privacyURL)
         default:
             break
         }
