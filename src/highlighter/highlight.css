@@ -33,12 +33,23 @@ li.ctime[data-emu-labmarker] {
   container-type: inline-size !important;
 }
 
+/* Centred like the portal's own cells, with the badge right under the codes. */
+li.ctime[data-emu-labmarker],
+li.ctime[data-emu-labmarker] > span,
+li.ctime[data-emu-labmarker] > span :is(a, button, span, strong, b, p, div) {
+  text-align: center !important;
+}
+
 li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
   min-width: 0 !important;
   padding-inline: 0 !important;
   font-size: max(9px, min(1em, 9.5cqi)) !important;
-  text-align: left !important;
+}
+
+li.ctime[data-emu-labmarker] > .emu-labmarker-badge {
+  align-self: center !important;
+  margin: 5px auto 0 !important;
 }
 
 /* The portal's own cells overflow too between about 1430px and 1530px screen
@@ -73,9 +84,11 @@ li.ctime[data-emu-labmarker] > span {
   border: 0 !important;
   border-radius: 6px !important;
   padding: 4px 7px !important;
-  font-family: inherit !important;
+  /* The portal's Montserrat variant has a stylised Z and E ("ÖZEL" read badly),
+     so badges use the system font. */
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif !important;
   font-size: 10.5px !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
   white-space: nowrap !important;
