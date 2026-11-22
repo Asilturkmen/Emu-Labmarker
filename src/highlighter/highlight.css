@@ -2,11 +2,16 @@
    the user's choice; the fallbacks are the original colours, so the page looks
    the same until a colour is picked. Text stays navy (#17365d) either way. */
 
+/* Each kind sets --emu-labmarker-fill and --emu-labmarker-ring (further down).
+   The whole cell is tinted and framed by a thin inner line, square like the
+   portal's own cells. */
 [data-emu-labmarker] {
+  --emu-labmarker-fill: var(--emu-lm-verified-bg, #ffd3d7);
+  --emu-labmarker-ring: var(--emu-lm-verified-border, #f12e4b);
   position: relative !important;
-  background: var(--emu-lm-verified-bg, #ffd3d7) !important;
+  background: var(--emu-labmarker-fill) !important;
   color: #17365d !important;
-  box-shadow: inset 0 0 0 3px var(--emu-lm-verified-border, #f12e4b) !important;
+  box-shadow: inset 0 0 0 1.5px var(--emu-labmarker-ring) !important;
   border-radius: 0 !important;
   text-align: left !important;
 }
@@ -16,26 +21,24 @@ td[data-emu-labmarker] {
   vertical-align: middle !important;
 }
 
-/* Stack the course content and badge in the centre column of each LI cell.
-   Shrinkable minmax(0, 16px) gutters prevent fixed padding from pushing long
-   course codes out of narrow cells. Keep the content column at 1fr so its
-   automatic minimum width shrinks the gutters before the text overflows.
-   If the code still exceeds the cell width, centre the overflow on both sides. */
+/* Portal cells (LI) have a fixed size, so the course codes shrink a little
+   when the cell is narrower than the text. "CMSE443/CMPE230" is about 10.3em wide, so
+   9.6cqi keeps it inside the card; 12px is the portal's own size. */
 li.ctime[data-emu-labmarker] {
   box-sizing: border-box !important;
   display: grid !important;
-  grid-template-columns: minmax(0, 16px) 1fr minmax(0, 16px) !important;
-  justify-content: center !important;
+  grid-template-columns: minmax(0, 1fr) !important;
   align-content: center !important;
-}
-
-li.ctime[data-emu-labmarker] > * {
-  grid-column: 2 !important;
+  padding: 8px 7px !important;
+  container-type: inline-size !important;
 }
 
 li.ctime[data-emu-labmarker] > span {
   box-sizing: border-box !important;
+  min-width: 0 !important;
   padding-inline: 0 !important;
+  font-size: clamp(10px, 9.6cqi, 12px) !important;
+  letter-spacing: -0.01em !important;
   text-align: left !important;
 }
 
@@ -53,10 +56,10 @@ li.ctime[data-emu-labmarker] > span {
   background: var(--emu-lm-verified-badge, #f12e4b) !important;
   color: var(--emu-lm-verified-badge-ink, #fff) !important;
   border: 0 !important;
-  border-radius: 7px !important;
-  padding: 5px 8px !important;
+  border-radius: 6px !important;
+  padding: 4px 7px !important;
   font-family: inherit !important;
-  font-size: 12px !important;
+  font-size: 10.5px !important;
   font-weight: 600 !important;
   line-height: 1 !important;
   letter-spacing: 0 !important;
@@ -75,7 +78,7 @@ li.ctime[data-emu-labmarker] > span {
   height: auto !important;
   min-width: 0 !important;
   min-height: 0 !important;
-  margin: 6px 0 0 auto !important;
+  margin: 5px 0 0 auto !important;
   inset: auto !important;
   transform: none !important;
   cursor: help;
@@ -106,7 +109,7 @@ li.ctime[data-emu-labmarker] > span {
   height: 25px;
   flex: 0 0 auto;
   box-sizing: border-box;
-  border: 3px solid var(--emu-lm-verified-border, #f12e4b);
+  border: 1.5px solid var(--emu-lm-verified-border, #f12e4b);
   border-radius: 6px;
   background: var(--emu-lm-verified-bg, #ffd3d7);
 }
@@ -114,8 +117,8 @@ li.ctime[data-emu-labmarker] > span {
 /* Use a separate colour for user-defined labs.
    Keep these rules after the shared rules, which have the same specificity. */
 [data-emu-labmarker="custom"] {
-  background: var(--emu-lm-custom-bg, #fef2d6) !important;
-  box-shadow: inset 0 0 0 3px var(--emu-lm-custom-border, #f08c14) !important;
+  --emu-labmarker-fill: var(--emu-lm-custom-bg, #fef2d6);
+  --emu-labmarker-ring: var(--emu-lm-custom-border, #f08c14);
 }
 
 [data-emu-labmarker="custom"],
@@ -136,8 +139,8 @@ li.ctime[data-emu-labmarker] > span {
 
 /* Use purple for tutorials. Keep these rules after the shared rules. */
 [data-emu-labmarker="tutorial"] {
-  background: var(--emu-lm-tutorial-bg, #efe7ff) !important;
-  box-shadow: inset 0 0 0 3px var(--emu-lm-tutorial-border, #8b5cf6) !important;
+  --emu-labmarker-fill: var(--emu-lm-tutorial-bg, #efe7ff);
+  --emu-labmarker-ring: var(--emu-lm-tutorial-border, #8b5cf6);
 }
 
 [data-emu-labmarker="tutorial"],
