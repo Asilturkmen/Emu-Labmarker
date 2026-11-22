@@ -52,6 +52,16 @@
           <button type="button" class="primary access-btn" id="access-btn">İzin ver</button>
         </section>
 
+        <label class="option" for="table-toggle">
+          <svg class="option-icon" viewBox="0 0 20 20" aria-hidden="true"><rect x="2.75" y="3.75" width="14.5" height="12.5" rx="2.2" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M2.75 7.75h14.5M7.25 3.75v12.5M12.25 3.75v12.5" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+          <span class="option-text">
+            <span class="option-title" id="table-title">Tablo görünümü</span>
+            <span class="option-detail" id="table-detail">Haftayı tek tabloda göster.</span>
+          </span>
+          <input id="table-toggle" type="checkbox" role="switch" aria-labelledby="table-title" aria-describedby="table-detail" disabled />
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
         <section class="rooms" aria-labelledby="rooms-title">
           <h2 id="rooms-title">Eklediğin sınıflar</h2>
           <form id="room-form" class="card add" autocomplete="off">

@@ -18,6 +18,7 @@ import {
 export const LABMARKER_ENABLED_KEY = "emuLabmarkerEnabled";
 export const CUSTOM_ROOMS_KEY = "emuLabmarkerCustomRooms";
 export const COLORS_KEY = "emuLabmarkerColors";
+export const TABLE_VIEW_KEY = "emuLabmarkerTableView";
 
 export async function getLabMarkerEnabled(): Promise<boolean> {
   const stored = await browser.storage.local.get(LABMARKER_ENABLED_KEY);
@@ -26,6 +27,16 @@ export async function getLabMarkerEnabled(): Promise<boolean> {
 
 export async function setLabMarkerEnabled(enabled: boolean): Promise<void> {
   await browser.storage.local.set({ [LABMARKER_ENABLED_KEY]: enabled });
+}
+
+/** Whether narrow screens show the week as the portal's desktop table. Off by default. */
+export async function getTableView(): Promise<boolean> {
+  const stored = await browser.storage.local.get(TABLE_VIEW_KEY);
+  return stored[TABLE_VIEW_KEY] === true;
+}
+
+export async function setTableView(on: boolean): Promise<void> {
+  await browser.storage.local.set({ [TABLE_VIEW_KEY]: on });
 }
 
 /** The user's own laboratory rules, in the order they were added. */

@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { COLORS_KEY, CUSTOM_ROOMS_KEY } from "../src/settings";
+import { COLORS_KEY, CUSTOM_ROOMS_KEY, TABLE_VIEW_KEY } from "../src/settings";
 import { LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 
 // Vitest runs from the project root, and the jsdom environment has no
@@ -863,5 +863,57 @@ describe("popup portal access (Safari)", () => {
     typeRoom("CMPE030");
 
     expect(hint()).toBe("Ders programı sayfasını yenile, sonra bu pencereyi yeniden aç.");
+  });
+});
+
+describe("popup table view switch", () => {
+  const tableToggle = () => document.querySelector<HTMLInputElement>("#table-toggle")!;
+  const mainToggle = () => document.querySelector<HTMLInputElement>("#enabled-toggle")!;
+
+  beforeEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("starts off and saves the choice when turned on", async () => {
+    await openPopup();
+    expect(tableToggle().checked).toBe(false);
+    expect(tableToggle().disabled).toBe(false);
+
+    tableToggle().click();
+
+    await vi.waitFor(() => expect(storage[TABLE_VIEW_KEY]).toBe(true));
+    expect(tableToggle().checked).toBe(true);
+  });
+
+  it("shows a choice saved earlier", async () => {
+    await openPopup({ [TABLE_VIEW_KEY]: true });
+    expect(tableToggle().checked).toBe(true);
+  });
+
+  // The table view belongs to the extension, so it cannot be changed while the extension is off.
+  it("is unavailable while the extension is off", async () => {
+    await openPopup({ emuLabmarkerEnabled: false, [TABLE_VIEW_KEY]: true });
+    expect(tableToggle().disabled).toBe(true);
+    expect(tableToggle().checked).toBe(true);
+    // The detail says why it is greyed out.
+    expect(document.querySelector("#table-detail")!.textContent).toBe("Eklenti açıkken kullanılabilir.");
+
+    mainToggle().click();
+    await vi.waitFor(() => expect(tableToggle().disabled).toBe(false));
+    // The main switch is locked until its own save finishes.
+    await vi.waitFor(() => expect(mainToggle().disabled).toBe(false));
+
+    mainToggle().click();
+    await vi.waitFor(() => expect(tableToggle().disabled).toBe(true));
+  });
+
+  // While on it stays visible everywhere, so it can always be turned off again.
+  it("marks the page while the table view is on", async () => {
+    await openPopup({ [TABLE_VIEW_KEY]: true });
+    expect(document.body.dataset.tableView).toBe("true");
+
+    tableToggle().click();
+    await vi.waitFor(() => expect(storage[TABLE_VIEW_KEY]).toBe(false));
+    expect(document.body.dataset.tableView).toBe("false");
   });
 });

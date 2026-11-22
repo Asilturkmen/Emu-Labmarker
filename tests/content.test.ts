@@ -1,7 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { portalTimetable } from "./fixtures/portalTimetable";
-import { COLORS_KEY, CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY } from "../src/settings";
+import { COLORS_KEY, CUSTOM_ROOMS_KEY, LABMARKER_ENABLED_KEY, TABLE_VIEW_KEY } from "../src/settings";
 import { LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
@@ -223,6 +223,70 @@ describe("content script", () => {
     notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: true } });
     await settle();
     expect(document.documentElement.hasAttribute("data-emu-labmarker-fit")).toBe(true);
+  });
+
+  describe("table view", () => {
+    const tableOn = () => document.documentElement.hasAttribute("data-emu-labmarker-table");
+
+    it("stays off until the user turns it on", async () => {
+      await startContentScript("/Academic/Timetable");
+      expect(tableOn()).toBe(false);
+    });
+
+    it("shows the table when it was turned on before the page opened", async () => {
+      stubEnvironment({ [TABLE_VIEW_KEY]: true });
+      await startContentScript("/Academic/Timetable");
+      expect(tableOn()).toBe(true);
+    });
+
+    it("follows the popup switch without a reload", async () => {
+      await startContentScript("/Academic/Timetable");
+
+      notifyStorage({ [TABLE_VIEW_KEY]: { newValue: true } });
+      await settle();
+      expect(tableOn()).toBe(true);
+
+      notifyStorage({ [TABLE_VIEW_KEY]: { newValue: false } });
+      await settle();
+      expect(tableOn()).toBe(false);
+    });
+
+    // The plain-text pass reads one text node at a time; the line breaks the
+    // table view adds must not split "MGMT101/CL 114" for the next scan.
+    it("keeps marking plain-text cells on every rescan", async () => {
+      for (const link of document.querySelectorAll(".schedule-table-content a")) {
+        link.replaceWith(document.createTextNode(link.textContent ?? ""));
+      }
+      stubEnvironment({ [TABLE_VIEW_KEY]: true, [CUSTOM_ROOMS_KEY]: ["CL114"] });
+      await startContentScript("/Academic/Timetable");
+      const plainMarks = () =>
+        marks("custom").filter((mark) => mark.closest(".schedule-table-content"));
+      const first = plainMarks().length;
+      expect(first).toBeGreaterThan(0);
+
+      notifyStorage({ [CUSTOM_ROOMS_KEY]: { newValue: ["CL114"] } });
+      await settle();
+
+      expect(tableOn()).toBe(true);
+      expect(plainMarks()).toHaveLength(first);
+    });
+
+    // The table view is part of the extension: switched off, the page stays as it is.
+    it("leaves the page alone while the extension is switched off", async () => {
+      stubEnvironment({ [TABLE_VIEW_KEY]: true, [LABMARKER_ENABLED_KEY]: false });
+      await startContentScript("/Academic/Timetable");
+      expect(tableOn()).toBe(false);
+
+      notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: true } });
+      await settle();
+      expect(tableOn()).toBe(true);
+
+      notifyStorage({ [LABMARKER_ENABLED_KEY]: { newValue: false } });
+      await settle();
+      expect(tableOn()).toBe(false);
+      expect(document.querySelectorAll("[data-emu-labmarker-hide]")).toHaveLength(0);
+      expect(document.querySelectorAll(".schedule-table-content wbr")).toHaveLength(0);
+    });
   });
 
   it("picks up a room added in the popup without a reload", async () => {

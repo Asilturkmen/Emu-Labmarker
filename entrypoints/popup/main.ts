@@ -35,9 +35,11 @@ import {
   getColorSettings,
   getCustomLabRules,
   getLabMarkerEnabled,
+  getTableView,
   removeCustomLabRules,
   setKindColor,
   setLabMarkerEnabled,
+  setTableView,
 } from "../../src/settings";
 import {
   LIST_SESSIONS_MESSAGE,
@@ -70,6 +72,7 @@ if (import.meta.env.BROWSER === "safari") {
   brandLink.querySelector("img")!.alt = "asilturkmen.com'u aç";
 }
 const toggle = requireElement<HTMLInputElement>("#enabled-toggle");
+const tableToggle = requireElement<HTMLInputElement>("#table-toggle");
 const statusText = requireElement<HTMLElement>("#status-text");
 const roomForm = requireElement<HTMLFormElement>("#room-form");
 const kindSwitch = requireElement<HTMLElement>("#kind-switch");
@@ -111,10 +114,22 @@ const WEEKDAY_NAMES: Record<Weekday, string> = {
   sunday: "Pazar",
 };
 
+/** True once the table view preference has been read. */
+let tableReady = false;
+/** True while the table view choice is being saved. */
+let tableSaving = false;
+const tableDetail = requireElement<HTMLElement>("#table-detail");
+
 function render(enabled: boolean): void {
   toggle.checked = enabled;
   statusText.textContent = enabled ? "Açık" : "Kapalı";
   document.body.dataset.enabled = String(enabled);
+  // The table view belongs to the extension; with the extension off it has no effect.
+  tableToggle.disabled = !enabled || !tableReady || tableSaving;
+  tableDetail.textContent = enabled
+    ? "Haftayı tek tabloda göster."
+    : "Eklenti açıkken kullanılabilir.";
+  document.body.dataset.tableView = String(tableToggle.checked);
 }
 
 /** A storage failure stays until the next result; typing does not clear it. */
@@ -260,7 +275,10 @@ function serialize(task: () => Promise<void>): Promise<void> {
 
 async function initialize(): Promise<void> {
   try {
-    render(await getLabMarkerEnabled());
+    const enabled = await getLabMarkerEnabled();
+    tableToggle.checked = await getTableView();
+    tableReady = true;
+    render(enabled);
     toggle.disabled = false;
     rules = await getCustomLabRules();
     renderRules();
@@ -331,6 +349,21 @@ toggle.addEventListener("change", async () => {
     setRoomStatus("Tercih kaydedilemedi.", "error", "", true);
   } finally {
     toggle.disabled = false;
+  }
+});
+
+tableToggle.addEventListener("change", async () => {
+  const on = tableToggle.checked;
+  tableSaving = true;
+  render(toggle.checked);
+  try {
+    await setTableView(on);
+  } catch {
+    tableToggle.checked = !on;
+    setRoomStatus("Tercih kaydedilemedi.", "error", "", true);
+  } finally {
+    tableSaving = false;
+    render(toggle.checked);
   }
 });
 
