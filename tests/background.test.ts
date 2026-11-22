@@ -4,16 +4,23 @@ import {
   ACTIVE_ICON_PATHS,
   TIMETABLE_ACTIVE_MESSAGE,
 } from "../src/toolbarIcon";
+import { MISSING_ACCESS_BADGE } from "../src/portalAccess";
 
 type MessageSender = { tab?: { id?: number } };
 type MessageListener = (message: unknown, sender: MessageSender) => void;
 
 let listeners: MessageListener[];
 let setIconCalls: unknown[];
+let badgeText: string | undefined;
+let permissionListeners: Array<() => void>;
+let access: { granted: boolean } | undefined;
 
-function stubEnvironment(): void {
+function stubEnvironment(env: { access?: { granted: boolean } } = {}): void {
   listeners = [];
   setIconCalls = [];
+  badgeText = undefined;
+  permissionListeners = [];
+  access = env.access;
 
   vi.stubGlobal("defineBackground", <T>(definition: T): T => definition);
   vi.stubGlobal("browser", {
@@ -26,7 +33,19 @@ function stubEnvironment(): void {
       setIcon: async (details: unknown) => {
         setIconCalls.push(details);
       },
+      setBadgeText: async ({ text }: { text: string }) => {
+        badgeText = text;
+      },
+      setBadgeBackgroundColor: async () => {},
+      setTitle: async () => {},
     },
+    ...(access && {
+      permissions: {
+        contains: async () => access!.granted,
+        onAdded: { addListener: (listener: () => void) => permissionListeners.push(listener) },
+        onRemoved: { addListener: (listener: () => void) => permissionListeners.push(listener) },
+      },
+    }),
   });
 }
 
@@ -41,7 +60,7 @@ function notify(message: unknown, sender: MessageSender): void {
   for (const listener of listeners) listener(message, sender);
 }
 
-beforeEach(stubEnvironment);
+beforeEach(() => stubEnvironment());
 
 afterEach(() => {
   vi.unstubAllGlobals();
@@ -86,5 +105,32 @@ describe("toolbar icon", () => {
       "icons/icon-48.png",
       "icons/icon-128.png",
     ]);
+  });
+});
+
+describe("portal access badge (Safari)", () => {
+  it("marks the button while the portal is not allowed", async () => {
+    stubEnvironment({ access: { granted: false } });
+    await startBackground();
+
+    await vi.waitFor(() => expect(badgeText).toBe(MISSING_ACCESS_BADGE));
+  });
+
+  it("clears the mark as soon as the portal is allowed", async () => {
+    stubEnvironment({ access: { granted: false } });
+    await startBackground();
+    await vi.waitFor(() => expect(badgeText).toBe(MISSING_ACCESS_BADGE));
+
+    access!.granted = true;
+    for (const listener of permissionListeners) listener();
+
+    await vi.waitFor(() => expect(badgeText).toBe(""));
+  });
+
+  it("shows no mark where access comes with the install, as in Chrome", async () => {
+    stubEnvironment({ access: { granted: true } });
+    await startBackground();
+
+    await vi.waitFor(() => expect(badgeText).toBe(""));
   });
 });

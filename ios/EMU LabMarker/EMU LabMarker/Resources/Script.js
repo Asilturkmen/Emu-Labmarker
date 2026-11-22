@@ -22,8 +22,8 @@ function show(enabled, canOpenSettings) {
         portal.parentElement.prepend(portal);
     } else {
         detail.textContent = canOpenSettings
-            ? "Aşağıdaki düğmeyle ayarları aç ve eklentiyi etkinleştir."
-            : "Ayarlar › Uygulamalar › Safari › Uzantılar";
+            ? "Aşağıdaki düğmeyle ayarları aç, \"Genişletmeye İzin Ver\"i aç."
+            : "Ayarlar › Uygulamalar › Safari › Genişletmeler › EMU LabMarker";
         settings.className = "primary";
         portal.className = "secondary";
         settings.parentElement.prepend(settings);

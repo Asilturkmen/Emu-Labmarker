@@ -25,6 +25,12 @@ import {
 } from "../../src/data/customRules";
 import { isValidRoomCode } from "../../src/data/labRooms";
 import {
+  hasPortalAccess,
+  PORTAL_ORIGINS,
+  portalOriginOf,
+  updateAccessBadge,
+} from "../../src/portalAccess";
+import {
   addCustomLabRule,
   getColorSettings,
   getCustomLabRules,
@@ -279,19 +285,22 @@ async function initialize(): Promise<void> {
 // the manifest; Chrome grants them at install, so the card never shows there.
 // ---------------------------------------------------------------------------
 
-const PORTAL_ORIGINS = ["https://student.emu.edu.tr/*", "https://students.emu.edu.tr/*"];
 const accessCard = requireElement<HTMLElement>("#access");
 const accessButton = requireElement<HTMLButtonElement>("#access-btn");
 
 async function refreshAccess(): Promise<void> {
-  let granted = true;
+  // On a portal page only that host matters; elsewhere any portal host will do.
+  let origin: string | null = null;
   try {
-    granted = await browser.permissions.contains({ origins: PORTAL_ORIGINS });
+    const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
+    origin = portalOriginOf(tab?.url);
   } catch {
-    // A browser without the permissions API has nothing to ask for.
+    // Without the active tab, fall back to any portal host.
   }
-  accessCard.hidden = granted;
+  accessCard.hidden = await hasPortalAccess(origin ?? undefined);
   fitRecords();
+  // The badge on the toolbar button follows the same state.
+  void updateAccessBadge();
 }
 
 accessButton.addEventListener("click", () => {
