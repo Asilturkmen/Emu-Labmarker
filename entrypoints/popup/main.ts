@@ -672,15 +672,19 @@ function renderRules(fx: { key: string; bump: boolean } | null = null): void {
 function applySpans(): void {
   for (const main of roomList.querySelectorAll<HTMLElement>(".box-main")) {
     const box = main.parentElement!;
-    if (main.scrollWidth > main.clientWidth && !box.classList.contains("span3")) {
-      box.classList.add("span2");
-    }
-    if (main.scrollWidth > main.clientWidth) {
-      box.classList.remove("span2");
-      box.classList.add("span3");
-    }
+    // Measure from one column again: on iPhone the sheet is first laid out
+    // narrower than it ends up, and a span chosen then must not stay.
+    box.classList.remove("span2", "span3");
+    if (main.scrollWidth > main.clientWidth) box.classList.add("span2");
+    if (main.scrollWidth > main.clientWidth) box.classList.replace("span2", "span3");
   }
 }
+
+// The iPhone sheet settles at its final width after the first layout.
+window.addEventListener("resize", () => {
+  applySpans();
+  fitRecords();
+});
 
 const boxOf = (key: string): HTMLElement | null =>
   [...roomList.querySelectorAll<HTMLElement>(".box")].find((box) => box.dataset.key === key) ??
@@ -916,12 +920,20 @@ roomList.addEventListener("click", (event) => {
  */
 const BODY_LIMIT = 600;
 
+/**
+ * On touch screens (Safari on iPhone and iPad) the popup is a sheet that scrolls
+ * as a whole, so the 600px limit would only squeeze the records card.
+ * Same query as the touch layout in style.css.
+ */
+const isTouchLayout = (): boolean =>
+  window.matchMedia?.("(hover: none) and (pointer: coarse)").matches ?? false;
+
 function fitRecords(scrollTo?: number): void {
   // Lifting the height limit clamps the scroll position; put it back after.
   const keep = scrollTo ?? roomList.scrollTop;
   roomList.style.maxHeight = "none";
   roomList.classList.remove("scrolls");
-  const over = viewMain.offsetHeight - BODY_LIMIT;
+  const over = isTouchLayout() ? 0 : viewMain.offsetHeight - BODY_LIMIT;
   if (over > 0) {
     const available = roomList.offsetHeight - over;
     const base = roomList.getBoundingClientRect().top;

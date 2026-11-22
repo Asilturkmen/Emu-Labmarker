@@ -377,6 +377,69 @@ button.box-main:focus-visible { outline: 2px solid var(--brand); outline-offset:
   transition: background-color 180ms ease, color 180ms ease;
 }
 
+/* ---------- Touch screens (Safari on iPhone and iPad) ----------
+   Same design; the popup opens as a sheet, so it takes the full width, controls
+   get 44pt touch targets and fields use 16px text (iOS zooms in on smaller text). */
+@media (hover: none) and (pointer: coarse) {
+  html, body { min-height: 100%; }
+  body { width: auto; max-width: 560px; margin: 0 auto; }
+  .view { padding: 20px 20px calc(16px + env(safe-area-inset-bottom)); }
+
+  .brand { grid-template-columns: 48px minmax(0, 1fr) auto; }
+  .brand-link img { width: 48px; height: 48px; border-radius: 11px; }
+  .brand h1 { margin-left: 12px; font-size: 19px; line-height: 24px; }
+  .brand-subtitle { margin-left: 12px; font-size: 13px; line-height: 17px; }
+  .icon-btn, .actions .icon-btn { width: 40px; height: 44px; }
+  .icon-btn svg { width: 20px; height: 20px; }
+  .control { height: 44px; gap: 8px; padding-left: 6px; }
+  .control small { font-size: 13px; }
+
+  .rooms { margin-top: 22px; }
+  .rooms h2 { margin-bottom: 10px; font-size: 15px; line-height: 20px; }
+  .add { gap: 10px; padding: 14px; }
+  .kind-label { width: 28px; font-size: 13px; }
+  .segmented { height: 40px; border-radius: 11px; }
+  .seg-thumb { height: 34px; border-radius: 9px; }
+  .seg span { height: 34px; border-radius: 9px; font-size: 15px; }
+  .entry { gap: 10px; }
+  .field, .ghost { font-size: 16px; }
+  .field { height: 44px; padding: 0 13px; border-radius: 10px; }
+  .ghost { padding: 0 14px; }
+  .primary { height: 44px; padding: 0 20px; border-radius: 10px; font-size: 16px; }
+  .when { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); gap: 10px; }
+  .select-btn { height: 44px; padding: 0 34px 0 13px; border-radius: 10px; font-size: 16px; }
+  .select-btn svg { right: 13px; }
+  .menu-list li { height: 44px; padding: 0 14px 0 10px; font-size: 16px; }
+  .form-hint, .room-status { font-size: 13px; line-height: 18px; }
+
+  .kgroup-head { height: 48px; padding: 0 14px; font-size: 14px; }
+  .kgroup.open .kinner { padding: 8px 14px 14px; }
+  .kgrid { gap: 10px; }
+  .box-main { height: 40px; border-radius: 9px; font-size: 15px; }
+  .tag-x { top: -9px; right: -9px; width: 28px; height: 28px; }
+  .rec-empty { padding: 14px; font-size: 14px; line-height: 19px; }
+  .rule-x { width: 32px; height: 32px; }
+  .rule-when { font-size: 16px; }
+  .rule-kind { font-size: 13px; }
+
+  .credit { padding-top: 14px; font-size: 14px; line-height: 19px; }
+  .credit a svg { width: 9px; height: 9px; }
+
+  .sub-head { height: 44px; }
+  .sub-head h1 { font-size: 19px; line-height: 24px; }
+  .back svg { width: 10px; height: 17px; }
+  .color-row { padding: 10px 14px 8px; }
+  .color-name { font-size: 15px; }
+  .reset { width: 32px; height: 32px; }
+  .swatch, .swatch span { width: 34px; height: 34px; }
+  /* Preview cells keep the timetable cell's shape (131×91) instead of stretching. */
+  .preview { flex: none; max-height: none; }
+  .preview-cells { flex: none; }
+  .pcell { aspect-ratio: 131 / 91; padding: 8px 8px 7px 9px; font-size: 12.5px; line-height: 15px; }
+  .pcell small { font-size: 10px; line-height: 13px; }
+  .preview-title { font-size: 13px; }
+}
+
 /* Until the stored colours are applied the popup stays invisible, so nobody sees
    a frame of the default colours. The animation reveals it anyway if the script fails. */
 .preload body { opacity: 0; animation: reveal 1ms 800ms forwards; }
