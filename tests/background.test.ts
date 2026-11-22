@@ -5,6 +5,7 @@ import {
   TIMETABLE_ACTIVE_MESSAGE,
 } from "../src/toolbarIcon";
 import { MISSING_ACCESS_BADGE } from "../src/portalAccess";
+import { OPEN_POPUP_MESSAGE } from "../src/popupButton/popupButton";
 
 type MessageSender = { tab?: { id?: number } };
 type MessageListener = (message: unknown, sender: MessageSender) => void;
@@ -132,5 +133,35 @@ describe("portal access badge (Safari)", () => {
     await startBackground();
 
     await vi.waitFor(() => expect(badgeText).toBe(""));
+  });
+});
+
+describe("open popup from the page button", () => {
+  async function ask(openPopup: (() => Promise<void>) | undefined): Promise<unknown> {
+    const env = (globalThis as unknown as { browser: { action: Record<string, unknown> } }).browser;
+    if (openPopup) env.action.openPopup = openPopup;
+    else delete env.action.openPopup;
+    await startBackground();
+    return new Promise((resolve) => {
+      for (const listener of listeners as unknown as Array<
+        (message: unknown, sender: MessageSender, respond: (value: unknown) => void) => unknown
+      >) {
+        listener(OPEN_POPUP_MESSAGE, { tab: { id: 7 } }, resolve);
+      }
+    });
+  }
+
+  it("opens the popup and answers true", async () => {
+    let opened = 0;
+    await expect(ask(async () => { opened += 1; })).resolves.toBe(true);
+    expect(opened).toBe(1);
+  });
+
+  it("answers false when the browser refuses", async () => {
+    await expect(ask(async () => { throw new Error("no gesture"); })).resolves.toBe(false);
+  });
+
+  it("answers false when the browser has no openPopup", async () => {
+    await expect(ask(undefined)).resolves.toBe(false);
   });
 });

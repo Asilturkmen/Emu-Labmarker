@@ -1,5 +1,6 @@
 import "../src/highlighter/highlight.css";
 import "../src/tableView/tableView.css";
+import "../src/popupButton/popupButton.css";
 
 import { groupMeetingBlocks } from "../src/grouping/groupMeetingBlocks";
 import {
@@ -26,6 +27,7 @@ import {
   TABLE_VIEW_KEY,
 } from "../src/settings";
 import { applyTableView, clearTableView } from "../src/tableView/tableView";
+import { ensurePopupButton } from "../src/popupButton/popupButton";
 import { collectSessions, LIST_SESSIONS_MESSAGE } from "../src/timetableSessions";
 import { TIMETABLE_ACTIVE_MESSAGE } from "../src/toolbarIcon";
 
@@ -99,6 +101,8 @@ export default defineContentScript({
         }
         // The table view is part of the extension: with the extension off the page stays as it is.
         applyTableView(enabled && tableView);
+        // The button stays while the extension is off, so it can be turned on again.
+        ensurePopupButton();
       } finally {
         observer.observe(document.body, { childList: true, subtree: true });
       }

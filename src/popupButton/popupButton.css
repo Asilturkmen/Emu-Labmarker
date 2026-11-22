@@ -1,0 +1,62 @@
+/* Button next to the page title that opens the extension (popupButton.ts).
+   Only on narrow screens, where the portal shows its phone layout; wide screens
+   have the browser's toolbar button. */
+
+.emu-labmarker-open,
+.emu-labmarker-open-hint {
+  display: none !important;
+}
+
+@media screen and (max-width: 71.938em) {
+  [data-emu-labmarker-title] {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    column-gap: 12px !important;
+  }
+
+  .emu-labmarker-open {
+    display: inline-flex !important;
+    flex: none !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    width: 44px !important;
+    height: 44px !important;
+    margin: 0 !important;
+    padding: 8px !important;
+    border: 1px solid #dce4ee !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: 0 1px 2px rgba(23, 54, 93, 0.06), 0 3px 10px rgba(23, 54, 93, 0.08) !important;
+    cursor: pointer !important;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform 120ms ease, background-color 120ms ease !important;
+  }
+
+  .emu-labmarker-open:active {
+    background: #eef5fc !important;
+    transform: scale(0.94) !important;
+  }
+
+  .emu-labmarker-open:focus-visible {
+    outline: 2px solid #1269b5 !important;
+    outline-offset: 2px !important;
+  }
+
+  .emu-labmarker-open svg {
+    display: block !important;
+    width: 26px !important;
+    height: 26px !important;
+  }
+
+  /* Shown only when the browser cannot open the popup for the page. */
+  .emu-labmarker-open-hint {
+    display: block !important;
+    flex-basis: 100% !important;
+    margin-top: 6px !important;
+    color: #61748b !important;
+    font: 500 13px/1.35 system-ui, -apple-system, sans-serif !important;
+    text-align: left !important;
+  }
+}

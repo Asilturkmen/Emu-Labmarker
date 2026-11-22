@@ -289,6 +289,17 @@ describe("content script", () => {
     });
   });
 
+  // The button opens the extension, so it stays even while marking is off.
+  it("adds the popup button next to the page title, also while switched off", async () => {
+    document.body.insertAdjacentHTML("afterbegin", "<h2>Zaman Çizelgesi</h2>");
+    stubEnvironment({ [LABMARKER_ENABLED_KEY]: false });
+
+    await startContentScript("/Academic/Timetable");
+
+    expect(document.querySelectorAll("h2 > .emu-labmarker-open")).toHaveLength(1);
+    expect(marks()).toHaveLength(0);
+  });
+
   it("picks up a room added in the popup without a reload", async () => {
     await startContentScript("/Academic/Timetable");
     expect(marks("custom")).toHaveLength(0);
