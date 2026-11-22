@@ -9,3 +9,7 @@ docs/store/
 
 # Yerel geliştirme tarayıcısı ayarı (npm run dev için)
 web-ext.config.ts
+
+# iOS (Safari) derleme çıktıları ve Xcode kullanıcı ayarları
+ios/build/
+ios/**/xcuserdata/
